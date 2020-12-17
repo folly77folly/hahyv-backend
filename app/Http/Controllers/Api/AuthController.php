@@ -101,7 +101,7 @@ class AuthController extends Controller
                 "user"=>$user,
                 "token" => $accessToken
             ]
-            ],201);
+            ],StatusCodes::CREATED);
     }
 
     public function login(LoginRequest $request)
@@ -112,16 +112,16 @@ class AuthController extends Controller
             return response()->json([
                 "status"=>"failure",
                 "Message"=>"Invalid Email or Password"
-            ], StatusCode::BAD_REQUEST);
+            ], StatusCodes::BAD_REQUEST);
         }
 
         $accessToken = Auth()->user()->createToken("authToken")->accessToken;
         return response()->json([
             "status"=>"success",
-            "status_code"=>StatusCode::SUCCESS,
+            "status_code"=> StatusCodes::SUCCESS,
             "user"=> Auth()->user(),
             "token" => $accessToken
-        ],StatusCode::SUCCESS);
+        ],StatusCodes::SUCCESS);
     }
 
 }
