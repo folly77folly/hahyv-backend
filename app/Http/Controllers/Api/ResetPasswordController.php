@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
+use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
 class ResetPasswordController extends Controller
@@ -30,12 +31,18 @@ class ResetPasswordController extends Controller
     // protected $redirectTo = RouteServiceProvider::HOME;
 
     protected function sendResetResponse(Request $request, $response){
-        return response(["message"=> trans($response)
-        ]);
+        return response([
+            "status"=> "success",
+            "status_code"=> StatusCodes::SUCCESS,
+            "message"=> trans($response)
+        ], StatusCodes::SUCCESS);
     }
 
     protected function sendResetFailedResponse(Request $request, $response){
-        return response(["errors"=> trans($response)
-    ], 422);
+        return response([
+            "status"=> "failure",
+            "status_code"=> StatusCodes::UNPROCESSABLE,
+            "message"=> trans($response)
+        ], StatusCodes::UNPROCESSABLE);
     }
 }

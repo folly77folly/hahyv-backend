@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
+use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\VerifiesEmails;
-use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class VerificationController extends Controller
@@ -44,7 +45,7 @@ class VerificationController extends Controller
 
     public function verify(Request $request)
     {
-
+        auth()->loginUsingId($request->route('id'));
         if (! hash_equals((string) $request->route('id'), (string) $request->user()->getKey())) {
             throw new AuthorizationException;  
         }
@@ -54,7 +55,11 @@ class VerificationController extends Controller
         }
 
         if ($request->user()->hasVerifiedEmail()) {
-            return response(["message"=>"Already Verified"]);   
+            return response([
+                "status"=> "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message"=>"Already Verified"
+            ],StatusCodes::BAD_REQUEST);   
         }
 
         // if ($request->user()->markEmailAsVerified()) {
@@ -65,17 +70,29 @@ class VerificationController extends Controller
         //     return response(["message"=>"Successfully Verified"]);
         // }
 
-        return response(["message"=>"Successfully Verified"]);
+        return response([
+            "status"=> "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message"=>"Successfully Verified"
+        ],StatusCodes::SUCCESS);
     }
 
     public function resend(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return response(["message"=>"Already Verified"]);
+            return response([
+                "status"=> "failure",
+                "status_code"=>StatusCodes::BAD_REQUEST,
+                "message"=>"Email Already Verified"
+            ],StatusCodes::BAD_REQUEST);
         }
 
         $request->user()->sendEmailVerificationNotification();
 
-        return response(["message"=>"Email Sent"]);
+        return response([
+            "status"=> "success",
+            "status_code"=>StatusCodes::SUCCESS,
+            "message"=>"Email Sent"
+        ],StatusCodes::SUCCESS);
     }
 }
