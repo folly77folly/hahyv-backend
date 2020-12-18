@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use App\Collections\StatusCodes;
 
 class ForgotPasswordController extends Controller
 {
@@ -23,14 +24,20 @@ class ForgotPasswordController extends Controller
 
     protected function sendResetLinkFailedResponse(Request $request, $response)
     {
-        return response(["error"=> trans($response)
-    ], 422);
+        return response([
+            "status"=> "failure",
+            "status_code"=> StatusCodes::UNPROCESSABLE,
+            "message"=> trans($response)
+        ], StatusCodes::UNPROCESSABLE);
     }
 
 
     protected function sendResetLinkResponse(Request $request, $response)
     {
-        return response(["message"=> trans($response)
-    ]);
+        return response([
+            "status"=> "success",
+            "status_code"=> StatusCodes::SUCCESS,
+            "message"=> trans($response)
+        ], StatusCodes::SUCCESS);
     }
 }
