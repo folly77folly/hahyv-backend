@@ -111,8 +111,9 @@ class AuthController extends Controller
         if (!Auth()->attempt($validatedData)){
             return response()->json([
                 "status"=>"failure",
-                "Message"=>"Invalid Email or Password"
-            ], StatusCodes::BAD_REQUEST);
+                "status_code" => StatusCodes::UNAUTHORIZED,
+                "message"=>"Invalid Email or Password"
+            ], StatusCodes::UNAUTHORIZED);
         }
 
         $accessToken = Auth()->user()->createToken("authToken")->accessToken;

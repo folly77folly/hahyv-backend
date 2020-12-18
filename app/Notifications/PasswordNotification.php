@@ -43,7 +43,8 @@ class PasswordNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $urlToResetForm ="/reset-password-form/?token=".$this->token;
+        $home = env('APP_URL', '127.0.0.1');
+        $urlToResetForm = "http://".$home."/reset-password-form/?token=".$this->token;
         return (new MailMessage)
                     ->subject(('Reset Password Notification'))
                     ->line(('You are receiving this email because we received a password reset request for your account'))
