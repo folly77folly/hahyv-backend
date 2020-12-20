@@ -9,7 +9,6 @@
     "license": "MIT",
     "require": {
         "php": "^7.2.5|^8.0",
-        "coderello/laravel-passport-social-grant": "^3.0",
         "doctrine/dbal": "^2.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -44,6 +43,9 @@
         "classmap": [
             "database/seeds",
             "database/factories"
+        ],
+        "files":[
+            "app/Helpers/auth.php"
         ]
     },
     "autoload-dev": {
