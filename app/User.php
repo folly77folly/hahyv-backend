@@ -5,6 +5,7 @@ namespace App;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\PasswordNotification;
+use App\Notifications\EmailVerifyNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -18,7 +19,11 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+         'email',
+          'password',
+          'username',
+          'otp',
     ];
 
     /**
@@ -27,7 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'otp_expiry'
     ];
 
     /**
@@ -42,5 +47,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new PasswordNotification($token));
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $OTP = Auth()->user()->otp;
+        $username = Auth()->user()->username;
+        $this->notify(new EmailVerifyNotification($OTP, $username));
     }
 }

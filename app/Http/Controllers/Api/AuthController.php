@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Collections\StatusCodes;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
-use App\Collections\StatusCodes;
 
 class AuthController extends Controller
 {
@@ -92,10 +93,16 @@ class AuthController extends Controller
     {
         $validatedData = $request->validated();
         $validatedData["password"] = Hash::make($request["password"]);
+        $validatedData["otp"] = OTP();
         $user = User::create($validatedData);
+        
+        if (!empty($validatedData["provider"])){
+            $user->email_verified_at = Carbon::now();
+            $user->save();
+        }
         $accessToken = $user->createToken('authToken')->accessToken;
         return response()->json([
-            "status"=> 1,
+            "status"=> "success",
             "message"=>"Registration Successful",
             "data"=> [
                 "user"=>$user,
@@ -106,13 +113,26 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
+
         $validatedData = $request->validated();
+
 
         if (!Auth()->attempt($validatedData)){
             return response()->json([
                 "status"=>"failure",
                 "status_code" => StatusCodes::UNAUTHORIZED,
                 "message"=>"Invalid Email or Password"
+            ], StatusCodes::UNAUTHORIZED);
+        }
+
+        // var_dump(Auth()->user());
+        // die();
+
+        if(!Auth()->user()->email_verified_at){
+            return response()->json([
+                "status"=>"failure",
+                "status_code" => StatusCodes::UNAUTHORIZED,
+                "message"=>"Email has not been Verified"
             ], StatusCodes::UNAUTHORIZED);
         }
 
