@@ -14,8 +14,8 @@ class AddNullableFieldsToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('provider_id')->nullable()->change();
-            $table->string('provider_name')->nullable()->change();
+            $table->string('provider_id')->nullable();
+            $table->string('provider_name')->nullable();
         });
     }
 
