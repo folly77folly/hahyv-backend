@@ -92,11 +92,14 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $validatedData = $request->validated();
+
+        var_dump($validatedData["provider_name"]);
+
         $validatedData["password"] = Hash::make($request["password"]);
         $validatedData["otp"] = OTP();
         $user = User::create($validatedData);
         
-        if (!empty($validatedData["provider"])){
+        if (!empty($validatedData["provider_name"])){
             $user->email_verified_at = Carbon::now();
             $user->save();
         }

@@ -42,7 +42,7 @@ class RegisterRequest extends FormRequest
             'email'=> 'required|email|unique:users',
             'password'=> 'required|confirmed',
             "otp"=> "string",
-            "provider" => '',
+            "provider_name" => '',
             "provider_id" => '',
         ];
     }
