@@ -93,7 +93,6 @@ class AuthController extends Controller
     {
         $validatedData = $request->validated();
 
-        var_dump($validatedData["provider_name"]);
 
         $validatedData["password"] = Hash::make($request["password"]);
         $validatedData["otp"] = OTP();
