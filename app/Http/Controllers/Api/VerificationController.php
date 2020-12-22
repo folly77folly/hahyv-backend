@@ -8,9 +8,11 @@ use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;
 use App\Http\Requests\OtpRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\Verified;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Auth\Access\AuthorizationException;
+
 
 class VerificationController extends Controller
 {
@@ -65,9 +67,10 @@ class VerificationController extends Controller
             ],StatusCodes::BAD_REQUEST);   
         }
 
-        // if ($request->user()->markEmailAsVerified()) {
-        //     event(new Verified($request->user()));
-        // }
+        if ($request->user()->markEmailAsVerified()) {
+            event(new Verified($request->user()));
+        }
+
 
         // if ($response = $this->verified($request)) {
         //     return response(["message"=>"Successfully Verified"]);
@@ -103,10 +106,25 @@ class VerificationController extends Controller
     {
         $validatedData = $request->validated();
 
-        $user = auth('api')->user()->otp ;
-        $userID = auth('api')->user()->id ;
+        auth()->loginUsingId($validatedData["id"]);
 
-        if($user != $validatedData["otp"])
+        if(!auth()->loginUsingId($validatedData["id"])){
+            return response()->json([
+                "status"=> "failure",
+                "status_code"=>StatusCodes::UNPROCESSABLE,
+                "message"=>"Wrong User"
+            ],StatusCodes::UNPROCESSABLE);
+        }
+
+        if (request()->user()->hasVerifiedEmail()) {
+            return response([
+                "status"=> "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message"=>"Already Verified"
+            ],StatusCodes::BAD_REQUEST);   
+        }
+
+        if(request()->user()->otp != $validatedData["otp"])
         {
             return response()->json([
                 "status"=> "failure",
@@ -115,9 +133,14 @@ class VerificationController extends Controller
             ],StatusCodes::UNPROCESSABLE);
         }
 
-        $myUser = User::findOrfail($userID);
+        $myUser = User::findOrfail(request()->user()->id);
         $myUser->email_verified_at = Carbon::now();
         $myUser->save();
+
+        if ($request->user()->markEmailAsVerified()) {
+            event(new Verified($request->user()));
+        }
+
         return response()->json([
             "status"=> "success",
             "status_code"=>StatusCodes::SUCCESS,

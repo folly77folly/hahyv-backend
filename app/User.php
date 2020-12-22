@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\PasswordNotification;
@@ -12,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable, HasApiTokens;
-
+    public static $token;
     /**
      * The attributes that are mass assignable.
      *
@@ -47,14 +48,19 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     public function sendPasswordResetNotification($token)
-    {
+    {   
+        $affected = DB::table('users')
+        ->where('id', $this->id)
+        ->update(['provider_id' => $token]);
         $this->notify(new PasswordNotification($token));
+        
     }
 
     public function sendEmailVerificationNotification()
     {
-        $OTP = Auth()->user()->otp;
-        $username = Auth()->user()->username;
+
+        $OTP = $this->otp;
+        $username = $this->username;
         $this->notify(new EmailVerifyNotification($OTP, $username));
     }
 }

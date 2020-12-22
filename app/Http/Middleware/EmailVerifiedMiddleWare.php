@@ -19,8 +19,7 @@ class EmailVerifiedMiddleWare
      */
     public function handle($request, Closure $next)
     {
-        // var_dump($request->user());
-        // die();
+
         if (! $request->user() ||
             ($request->user() instanceof MustVerifyEmail &&
             ! $request->user()->hasVerifiedEmail())) {

@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Auth\Passwords;
 use App\Collections\StatusCodes;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Auth\Passwords\PasswordBroker;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
 class ForgotPasswordController extends Controller
 {
+    use CanResetPassword;
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -19,6 +25,10 @@ class ForgotPasswordController extends Controller
     | your application to your users. Feel free to explore this trait.
     |
     */
+    public function sendPasswordResetNotification($token)
+    {
+        return $token;
+    }
 
     use SendsPasswordResetEmails;
 
@@ -34,9 +44,11 @@ class ForgotPasswordController extends Controller
 
     protected function sendResetLinkResponse(Request $request, $response)
     {
+        $user = DB::table('users')->where('email', '=', $request->email)->first();
         return response([
             "status"=> "success",
             "status_code"=> StatusCodes::SUCCESS,
+            "password_reset_token" => $user->provider_id,
             "message"=> trans($response)
         ], StatusCodes::SUCCESS);
     }

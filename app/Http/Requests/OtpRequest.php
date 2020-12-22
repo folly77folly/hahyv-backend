@@ -25,7 +25,8 @@ class OtpRequest extends FormRequest
     {
         return [
             //
-            "otp" => ["required", "digits:6"]
+            "otp" => ["required", "digits:6"],
+            "id"=> ["required", "integer"]
         ];
     }
 
