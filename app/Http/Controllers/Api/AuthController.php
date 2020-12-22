@@ -109,6 +109,7 @@ class AuthController extends Controller
             "status"=> "success",
             "message"=>"Registration Successful",
             "data"=> [
+                "name"=>$user->name,
                 "username"=>$user->username,
                 "email"=>$user->email,
                 "id"=>$user->id,
@@ -144,6 +145,7 @@ class AuthController extends Controller
         return response()->json([
             "status"=>"success",
             "status_code"=> StatusCodes::SUCCESS,
+            "name"=> Auth()->user()->name,
             "username"=> Auth()->user()->username,
             "email"=> Auth()->user()->email,
             "id"=> Auth()->user()->id,
