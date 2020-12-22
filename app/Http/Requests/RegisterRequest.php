@@ -41,6 +41,9 @@ class RegisterRequest extends FormRequest
             'username' => 'required|string|unique:users',
             'email'=> 'required|email|unique:users',
             'password'=> 'required|confirmed',
+            "otp"=> "string",
+            "provider_name" => '',
+            "provider_id" => '',
         ];
     }
 }

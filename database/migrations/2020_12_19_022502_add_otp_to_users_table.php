@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNullableFieldsToUsersTable extends Migration
+class AddOtpToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,9 @@ class AddNullableFieldsToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('provider_id')->nullable();
-            $table->string('provider_name')->nullable();
+            //
+            $table->string('otp')->nullable();
+            $table->timestamp('otp_expiry')->nullable();
         });
     }
 
@@ -28,6 +29,8 @@ class AddNullableFieldsToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
+            $table->dropColumn('otp');
+            $table->dropColumn('otp_expiry');
         });
     }
 }

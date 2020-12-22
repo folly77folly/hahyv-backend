@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;
+use App\Http\Requests\OtpRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\Verified;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Auth\Access\AuthorizationException;
+
 
 class VerificationController extends Controller
 {
@@ -38,7 +43,7 @@ class VerificationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api')->only('resend');
+        $this->middleware('auth:api')->only('resend', 'verifyOtp');
         $this->middleware('signed')->only('verify');
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
@@ -62,19 +67,21 @@ class VerificationController extends Controller
             ],StatusCodes::BAD_REQUEST);   
         }
 
-        // if ($request->user()->markEmailAsVerified()) {
-        //     event(new Verified($request->user()));
-        // }
+        if ($request->user()->markEmailAsVerified()) {
+            event(new Verified($request->user()));
+        }
+
 
         // if ($response = $this->verified($request)) {
         //     return response(["message"=>"Successfully Verified"]);
         // }
+        return redirect("http://localhost:3001/welcome");
 
-        return response([
-            "status"=> "success",
-            "status_code" => StatusCodes::SUCCESS,
-            "message"=>"Successfully Verified"
-        ],StatusCodes::SUCCESS);
+        // return response([
+        //     "status"=> "success",
+        //     "status_code" => StatusCodes::SUCCESS,
+        //     "message"=>"Successfully Verified"
+        // ],StatusCodes::SUCCESS);
     }
 
     public function resend(Request $request)
@@ -92,7 +99,53 @@ class VerificationController extends Controller
         return response([
             "status"=> "success",
             "status_code"=>StatusCodes::SUCCESS,
-            "message"=>"Email Sent"
+            "message"=>"Verification Link Sent to your email address"
+        ],StatusCodes::SUCCESS);
+    }
+
+    public function verifyOTP(OtpRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        auth()->loginUsingId($validatedData["id"]);
+
+        if(!auth()->loginUsingId($validatedData["id"])){
+            return response()->json([
+                "status"=> "failure",
+                "status_code"=>StatusCodes::UNPROCESSABLE,
+                "message"=>"Wrong User"
+            ],StatusCodes::UNPROCESSABLE);
+        }
+
+        if (request()->user()->hasVerifiedEmail()) {
+            return response([
+                "status"=> "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message"=>"Already Verified"
+            ],StatusCodes::BAD_REQUEST);   
+        }
+
+        if(request()->user()->otp != $validatedData["otp"])
+        {
+            return response()->json([
+                "status"=> "failure",
+                "status_code"=>StatusCodes::UNPROCESSABLE,
+                "message"=>"Validation Code is not correct"
+            ],StatusCodes::UNPROCESSABLE);
+        }
+
+        $myUser = User::findOrfail(request()->user()->id);
+        $myUser->email_verified_at = Carbon::now();
+        $myUser->save();
+
+        if ($request->user()->markEmailAsVerified()) {
+            event(new Verified($request->user()));
+        }
+
+        return response()->json([
+            "status"=> "success",
+            "status_code"=>StatusCodes::SUCCESS,
+            "message"=>"User successfully verified"
         ],StatusCodes::SUCCESS);
     }
 }
