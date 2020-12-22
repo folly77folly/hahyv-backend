@@ -75,12 +75,13 @@ class VerificationController extends Controller
         // if ($response = $this->verified($request)) {
         //     return response(["message"=>"Successfully Verified"]);
         // }
+        return redirect("http://localhost:3001/welcome");
 
-        return response([
-            "status"=> "success",
-            "status_code" => StatusCodes::SUCCESS,
-            "message"=>"Successfully Verified"
-        ],StatusCodes::SUCCESS);
+        // return response([
+        //     "status"=> "success",
+        //     "status_code" => StatusCodes::SUCCESS,
+        //     "message"=>"Successfully Verified"
+        // ],StatusCodes::SUCCESS);
     }
 
     public function resend(Request $request)

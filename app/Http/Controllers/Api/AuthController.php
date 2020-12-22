@@ -109,7 +109,9 @@ class AuthController extends Controller
             "status"=> "success",
             "message"=>"Registration Successful",
             "data"=> [
-                "user"=>$user,
+                "username"=>$user->username,
+                "email"=>$user->email,
+                "id"=>$user->id,
                 "token" => $accessToken
             ]
             ],StatusCodes::CREATED);
@@ -142,7 +144,9 @@ class AuthController extends Controller
         return response()->json([
             "status"=>"success",
             "status_code"=> StatusCodes::SUCCESS,
-            "user"=> Auth()->user(),
+            "username"=> Auth()->user()->username,
+            "email"=> Auth()->user()->email,
+            "id"=> Auth()->user()->id,
             "token" => $accessToken
         ],StatusCodes::SUCCESS);
     }
