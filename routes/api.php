@@ -30,4 +30,4 @@ Route::POST('/password/reset', 'Api\ResetPasswordController@reset')->name('reset
 //Email Verification
 Route::GET('email/resend', 'Api\VerificationController@resend')->name('verification.resend');
 Route::GET('email/verify/{id}/{hash}', 'Api\VerificationController@verify')->name('verification.verify');
-Route::GET('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
+Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
