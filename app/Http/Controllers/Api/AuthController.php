@@ -10,6 +10,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
 {
@@ -102,6 +103,7 @@ class AuthController extends Controller
             $user->email_verified_at = Carbon::now();
             $user->save();
         }
+        event(new Registered($user));
         $accessToken = $user->createToken('authToken')->accessToken;
         return response()->json([
             "status"=> "success",
@@ -127,10 +129,8 @@ class AuthController extends Controller
             ], StatusCodes::UNAUTHORIZED);
         }
 
-        // var_dump(Auth()->user());
-        // die();
 
-        if(!Auth()->user()->email_verified_at){
+        if(!Auth()->user()->hasVerifiedEmail()){
             return response()->json([
                 "status"=>"failure",
                 "status_code" => StatusCodes::UNAUTHORIZED,
