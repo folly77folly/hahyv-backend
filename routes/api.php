@@ -37,3 +37,9 @@ Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verific
 Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
 Route::PUT('profile/{id}', 'Api\UserProfileController@update')->name('userProfileUpdate');
 Route::DELETE('user/{id}', 'Api\UserProfileController@destroy')->name('deleteUser');
+
+// Get all preferences
+Route::GET('preferences/', 'Api\PreferenceController@index')->name('preferences');
+Route::POST('preferences/', 'Api\PreferenceController@store')->name('storePreferences');
+Route::PUT('preferences/{id}', 'Api\PreferenceController@update')->name('updatePreferences');
+Route::DELETE('preferences/{id}', 'Api\PreferenceController@destroy')->name('deletePreferences');
