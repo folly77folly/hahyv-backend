@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class UserProfileController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function profile()
+    public function index()
     {
         //
     }
@@ -35,9 +36,48 @@ class UserProfileController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function profile($id)
     {
-        //
+
+        $user = User::Where('id', $id)
+            ->select(
+                'name',
+                'username',
+                'email',
+                'description',
+                'profile_image_url',
+                'website_url',
+                'gender',
+                'date_of_birth',
+                'is_active',
+                'is_reported',
+                'is_blocked',
+                'followerCount',
+                'followingCount',
+                'fansCount',
+                'postCount',
+                'walletBalance',
+                'tokenBalance',
+                'subscription_plan',
+                'is_monetize',
+                'subscription_amount',
+                'cover_image_url'
+            )
+            ->first();
+        // $user = User::Where('id', $id)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => "Not found",
+                "message" => "This user does not exist in the Database",
+            ], StatusCodes::NOT_FOUND);
+        }
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Profile retrieved Successful",
+            "data" => $user
+        ], StatusCodes::SUCCESS);
     }
 
     /**
@@ -47,9 +87,56 @@ class UserProfileController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate(
+            [
+                'email' => 'email'
+            ],
+            [
+                'email.email' => 'The email address is not correct'
+            ]
+        );
+        
+        $user = User::Where('id', $id)
+            ->select(
+                'name',
+                'username',
+                'email',
+                'description',
+                'profile_image_url',
+                'website_url',
+                'gender',
+                'date_of_birth',
+                'is_active',
+                'is_reported',
+                'is_blocked',
+                'followerCount',
+                'followingCount',
+                'fansCount',
+                'postCount',
+                'walletBalance',
+                'tokenBalance',
+                'subscription_plan',
+                'is_monetize',
+                'subscription_amount',
+                'cover_image_url'
+            )->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => "Not found",
+                "message" => "This user does not exist in the Database",
+            ], StatusCodes::NOT_FOUND);
+        }
+
+        $user->update($request->all());
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Profile updated Successful",
+            "data" => $user
+        ], StatusCodes::SUCCESS);
     }
 
     /**
@@ -58,8 +145,23 @@ class UserProfileController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        //
+        $user = User::Where('id', $id)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => "Not found",
+                "message" => "This user does not exist in the Database",
+            ], StatusCodes::NOT_FOUND);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "User Deleted Successful",
+            "data" => $user
+        ], StatusCodes::SUCCESS);
     }
 }
