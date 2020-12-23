@@ -23,12 +23,30 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $fillable = [
         'name',
-         'email',
-          'password',
-          'username',
-          'otp',
-          'provider_name',
-          'provider_id',
+        'email',
+        'password',
+        'username',
+        'otp',
+        'provider_name',
+        'provider_id',
+        'description',
+        'profile_image_url',
+        'website_url',
+        'gender',
+        'date_of_birth',
+        'is_active',
+        'is_reported',
+        'is_blocked',
+        'followerCount',
+        'followingCount',
+        'fansCount',
+        'postCount',
+        'walletBalance',
+        'tokenBalance',
+        'subscription_plan',
+        'is_monetize',
+        'subscription_amount',
+        'cover_image_url'
     ];
 
     /**
@@ -50,13 +68,12 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     public function sendPasswordResetNotification($token)
-    {   
+    {
         $affected = DB::table('users')
-        ->where('id', $this->id)
-        ->update(['provider_id' => $token]);
+            ->where('id', $this->id)
+            ->update(['provider_id' => $token]);
         $email = $this->email;
         $this->notify(new PasswordNotification($token, $email));
-        
     }
 
     public function sendEmailVerificationNotification()

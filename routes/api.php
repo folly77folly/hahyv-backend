@@ -35,3 +35,5 @@ Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verific
 
 // User profile
 Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
+Route::PUT('profile/{id}', 'Api\UserProfileController@update')->name('userProfileUpdate');
+Route::DELETE('user/{id}', 'Api\UserProfileController@destroy')->name('deleteUser');
