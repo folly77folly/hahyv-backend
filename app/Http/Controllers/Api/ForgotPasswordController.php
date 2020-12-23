@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Passwords;
 use App\Collections\StatusCodes;
