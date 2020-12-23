@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
-use App\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserProfileController extends Controller
@@ -97,7 +97,7 @@ class UserProfileController extends Controller
                 'email.email' => 'The email address is not correct'
             ]
         );
-        
+
         $user = User::Where('id', $id)
             ->select(
                 'name',

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;

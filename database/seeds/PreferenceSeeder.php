@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Preference;
+use App\Models\Preference;
 
 class PreferenceSeeder extends Seeder
 {
