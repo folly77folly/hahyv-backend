@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Follower;
+use App\Preference;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -52,7 +54,8 @@ class User extends Authenticatable implements MustVerifyEmail
         $affected = DB::table('users')
         ->where('id', $this->id)
         ->update(['provider_id' => $token]);
-        $this->notify(new PasswordNotification($token));
+        $email = $this->email;
+        $this->notify(new PasswordNotification($token, $email));
         
     }
 
@@ -62,5 +65,15 @@ class User extends Authenticatable implements MustVerifyEmail
         $OTP = $this->otp;
         $username = $this->username;
         $this->notify(new EmailVerifyNotification($OTP, $username));
+    }
+
+    public function follower()
+    {
+        return $this->belongsTo(Follower::class);
+    }
+
+    public function preference()
+    {
+        return $this->belongsTo(Preference::class);
     }
 }
