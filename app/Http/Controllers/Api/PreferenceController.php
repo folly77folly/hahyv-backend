@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controller\API;
+namespace App\Http\Controllers\API;
 
-use App\preference;
+use App\Collections\StatusCodes;
+use App\Models\Preference;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class PreferenceController extends Controller
 {
@@ -14,7 +16,13 @@ class PreferenceController extends Controller
      */
     public function index()
     {
-        //
+        $preferences = Preference::select('id','preference')->get();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Preferences retrieved successfully.",
+            "data" => $preferences
+        ], StatusCodes::SUCCESS);
     }
 
     /**
@@ -35,7 +43,17 @@ class PreferenceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $preference = New Preference;
+
+        $preference->preference = $request->input('preference');
+
+        $preference->save();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Preferences created successfully.",
+            "data" => $preference
+        ], StatusCodes::CREATED);
     }
 
     /**
@@ -67,9 +85,24 @@ class PreferenceController extends Controller
      * @param  \App\preference  $preference
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, preference $preference)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate(
+            [
+                'preference' => 'required'
+            ],
+            [
+                'preference.unique' => 'This preference already exist'
+            ]
+        );
+        $preference = Preference::find($id);
+        $preference->update(['preference' => $request->preference]);
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Preferences updated successfully.",
+            "data" => $preference
+        ], StatusCodes::SUCCESS);
     }
 
     /**
@@ -78,8 +111,22 @@ class PreferenceController extends Controller
      * @param  \App\preference  $preference
      * @return \Illuminate\Http\Response
      */
-    public function destroy(preference $preference)
+    public function destroy($id)
     {
-        //
+        $preference = Preference::Where('id', $id)->first();
+
+        if (!$preference) {
+            return response()->json([
+                "status" => "Not found",
+                "message" => "This preference does not exist in the Database",
+            ], StatusCodes::NOT_FOUND);
+        }
+
+        $preference->delete();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "preference Deleted Successful"
+        ], StatusCodes::SUCCESS);
     }
 }

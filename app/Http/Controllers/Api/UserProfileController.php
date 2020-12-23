@@ -160,8 +160,7 @@ class UserProfileController extends Controller
 
         return response()->json([
             "status" => "success",
-            "message" => "User Deleted Successful",
-            "data" => $user
+            "message" => "User Deleted Successful"
         ], StatusCodes::SUCCESS);
     }
 }
