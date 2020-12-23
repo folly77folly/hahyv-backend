@@ -31,3 +31,7 @@ Route::POST('/password/reset', 'Api\ResetPasswordController@reset')->name('reset
 Route::GET('email/resend', 'Api\VerificationController@resend')->name('verification.resend');
 Route::GET('email/verify/{id}/{hash}', 'Api\VerificationController@verify')->name('verification.verify');
 Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
+
+
+// User profile
+Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
