@@ -75,7 +75,8 @@ class VerificationController extends Controller
         // if ($response = $this->verified($request)) {
         //     return response(["message"=>"Successfully Verified"]);
         // }
-        return redirect("http://localhost:3001/welcome");
+        $base_url = env('BASE_URL', 'http://127.0.0.1:3001');
+        return redirect($base_url."/welcome");
 
         // return response([
         //     "status"=> "success",
