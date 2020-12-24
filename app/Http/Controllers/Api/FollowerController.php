@@ -12,6 +12,8 @@ use App\Http\Requests\FollowerRequest;
 
 class FollowerController extends Controller
 {
+    public $id_auth_user;
+    public $id_other_user;
     /**
      * Display a listing of the resource.
      *
@@ -42,6 +44,10 @@ class FollowerController extends Controller
     {
         //
         $validatedData = $request->validated();
+
+        $id_auth_user = Auth()->user()->id;
+        $id_other_user = $validatedData["following_userId"];
+
         $data = [
             'user_id'=> Auth()->user()->id,
             'following_userId'=> $validatedData["following_userId"],
@@ -63,6 +69,7 @@ class FollowerController extends Controller
         Follower::create($data);
 
         //fire an event to increase
+        $this->increaseFollowing($id_auth_user, $id_other_user );
 
         return response()->json([
             "status" => "success",
@@ -115,6 +122,9 @@ class FollowerController extends Controller
     public function destroy($id)
     {
         //
+        $id_other_user = $id;
+        $id_auth_user =  Auth()->user()->id;
+
         $user = User::findorFail($id);
         if(!$user)
         {
@@ -141,7 +151,9 @@ class FollowerController extends Controller
 
         Follower::destroy($follower->id);
         //reduce count
+        $this->decreaseFollowing($id_auth_user, $id_other_user);
         
+
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
@@ -185,5 +197,30 @@ class FollowerController extends Controller
             "message" => "all followers",
             "data" => $result
         ],StatusCodes::SUCCESS);
+    }
+
+    public function increaseFollowing($id_auth_user, $id_other_user)
+    {
+        // $this->id_auth_user, $this->id_other_user
+
+        $user = User::find($id_other_user);
+        $user->followerCount = $user->followerCount  + 1;
+        $user->save();
+
+        $newuser = User::find($id_auth_user);
+        $newuser->followingCount = $user->followingCount  + 1;
+        $newuser->save();
+    }
+
+    public function decreaseFollowing($id_auth_user, $id_other_user)
+    {
+        // $this->id_auth_user, $this->id_other_user
+        $user = User::find($id_other_user);
+        $user->followerCount = $user->followerCount  - 1;
+        $user->save();
+
+        $user = User::find($id_auth_user);
+        $user->followingCount = $user->followingCount  - 1;
+        $user->save();
     }
 }
