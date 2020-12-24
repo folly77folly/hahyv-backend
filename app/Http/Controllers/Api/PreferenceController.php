@@ -96,6 +96,7 @@ class PreferenceController extends Controller
             ]
         );
         $preference = Preference::find($id);
+        
         $preference->update(['preference' => $request->preference]);
 
         return response()->json([
