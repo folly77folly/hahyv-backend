@@ -33,9 +33,17 @@ class AuthController extends Controller
             'cover_image_url',
             'preference_id'
             )
-            ->where('id', '!=', $id);
+            ->where('id', '!=', $id)
+            ->toArray();
 
-        if($users){
+        if(!$users){
+
+            return response()->json([
+                "status"=> "failure",
+                "status_code"=> StatusCodes::UNPROCESSABLE,
+                "message"=>"No users found",
+                ],StatusCodes::UNPROCESSABLE);
+        }
 
             return response()->json([
                 "status"=> "success",
@@ -43,13 +51,6 @@ class AuthController extends Controller
                 "message"=>"Users found",
                 "data"=> $users 
                 ],StatusCodes::SUCCESS);
-        }else{
-            return response()->json([
-                "status"=> "failure",
-                "status_code"=> StatusCodes::UNPROCESSABLE,
-                "message"=>"No users found",
-                ],StatusCodes::UNPROCESSABLE);
-        }
     }
 
     /**

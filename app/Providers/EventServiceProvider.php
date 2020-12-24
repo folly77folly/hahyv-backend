@@ -23,6 +23,10 @@ class EventServiceProvider extends ServiceProvider
         Verified::class => [
             'App\Listeners\LogVerifiedUser',
         ],
+
+        Following::class => [
+            AddFollowing::class,
+        ],
     ];
 
     /**
