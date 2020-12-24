@@ -6,6 +6,7 @@ use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserProfileController extends Controller
 {
@@ -98,6 +99,17 @@ class UserProfileController extends Controller
             ]
         );
 
+        $user = User::Where('id', $id)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => "Not found",
+                "message" => "This user does not exist in the Database",
+            ], StatusCodes::NOT_FOUND);
+        }
+
+        DB::table('users')->where('id', $id)->update($request->all());
+
         $user = User::Where('id', $id)
             ->select(
                 'name',
@@ -124,14 +136,6 @@ class UserProfileController extends Controller
                 'cover_image_url'
             )->first();
 
-        if (!$user) {
-            return response()->json([
-                "status" => "Not found",
-                "message" => "This user does not exist in the Database",
-            ], StatusCodes::NOT_FOUND);
-        }
-
-        $user->update($request->all());
 
         return response()->json([
             "status" => "success",
