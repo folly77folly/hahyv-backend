@@ -22,6 +22,34 @@ class AuthController extends Controller
     public function index()
     {
         //
+        $id = Auth()->user()->id;
+        $users = User::all(
+            'id',
+            'name',
+            'username',
+            'email',
+            'description',
+            'profile_image_url',
+            'cover_image_url',
+            'preference_id'
+            )
+            ->where('id', '!=', $id);
+
+        if($users){
+
+            return response()->json([
+                "status"=> "success",
+                "status_code"=> StatusCodes::SUCCESS,
+                "message"=>"Users found",
+                "data"=> $users 
+                ],StatusCodes::SUCCESS);
+        }else{
+            return response()->json([
+                "status"=> "failure",
+                "status_code"=> StatusCodes::UNPROCESSABLE,
+                "message"=>"No users found",
+                ],StatusCodes::UNPROCESSABLE);
+        }
     }
 
     /**

@@ -16,7 +16,7 @@ class PreferenceController extends Controller
      */
     public function index()
     {
-        $preferences = Preference::select('id','preference')->get();
+        $preferences = Preference::select('id','preference', 'image_url')->get();
 
         return response()->json([
             "status" => "success",
@@ -46,6 +46,7 @@ class PreferenceController extends Controller
         $preference = New Preference;
 
         $preference->preference = $request->input('preference');
+        $preference->preference = $request->input('image_url');
 
         $preference->save();
 
@@ -89,7 +90,8 @@ class PreferenceController extends Controller
     {
         $request->validate(
             [
-                'preference' => 'required'
+                'preference' => 'required',
+                'image_url' => 'required'
             ],
             [
                 'preference.unique' => 'This preference already exist'
@@ -103,7 +105,11 @@ class PreferenceController extends Controller
                 "data" => $preference
             ], StatusCodes::UNPROCESSABLE);
         }
-        $preference->update(['preference' => strtolower($request->preference)]);
+
+        $preference->preference = strtolower($request->preference);
+        $preference->image_url = $request->image_url;
+
+        $preference->save();
 
         return response()->json([
             "status" => "success",

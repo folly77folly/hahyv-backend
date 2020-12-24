@@ -62,6 +62,7 @@ class FollowerController extends Controller
         // saving a following
         Follower::create($data);
 
+        //fire an event to increase
 
         return response()->json([
             "status" => "success",
@@ -139,6 +140,8 @@ class FollowerController extends Controller
 
 
         Follower::destroy($follower->id);
+        //reduce count
+        
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
@@ -151,6 +154,7 @@ class FollowerController extends Controller
         $result = $followings->map(function($follow){
             return [
                 "id"=> $follow->following->id,
+                "name"=> $follow->following->name,
                 "username"=> $follow->following->username,
                 "img_url"=> $follow->following->profile_image_url ,
             ];
@@ -169,6 +173,7 @@ class FollowerController extends Controller
         $result = $followers->map(function($follower){
             return [
                 "id"=> $follower->user->id,
+                "name"=> $follower->user->name,
                 "username"=> $follower->user->username,
                 "img_url"=> $follower->user->profile_image_url ,
             ];

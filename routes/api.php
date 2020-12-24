@@ -34,6 +34,8 @@ Route::GET('email/verify/{id}/{hash}', 'Api\VerificationController@verify')->nam
 Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
 
 Route::group(['middleware'=>'auth:api'], function(){
+    //all users
+    Route::GET('/users', 'Api\AuthController@index')->name('allUsers');
 
     // User profile
     Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
