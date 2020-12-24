@@ -96,7 +96,14 @@ class PreferenceController extends Controller
             ]
         );
         $preference = Preference::find($id);
-        $preference->update(['preference' => $request->preference]);
+        if(!$preference){
+            return response()->json([
+                "status" => "failure",
+                "message" => "Preferences not found.",
+                "data" => $preference
+            ], StatusCodes::UNPROCESSABLE);
+        }
+        $preference->update(['preference' => strtolower($request->preference)]);
 
         return response()->json([
             "status" => "success",

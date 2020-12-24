@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\Follower;
-use App\Preference;
+use App\Models\Follower;
+use App\Models\Preference;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -86,7 +86,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function follower()
     {
-        return $this->belongsTo(Follower::class);
+        return $this->hasMany(Follower::class);
     }
 
     public function preference()
