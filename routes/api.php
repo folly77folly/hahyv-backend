@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\FollowerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,14 +33,22 @@ Route::GET('email/resend', 'Api\VerificationController@resend')->name('verificat
 Route::GET('email/verify/{id}/{hash}', 'Api\VerificationController@verify')->name('verification.verify');
 Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
 
+Route::group(['middleware'=>'auth:api'], function(){
 
-// User profile
-Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
-Route::PUT('profile/{id}', 'Api\UserProfileController@update')->name('userProfileUpdate');
-Route::DELETE('user/{id}', 'Api\UserProfileController@destroy')->name('deleteUser');
+    // User profile
+    Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
+    Route::PUT('profile/{id}', 'Api\UserProfileController@update')->name('userProfileUpdate');
+    Route::DELETE('user/{id}', 'Api\UserProfileController@destroy')->name('deleteUser');
+    
+    // Get all preferences
+    Route::GET('preferences/', 'Api\PreferenceController@index')->name('preferences');
+    Route::POST('preferences/', 'Api\PreferenceController@store')->name('storePreferences');
+    Route::PUT('preferences/{id}', 'Api\PreferenceController@update')->name('updatePreferences');
+    Route::DELETE('preferences/{id}', 'Api\PreferenceController@destroy')->name('deletePreferences');
+    
+    //follower
+    Route::GET('/following', 'Api\FollowerController@following');
+    Route::GET('/followers', 'Api\FollowerController@followers');
+    Route::resource('follower', Api\FollowerController::class);
+});
 
-// Get all preferences
-Route::GET('preferences/', 'Api\PreferenceController@index')->name('preferences');
-Route::POST('preferences/', 'Api\PreferenceController@store')->name('storePreferences');
-Route::PUT('preferences/{id}', 'Api\PreferenceController@update')->name('updatePreferences');
-Route::DELETE('preferences/{id}', 'Api\PreferenceController@destroy')->name('deletePreferences');

@@ -104,6 +104,7 @@ class UserProfileController extends Controller
                 'username',
                 'email',
                 'description',
+                'preference_id',
                 'profile_image_url',
                 'website_url',
                 'gender',
