@@ -37,7 +37,7 @@ class UserProfileController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function profile(int $id)
+    public function profile($id)
     {
 
         $user = User::Where('id', $id)
@@ -89,7 +89,7 @@ class UserProfileController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, $id)
     {
         $request->validate(
             [
@@ -151,7 +151,7 @@ class UserProfileController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id)
+    public function destroy($id)
     {
         $user = User::Where('id', $id)->first();
 
@@ -168,55 +168,5 @@ class UserProfileController extends Controller
             "status" => "success",
             "message" => "User Deleted Successful"
         ], StatusCodes::SUCCESS);
-    }
-
-    public function preference()
-    {   
-        $userP = Auth()->user()->preference_id;
-        $id = Auth()->user()->id;
-        
-        if ($userP != 1){
-            $suggestions = User::all(
-                'id',
-                'name',
-                'username',
-                'email',
-                'description',
-                'profile_image_url',
-                'cover_image_url',
-                'preference_id'
-            )
-            ->where('preference_id', '==', $userP)
-            ->where('id', '!=', $id )
-            ->toArray();
-
-            return response()->json([
-                "status"=>"success",
-                "status_code" => StatusCodes::SUCCESS,
-                "message" => "suggestions successfully fetched",
-                "data" => $suggestions
-            ]);
-        }
-
-        $suggestions = User::all(
-            'id',
-            'name',
-            'username',
-            'email',
-            'description',
-            'profile_image_url',
-            'cover_image_url',
-            'preference_id'
-        )
-        ->where('id', '!=', $id )
-        ->toArray();
-
-        return response()->json([
-            "status"=>"success",
-            "status_code" => StatusCodes::SUCCESS,
-            "message" => "suggestions successfully fetched",
-            "data" => $suggestions
-        ]);
-
     }
 }
