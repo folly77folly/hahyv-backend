@@ -63,7 +63,8 @@ class UserProfileController extends Controller
                 'subscription_plan',
                 'is_monetize',
                 'subscription_amount',
-                'cover_image_url'
+                'cover_image_url',
+                'location'
             )
             ->first();
         // $user = User::Where('id', $id)->first();
@@ -134,7 +135,8 @@ class UserProfileController extends Controller
                 'subscription_plan',
                 'is_monetize',
                 'subscription_amount',
-                'cover_image_url'
+                'cover_image_url',
+                'location'
             )->first();
 
 
