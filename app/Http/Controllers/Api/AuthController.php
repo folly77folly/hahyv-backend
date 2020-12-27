@@ -49,7 +49,7 @@ class AuthController extends Controller
                 "status"=> "success",
                 "status_code"=> StatusCodes::SUCCESS,
                 "message"=>"Users found",
-                "data"=> $users 
+                "data"=> array_values($users)
                 ],StatusCodes::SUCCESS);
     }
 
