@@ -39,8 +39,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     
     // User profile
     Route::GET('profile/preference', 'Api\UserProfileController@preference');
-    Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
     Route::PUT('profile/{id}', 'Api\UserProfileController@update')->name('userProfileUpdate');
+    Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
     Route::DELETE('user/{id}', 'Api\UserProfileController@destroy')->name('deleteUser');
     
     // Get all preferences
@@ -54,6 +54,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('/followers', 'Api\FollowerController@followers');
     Route::resource('follower', Api\FollowerController::class);
 
+    Route::resource('picture', Api\PictureController::class);
     
 });
 

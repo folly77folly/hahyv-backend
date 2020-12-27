@@ -22,7 +22,7 @@ class AuthController extends Controller
     public function index()
     {
         //
-        $id = Auth()->user()->id;
+        // $id = Auth()->user()->id;
         $users = User::all(
             'id',
             'name',
@@ -49,7 +49,7 @@ class AuthController extends Controller
                 "status"=> "success",
                 "status_code"=> StatusCodes::SUCCESS,
                 "message"=>"Users found",
-                "data"=> $users 
+                "data"=> $users //array_values($users)
                 ],StatusCodes::SUCCESS);
     }
 
