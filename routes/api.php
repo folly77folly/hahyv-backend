@@ -54,6 +54,11 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('/followers', 'Api\FollowerController@followers');
     Route::resource('follower', Api\FollowerController::class);
 
-    
 });
 
+Route::GET('post/userspost/{id}', 'Api\PostController@usersPost');
+Route::POST('post/likepost/{id}', 'Api\PostController@likePost');
+Route::POST('post/dislikepost/{id}', 'Api\PostController@disLikePost');
+
+
+Route::apiResource('post', Api\PostController::class);

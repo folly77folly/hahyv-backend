@@ -90,7 +90,7 @@ class PreferenceController extends Controller
     {
         $request->validate(
             [
-                'preference' => 'required',
+                'preference' => 'required|unique:preferences',
                 'image_url' => 'required'
             ],
             [
@@ -101,8 +101,7 @@ class PreferenceController extends Controller
         if(!$preference){
             return response()->json([
                 "status" => "failure",
-                "message" => "Preferences not found.",
-                "data" => $preference
+                "message" => "Preferences not found."
             ], StatusCodes::UNPROCESSABLE);
         }
 
