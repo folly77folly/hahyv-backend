@@ -22,7 +22,7 @@ class AuthController extends Controller
     public function index()
     {
         //
-        // $id = Auth()->user()->id;
+        $id = Auth()->user()->id;
         $users = User::all(
             'id',
             'name',
