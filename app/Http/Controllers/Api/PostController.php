@@ -41,11 +41,13 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        // $validatedData = $request->validated();
+
         $post = new Post;
 
         $post->description = $request->input('description');
-        $post->image_id = $request->input('image_id');
-        $post->video_id = $request->input('video_id');
+        $post->images = serialize($request->input('images'));
+        $post->videos = serialize($request->input('videos')); 
         $post->user_id = $request->input('user_id');
         $post->poll = $request->input('poll');
 
@@ -54,7 +56,13 @@ class PostController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "Post created successfully.",
-            "data" => $post
+            "data" => array(
+                "description" => $request->input('description'), 
+                "images" => unserialize($post->images), 
+                "videos" => unserialize($post->videos), 
+                "poll" => $request->input('poll'),
+                "user" => User::find($post->user_id)
+            )
         ], StatusCodes::CREATED);
     }
 
@@ -87,9 +95,9 @@ class PostController extends Controller
             ], StatusCodes::UNPROCESSABLE);
         }
 
-        $post->description = $request->input('description');
-        $post->image_id = $request->input('image_id');
-        $post->video_id = $request->input('video_id');
+        $post->description = $request->input('description'); 
+        $post->images = serialize($request->input('images'));
+        $post->videos = serialize($request->input('videos'));
         $post->user_id = $request->input('user_id');
         $post->poll = $request->input('poll');
         $post->likesCount = $request->input('likesCount');
@@ -100,7 +108,13 @@ class PostController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "Post updated successfully.",
-            "data" => $post
+            "data" => array(
+                "description" => $request->input('description'), 
+                "images" => unserialize($post->images), 
+                "videos" => unserialize($post->videos), 
+                "poll" => $request->input('poll'),
+                "user" => User::find($post->user_id)
+            )
         ], StatusCodes::SUCCESS);
     }
 

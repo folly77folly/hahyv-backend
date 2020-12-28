@@ -9,8 +9,8 @@ class Post extends Model
 {
     protected $fillable = [
         'description',
-        'image_id',
-        'video_id',
+        'images',
+        'videos',
         'poll',
         'user_id',
         'likesCount',

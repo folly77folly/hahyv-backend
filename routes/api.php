@@ -41,13 +41,13 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('profile/preference', 'Api\UserProfileController@preference');
     Route::PUT('profile/{id}', 'Api\UserProfileController@update')->name('userProfileUpdate');
     Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
-    Route::DELETE('user/{id}', 'Api\UserProfileController@destroy')->name('deleteUser');
     
     // Get all preferences
     Route::GET('preferences/', 'Api\PreferenceController@index')->name('preferences');
     Route::POST('preferences/', 'Api\PreferenceController@store')->name('storePreferences');
     Route::PUT('preferences/{id}', 'Api\PreferenceController@update')->name('updatePreferences');
     Route::DELETE('preferences/{id}', 'Api\PreferenceController@destroy')->name('deletePreferences');
+    Route::DELETE('user/{id}', 'Api\UserProfileController@destroy')->name('deleteUser');
     
     //follower
     Route::GET('/following', 'Api\FollowerController@following');
@@ -56,11 +56,11 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     Route::resource('picture', Api\PictureController::class);
     
+    Route::GET('post/userspost/{id}', 'Api\PostController@usersPost');
+    Route::POST('post/likepost/{id}', 'Api\PostController@likePost');
+    Route::POST('post/dislikepost/{id}', 'Api\PostController@disLikePost');
+    
+    
+    Route::apiResource('post', Api\PostController::class);
 });
 
-Route::GET('post/userspost/{id}', 'Api\PostController@usersPost');
-Route::POST('post/likepost/{id}', 'Api\PostController@likePost');
-Route::POST('post/dislikepost/{id}', 'Api\PostController@disLikePost');
-
-
-Route::apiResource('post', Api\PostController::class);
