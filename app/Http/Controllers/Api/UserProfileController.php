@@ -196,7 +196,7 @@ class UserProfileController extends Controller
                 "status"=>"success",
                 "status_code" => StatusCodes::SUCCESS,
                 "message" => "suggestions successfully fetched",
-                "data" => $suggestions
+                "data" => array_values($suggestions)
             ]);
         }
 
@@ -217,7 +217,7 @@ class UserProfileController extends Controller
             "status"=>"success",
             "status_code" => StatusCodes::SUCCESS,
             "message" => "suggestions successfully fetched",
-            "data" => $suggestions
+            "data" => array_values($suggestions)
         ]);
 
     }
