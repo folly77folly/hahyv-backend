@@ -24,12 +24,14 @@ class PostController extends Controller
 
     public function usersPost($id)
     {
-        $user = User::find($id)->post;
+        $user = User::find($id);
+
+        $post = Post::where('user_id', $user->id)->latest()->get();
 
         return response()->json([
             "status" => "success",
             "message" => "Preferences created successfully.",
-            "data" => $user
+            "data" => $post
         ], StatusCodes::SUCCESS);
     }
 
@@ -42,13 +44,15 @@ class PostController extends Controller
     public function store(Request $request)
     {
         // $validatedData = $request->validated();
+        $id = Auth()->user()->id;
+
 
         $post = new Post;
 
         $post->description = $request->input('description');
         $post->images = serialize($request->input('images'));
         $post->videos = serialize($request->input('videos')); 
-        $post->user_id = $request->input('user_id');
+        $post->user_id = $id;
         $post->poll = $request->input('poll');
 
         $post->save();
@@ -61,6 +65,7 @@ class PostController extends Controller
                 "images" => unserialize($post->images), 
                 "videos" => unserialize($post->videos), 
                 "poll" => $request->input('poll'),
+                "created" => $post->created_at,
                 "user" => User::find($post->user_id)
             )
         ], StatusCodes::CREATED);
@@ -88,6 +93,9 @@ class PostController extends Controller
     {
         $post = Post::find($id);
 
+        $user_id = Auth()->user()->id;
+
+
         if (!$post) {
             return response()->json([
                 "status" => "failure",
@@ -98,7 +106,7 @@ class PostController extends Controller
         $post->description = $request->input('description'); 
         $post->images = serialize($request->input('images'));
         $post->videos = serialize($request->input('videos'));
-        $post->user_id = $request->input('user_id');
+        $post->user_id = $user_id;
         $post->poll = $request->input('poll');
         $post->likesCount = $request->input('likesCount');
         $post->dislikesCount = $request->input('dislikesCount');
@@ -113,6 +121,7 @@ class PostController extends Controller
                 "images" => unserialize($post->images), 
                 "videos" => unserialize($post->videos), 
                 "poll" => $request->input('poll'),
+                "updated" => $post->updated_at,
                 "user" => User::find($post->user_id)
             )
         ], StatusCodes::SUCCESS);
