@@ -17,8 +17,8 @@ class CreatePostsTable extends Migration
             $table->id();
             $table->string('description')->nullable();
             $table->string('poll')->nullable();
-            $table->unsignedBigInteger('image_id')->nullable();
-            $table->unsignedBigInteger('video_id')->nullable();
+            $table->longText('images')->nullable();
+            $table->longText('videos')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('likesCount')->default(0);
