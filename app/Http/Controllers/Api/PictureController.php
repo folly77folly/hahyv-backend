@@ -26,7 +26,7 @@ class PictureController extends Controller
             return [
                 "user_id" => $photo->user_id,
                 "title" => $photo->title,
-                "photos" => unserialize($photo->photos)
+                "photos" => $photo->photos
             ];
         });
 
@@ -62,7 +62,7 @@ class PictureController extends Controller
         $data = [
             "user_id" => $id,
             "title" => $validatedData["title"],
-            "photos" => serialize($validatedData["photos"]),
+            "photos" => $validatedData["photos"],
             "photoCount" => count($validatedData["photos"]),
             "photoTag" => Str::slug($validatedData["title"])
         ];
@@ -76,7 +76,7 @@ class PictureController extends Controller
             "data" => array(
                 "user_id" => $data["user_id"],
                 "title" => $data["title"],
-                "photos" => unserialize($data["photos"])
+                "photos" => $data["photos"]
             )
         ],StatusCodes::SUCCESS);
     }

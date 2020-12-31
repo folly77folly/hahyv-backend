@@ -2,8 +2,9 @@
 
 namespace App;
 
-use App\Models\Follower;
 use App\Models\Post;
+use App\Models\Comment;
+use App\Models\Follower;
 use App\Models\Preference;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
@@ -56,7 +57,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'otp_expiry'
+        'password', 'remember_token', 'otp_expiry', 'otp'
     ];
 
     /**
@@ -102,5 +103,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function like() 
     {
         return $this->hasMany(Post::class);
+    }
+
+    //relationship between user and comment
+    public function comment() 
+    {
+        return $this->hasMany(Comment::class);
     }
 }

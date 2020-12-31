@@ -47,7 +47,13 @@ class FollowerController extends Controller
 
         $id_auth_user = Auth()->user()->id;
         $id_other_user = $validatedData["following_userId"];
-
+        if($id_auth_user == $id_other_user){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::UNPROCESSABLE,
+                "message" => "You can't follow your profile"
+            ],StatusCodes::UNPROCESSABLE);
+        }
         $data = [
             'user_id'=> Auth()->user()->id,
             'following_userId'=> $validatedData["following_userId"],
@@ -162,40 +168,24 @@ class FollowerController extends Controller
     }
     
     public function following(){
-        $followings = Follower::where('user_id', '=', Auth()->user()->id)->get();
-        $result = $followings->map(function($follow){
-            return [
-                "id"=> $follow->following->id,
-                "name"=> $follow->following->name,
-                "username"=> $follow->following->username,
-                "img_url"=> $follow->following->profile_image_url ,
-            ];
-        });
+        $followings = Follower::where('user_id', '=', Auth()->user()->id)->with('User')->get();
 
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
             "message" => "all followings",
-            "data" => $result
+            "data" => $followings
         ],StatusCodes::SUCCESS);
     }
 
     public function followers(){
-        $followers= Follower::where('following_userId', '=', Auth()->user()->id)->get();
-        $result = $followers->map(function($follower){
-            return [
-                "id"=> $follower->user->id,
-                "name"=> $follower->user->name,
-                "username"=> $follower->user->username,
-                "img_url"=> $follower->user->profile_image_url ,
-            ];
-        });
+        $followers= Follower::where('following_userId', '=', Auth()->user()->id)->with('User')->get();
 
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
             "message" => "all followers",
-            "data" => $result
+            "data" => $followers
         ],StatusCodes::SUCCESS);
     }
 
