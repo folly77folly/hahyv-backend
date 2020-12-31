@@ -14,4 +14,8 @@ class Picture extends Model
         'photoCount',
         'photoTag'
     ];
+
+    protected $casts =[
+        'photos' => 'array'
+    ];
 }

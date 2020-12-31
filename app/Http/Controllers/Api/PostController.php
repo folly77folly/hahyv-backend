@@ -22,11 +22,10 @@ class PostController extends Controller
         //
     }
 
-    public function usersPost($id)
+    public function usersPost()
     {
-        $user = User::find($id);
-
-        $post = Post::where('user_id', $user->id)->latest()->get();
+        $id = Auth()->user()->id;
+        $post = Post::where('user_id', $id)->with(array('Comment'))->latest()->get();
 
         return response()->json([
             "status" => "success",
@@ -43,15 +42,12 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        // $validatedData = $request->validated();
         $id = Auth()->user()->id;
-
-
         $post = new Post;
 
         $post->description = $request->input('description');
-        $post->images = serialize($request->input('images'));
-        $post->videos = serialize($request->input('videos')); 
+        $post->images = $request->input('images');
+        $post->videos = $request->input('videos'); 
         $post->user_id = $id;
         $post->poll = $request->input('poll');
 
@@ -61,12 +57,14 @@ class PostController extends Controller
             "status" => "success",
             "message" => "Post created successfully.",
             "data" => array(
-                "description" => $request->input('description'), 
-                "images" => unserialize($post->images), 
-                "videos" => unserialize($post->videos), 
-                "poll" => $request->input('poll'),
-                "created" => $post->created_at,
-                "user" => User::find($post->user_id)
+                "description" => $post->description, 
+                "images" => $post->images, 
+                "videos" => $post->videos, 
+                "poll" => $post->poll,
+                "name" => $post->user->name,
+                "username" => $post->user->username,
+                "created_at" =>$post->created_at,
+                "updated_at" =>$post->updated_at,
             )
         ], StatusCodes::CREATED);
     }
@@ -92,10 +90,6 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $post = Post::find($id);
-
-        $user_id = Auth()->user()->id;
-
-
         if (!$post) {
             return response()->json([
                 "status" => "failure",
@@ -104,9 +98,8 @@ class PostController extends Controller
         }
 
         $post->description = $request->input('description'); 
-        $post->images = serialize($request->input('images'));
-        $post->videos = serialize($request->input('videos'));
-        $post->user_id = $user_id;
+        $post->images = $request->input('images');
+        $post->videos = $request->input('videos');
         $post->poll = $request->input('poll');
         $post->likesCount = $request->input('likesCount');
         $post->dislikesCount = $request->input('dislikesCount');
@@ -116,14 +109,7 @@ class PostController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "Post updated successfully.",
-            "data" => array(
-                "description" => $request->input('description'), 
-                "images" => unserialize($post->images), 
-                "videos" => unserialize($post->videos), 
-                "poll" => $request->input('poll'),
-                "updated" => $post->updated_at,
-                "user" => User::find($post->user_id)
-            )
+            "data" => $post
         ], StatusCodes::SUCCESS);
     }
 

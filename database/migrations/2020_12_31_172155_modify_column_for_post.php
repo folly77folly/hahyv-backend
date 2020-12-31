@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class ModifyColumnForPost extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            //
+            $table->string('description',300)->change();
+        });
+
+        Schema::table('comments', function (Blueprint $table) {
+            //
+            $table->string('comment',300)->change();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            //
+            $table->string('description')->change();
+        });
+
+        Schema::table('comments', function (Blueprint $table) {
+            //
+            $table->string('comment')->change();
+        });
+    }
+}

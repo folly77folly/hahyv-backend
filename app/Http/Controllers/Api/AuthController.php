@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Auth\Events\Registered;
+use App\Http\Requests\ChangePasswordRequest;
 
 class AuthController extends Controller
 {
@@ -31,7 +32,9 @@ class AuthController extends Controller
             'description',
             'profile_image_url',
             'cover_image_url',
-            'preference_id'
+            'preference_id',
+            'created_at',
+            'updated_at',
             )
             ->where('id', '!=', $id)
             ->toArray();
@@ -142,7 +145,9 @@ class AuthController extends Controller
                 "username"=>$user->username,
                 "email"=>$user->email,
                 "id"=>$user->id,
-                "token" => $accessToken
+                "token" => $accessToken,
+                "created_at" => $user->created_at,
+                "updated_at" => $user->updated_at,
             ]
             ],StatusCodes::CREATED);
     }
@@ -182,4 +187,27 @@ class AuthController extends Controller
         ],StatusCodes::SUCCESS);
     }
 
+    public function changePassword(ChangePasswordRequest $request)
+    {       
+            $validatedData = $request->validated();
+
+            $user = User::find(Auth()->user()->id);
+
+           if(!Hash::check($validatedData["current_password"], $user->password)){
+               return response()->json([
+                   "status" =>"failure",
+                   "status_code" => StatusCodes::UNPROCESSABLE,
+                   "message" => "Invalid current password",
+               ],StatusCodes::UNPROCESSABLE,);
+           }
+
+            $newPassword = $validatedData['new_password'];
+            $user->password = Hash::make($newPassword);
+            $user->save();
+            return response()->json([
+                "status" => "success",
+                "status_code" => StatusCodes::SUCCESS,
+                "message" => "Password changed successfully",
+            ],StatusCodes::SUCCESS,);
+    }
 }

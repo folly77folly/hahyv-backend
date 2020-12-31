@@ -186,7 +186,9 @@ class UserProfileController extends Controller
                 'description',
                 'profile_image_url',
                 'cover_image_url',
-                'preference_id'
+                'preference_id',
+                'created_at',
+                'updated_at'
             )
             ->where('preference_id', '==', $userP)
             ->where('id', '!=', $id )
@@ -208,7 +210,9 @@ class UserProfileController extends Controller
             'description',
             'profile_image_url',
             'cover_image_url',
-            'preference_id'
+            'preference_id',
+            'created_at',
+            'updated_at'
         )
         ->where('id', '!=', $id )
         ->toArray();

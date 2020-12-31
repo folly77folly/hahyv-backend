@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\User;
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
@@ -14,12 +15,24 @@ class Post extends Model
         'poll',
         'user_id',
         'likesCount',
-        'dislikesCount'
+        'dislikesCount',
+        'name',
+        'username'
+    ];
+
+    protected $casts = [
+        'images' =>'array',
+        'videos' =>'array',
     ];
 
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function comment()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

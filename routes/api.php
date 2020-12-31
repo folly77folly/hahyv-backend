@@ -41,6 +41,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('profile/preference', 'Api\UserProfileController@preference');
     Route::PUT('profile/{id}', 'Api\UserProfileController@update')->name('userProfileUpdate');
     Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
+    // change password
+    Route::POST('/changepassword', 'Api\AuthController@changePassword');
     
     // Get all preferences
     Route::GET('preferences/', 'Api\PreferenceController@index')->name('preferences');
@@ -56,11 +58,16 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     Route::resource('picture', Api\PictureController::class);
     
-    Route::GET('post/userspost/{id}', 'Api\PostController@usersPost');
+    Route::GET('post/userspost', 'Api\PostController@usersPost');
     Route::POST('post/likepost/{id}', 'Api\PostController@likePost');
     Route::POST('post/dislikepost/{id}', 'Api\PostController@disLikePost');
     
     
     Route::apiResource('post', Api\PostController::class);
+
+    //Comments
+    Route::resource('comment', Api\CommentController::class);
+    Route::POST('/comment_unlike', 'Api\CommentLikeController@comment_unlike');
+    Route::resource('commentlike', Api\CommentLikeController::class);
 });
 
