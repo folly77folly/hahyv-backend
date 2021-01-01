@@ -72,7 +72,7 @@ class FollowerController extends Controller
             ],StatusCodes::UNPROCESSABLE);
         }
         // saving a following
-        Follower::create($data);
+        $follower = Follower::create($data);
 
         //fire an event to increase
         $this->increaseFollowing($id_auth_user, $id_other_user );
@@ -80,7 +80,8 @@ class FollowerController extends Controller
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
-            "message" => "Following successful"
+            "message" => "Following successful",
+            "data" => $follower->load('following')
         ],StatusCodes::SUCCESS);
     }
 
