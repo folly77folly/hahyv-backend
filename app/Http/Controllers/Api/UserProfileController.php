@@ -64,7 +64,9 @@ class UserProfileController extends Controller
                 'is_monetize',
                 'subscription_amount',
                 'cover_image_url',
-                'location'
+                'location',
+                'created_at',
+                'updated_at'
             )
             ->first();
         // $user = User::Where('id', $id)->first();
