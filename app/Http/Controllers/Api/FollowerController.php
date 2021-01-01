@@ -168,7 +168,7 @@ class FollowerController extends Controller
     }
     
     public function following(){
-        $followings = Follower::where('user_id', '=', Auth()->user()->id)->with('User')->get();
+        $followings = Follower::select('following_userId')->where('user_id', '=', Auth()->user()->id)->with('following')->get();
 
         return response()->json([
             "status" => "success",
@@ -179,7 +179,7 @@ class FollowerController extends Controller
     }
 
     public function followers(){
-        $followers= Follower::where('following_userId', '=', Auth()->user()->id)->with('User')->get();
+        $followers= Follower::select('user_id')->where('following_userId', '=', Auth()->user()->id)->with('user')->get();
 
         return response()->json([
             "status" => "success",

@@ -57,7 +57,8 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'otp_expiry', 'otp'
+        'password', 'remember_token', 'otp_expiry', 'otp',
+        'provider_id'
     ];
 
     /**
@@ -90,6 +91,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Follower::class);
     }
+
+    public function following()
+    {
+        return $this->hasMany(Follower::class, 'following_userId');
+    }
+
 
     public function preference()
     {
