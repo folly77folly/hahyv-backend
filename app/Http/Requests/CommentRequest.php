@@ -25,10 +25,10 @@ class CommentRequest extends FormRequest
     {
         return [
             //
-            'comment'=>["required"],
-            'post_id'=>["required", "integer"],
-            'image'=>["array", "nullable"],
-            'video'=>["array", "nullable"],
+            'comment'=> 'required',
+            'post_id'=> 'required|integer',
+            'image'=> 'array|nullable',
+            'video'=> 'array|nullable',
         ];
     }
 }
