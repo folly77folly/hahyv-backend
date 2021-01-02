@@ -7,9 +7,7 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use Cloudinary\Cloudinary;
-// use Cloudinary\Cloudinary;
+use App\Http\Controllers\Controller; 
 use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
@@ -46,11 +44,6 @@ class PostController extends Controller
         $id = Auth()->user()->id;
         $post = new Post;
         
-        // $class_methods = get_class_methods(new Cloundinary);
-
-
-         $uploadImage = Cloudinary::uploa($request->file('file')->getRealPath())->getSecurePath();
-
         $post->description = $request->input('description');
         $post->images = $request->input('images');
         $post->videos = $request->input('videos'); 
@@ -155,7 +148,6 @@ class PostController extends Controller
 
         $likedUser = Auth()->user()->id;
 
-
         if(!$likedUser) {
             return response()->json([
                 "status" => "failure",
@@ -163,11 +155,8 @@ class PostController extends Controller
             ], StatusCodes::UNPROCESSABLE);
         }
         
-
+        $this->increasingLikes($likedUser, $postUser->id, $postId);
         
-        $auth = $this->increasingLikes($likedUser, $postUser->id, $postId);
-        
-
         return response()->json([
             "status" => "success",
             "message" => "Like successfully." 
@@ -183,7 +172,6 @@ class PostController extends Controller
         $postUser = User::find($post->user_id);
 
         $dislikedUser = Auth()->user()->id;
-
 
         if(!$dislikedUser) {
             return response()->json([
@@ -203,7 +191,6 @@ class PostController extends Controller
 
     public function increasingLikes($auth_user_id, $post_user_id, $post)
     {
-
         $authUser = User::find($auth_user_id);
  
         $postUser = User::find($post_user_id);
@@ -218,8 +205,6 @@ class PostController extends Controller
                 DB::table('posts')->where('id', $post)->update(['likesCount' => $initialCount->likesCount + 1, 'dislikesCount' => $initialCount->dislikesCount - 1]);
             });
         }
-
-        
     }
 
 
