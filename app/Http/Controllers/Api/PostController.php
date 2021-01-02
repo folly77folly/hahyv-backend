@@ -28,7 +28,7 @@ class PostController extends Controller
 
         return response()->json([
             "status" => "success",
-            "message" => "Preferences created successfully.",
+            "message" => "All Posts fetched successfully.",
             "data" => $post
         ], StatusCodes::SUCCESS);
     }
@@ -55,16 +55,7 @@ class PostController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "Post created successfully.",
-            "data" => array(
-                "description" => $post->description, 
-                "images" => $post->images, 
-                "videos" => $post->videos, 
-                "poll" => $post->poll,
-                "name" => $post->user->name,
-                "username" => $post->user->username,
-                "created_at" =>$post->created_at,
-                "updated_at" =>$post->updated_at,
-            )
+            "data" => Post::find($post->id)->load('user')
         ], StatusCodes::CREATED);
     }
 
