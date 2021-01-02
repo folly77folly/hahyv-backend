@@ -10,6 +10,7 @@
     "require": {
         "php": "^7.2.5|^8.0",
         "doctrine/dbal": "^2.10",
+        "fakerphp/faker": "^1.9.1",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^6.3.1|^7.0.1",
@@ -18,7 +19,7 @@
         "laravel/socialite": "^5.1",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^2.5",
-        "fakerphp/faker": "^1.9.1"
+        "pusher/pusher-php-server": "^4.1"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

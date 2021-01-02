@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use App\Events\LikeComment;
 use App\Models\CommentLike;
 use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CommentLikeRequest;
 
@@ -51,6 +53,7 @@ class CommentLikeController extends Controller
             if($likedComments->liked == 1){
                 $data = ['liked'=> 0];
                 $likedComments->update($data);
+                // event(new LikeComment(CommentLike::find($commentLike->id)));
                 return response()->json([
                     "status" => "success",
                     "status_code" => StatusCodes::SUCCESS,
@@ -61,6 +64,7 @@ class CommentLikeController extends Controller
             }else{
                 $data = ['liked'=> 1];
                 $likedComments->update($data);
+                // event(new LikeComment(CommentLike::find($commentLike->id)));
                 return response()->json([
                     "status" => "success",
                     "status_code" => StatusCodes::SUCCESS,
@@ -84,6 +88,10 @@ class CommentLikeController extends Controller
                 'comment_id' => $commentLike->comment_id,
                 'like' => $commentLike->liked,
             ];
+            //use event to broadcast comment liking
+            // Log::debug(CommentLike::find($commentLike->id)->user->username);
+            event(new LikeComment(CommentLike::find($commentLike->id)));
+
             return response()->json([
                 "status" => "success",
                 "status_code" => StatusCodes::SUCCESS,
