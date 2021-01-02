@@ -63,6 +63,22 @@
                 margin-bottom: 30px;
             }
         </style>
+
+          <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+          <script>
+        
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+        
+            var pusher = new Pusher('30b40ac3acc26d1a0504', {
+              cluster: 'eu'
+            });
+        
+            var channel = pusher.subscribe('channel-name');
+            channel.bind('LikeComment', function(data) {
+              alert(JSON.stringify(data));
+            });
+          </script>
     </head>
     <body>
         <div class="flex-center position-ref full-height">
@@ -89,6 +105,13 @@
                     <a href="https://documenter.getpostman.com/view/8806253/TVsrF97w">API-Docs</a>
                 </div>
             </div>
+        </div>
+        <div>
+            <h1>Pusher Test</h1>
+            <p>
+              Try publishing an event to channel <code>my-channel</code>
+              with event name <code>my-event</code>.
+            </p>
         </div>
     </body>
 </html>

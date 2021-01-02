@@ -16,4 +16,8 @@ class CommentLike extends Model
     protected $casts = [
         'liked' => 'boolean'
      ];
+
+     public function user(){
+         return $this->belongsTo('App\User');
+     }
 }
