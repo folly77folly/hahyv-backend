@@ -24,7 +24,7 @@ class PostController extends Controller
     public function usersPost()
     {
         $id = Auth()->user()->id;
-        $post = Post::where('user_id', $id)->with(array('Comment'))->latest()->get();
+        $post = Post::where('user_id', $id)->with(array('Comment'))->with('user')->latest()->get();
 
         return response()->json([
             "status" => "success",
