@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Cloudinary\Cloudinary;
+// use Cloudinary\Cloudinary;
 use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
@@ -19,7 +21,6 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
     }
 
     public function usersPost()
@@ -44,6 +45,11 @@ class PostController extends Controller
     {
         $id = Auth()->user()->id;
         $post = new Post;
+        
+        // $class_methods = get_class_methods(new Cloundinary);
+
+
+         $uploadImage = Cloudinary::uploa($request->file('file')->getRealPath())->getSecurePath();
 
         $post->description = $request->input('description');
         $post->images = $request->input('images');
@@ -138,110 +144,97 @@ class PostController extends Controller
         ], StatusCodes::SUCCESS);
     }
 
-    public function likePost(Request $request, $id)
+    public function likePost(Request $request)
     {
-        // $user =  Auth()->user()->id;
-        $user =  User::find($id);
 
-        if(!$user) {
+        $post = Post::find($request->post_id);
+
+        $postId = $request->post_id;
+
+        $postUser = User::find($post->user_id);
+
+        $likedUser = Auth()->user()->id;
+
+
+        if(!$likedUser) {
             return response()->json([
                 "status" => "failure",
-                "message" => "User not found."
-            ], StatusCodes::UNPROCESSABLE);
-        }
-
-        $likedUser = $request->likedUser;
-
-        $post = $request->post;
-
-        
-        $newUser = User::find($likedUser);
-        
-        if(!$newUser) {
-            return response()->json([
-                "status" => "failure",
-                "message" => "Please who is liking."
+                "message" => "You did not login."
             ], StatusCodes::UNPROCESSABLE);
         }
         
-        $this->increasingLikes($user->id, $newUser->id, $post);
+
+        
+        $auth = $this->increasingLikes($likedUser, $postUser->id, $postId);
         
 
         return response()->json([
             "status" => "success",
-            "message" => "Like successfully."
+            "message" => "Like successfully." 
         ], StatusCodes::SUCCESS);
     }
 
-    public function disLikePost(Request $request, $id)
+    public function disLikePost(Request $request)
     {
-        // $user =  Auth()->user()->id;
-        $user =  User::find($id);
+        $post = Post::find($request->post_id);
+
+        $postId = $request->post_id;
+
+        $postUser = User::find($post->user_id);
+
+        $dislikedUser = Auth()->user()->id;
 
 
-        if(!$user) {
+        if(!$dislikedUser) {
             return response()->json([
                 "status" => "failure",
-                "message" => "User not found."
+                "message" => "You did not login."
             ], StatusCodes::UNPROCESSABLE);
         }
 
-        $dislikedUser = $request->dislikedUser;
-
-        $post = $request->post;
-
-
-        $newUser = User::find($dislikedUser);
-
-        if(!$newUser) {
-            return response()->json([
-                "status" => "failure",
-                "message" => "Please who is disliking."
-            ], StatusCodes::UNPROCESSABLE);
-        }
-
-        $this->increasingDisLikes($user->id, $newUser->id, $post);
+        $this->increasingDisLikes($dislikedUser, $postUser->id, $postId);
 
         return response()->json([
             "status" => "success",
-            "message" => "Dislike successfully."
+            "message" => "Dislike successfully.", 
         ], StatusCodes::SUCCESS);
     }
 
 
-    public function increasingLikes($id_auth_user, $id_other_user, $post)
+    public function increasingLikes($auth_user_id, $post_user_id, $post)
     {
-        $authUser = User::find($id_auth_user);
+
+        $authUser = User::find($auth_user_id);
  
-        $newUser = User::find($id_other_user);
+        $postUser = User::find($post_user_id);
 
-        $like = DB::table('likes')->where([['user_id', $authUser->id], ['liking_userId', $newUser->id]])->first();
+        $like = DB::table('likes')->where([['liking_userId', $authUser->id], ['user_id', $postUser->id], ['post_id', $post]])->first();
         
-
         if (!$like) {
-            DB::transaction(function ()  use ($newUser, $authUser, $post) {
-                DB::table('likes')->insert(['user_id' => $authUser->id, 'liking_userId' => $newUser->id, 'created_at' => now(), 'updated_at' => now()]);
-                DB::table('dislikes')->where([['user_id', $authUser->id], ['disliking_userId', $newUser->id]])->delete();
+            DB::transaction(function ()  use ($postUser, $authUser, $post) {
+                DB::table('likes')->insert(['liking_userId' => $authUser->id, 'user_id' => $postUser->id, 'post_id' => $post, 'created_at' => now(), 'updated_at' => now()]);
+                DB::table('dislikes')->where([['disliking_userId', $authUser->id], ['user_id', $postUser->id], ['post_id', $post]])->delete();
                 $initialCount = DB::table('posts')->where('id', $post)->first();
                 DB::table('posts')->where('id', $post)->update(['likesCount' => $initialCount->likesCount + 1, 'dislikesCount' => $initialCount->dislikesCount - 1]);
             });
         }
+
         
     }
 
 
-    public function increasingDisLikes($id_auth_user, $id_other_user, $post)
+    public function increasingDisLikes($auth_user_id, $post_user_id, $post)
     {
-        $authUser = User::find($id_auth_user);
+        $authUser = User::find($auth_user_id);
 
-        $newUser = User::find($id_other_user);
+        $postUser = User::find($post_user_id);
 
-        $dislike = DB::table('dislikes')->where([['user_id', $authUser->id], ['disliking_userId', $newUser->id]])->first();
+        $dislike = DB::table('dislikes')->where([['disliking_userId', $authUser->id], ['user_id', $postUser->id], ['post_id', $post]])->first();
 
         if (!$dislike) {
-            DB::transaction(function ()  use ($newUser, $authUser, $post) {
-                DB::table('dislikes')->insert(['user_id'=> $authUser->id, 'disliking_userId' => $newUser->id, 'created_at' => now(), 'updated_at' => now()]);
-                DB::table('likes')->where([['user_id', $authUser->id], ['liking_userId', $newUser->id]])->delete();
+            DB::transaction(function ()  use ($postUser, $authUser, $post) {
+                DB::table('dislikes')->insert(['disliking_userId'=> $authUser->id, 'user_id' => $postUser->id, 'post_id' => $post, 'created_at' => now(), 'updated_at' => now()]);
+                DB::table('likes')->where([['liking_userId', $authUser->id], ['user_id', $postUser->id], ['post_id', $post]])->delete();
                 $initialCount = DB::table('posts')->where('id', $post)->first();
                 DB::table('posts')->where('id', $post)->update(['likesCount' => $initialCount->likesCount - 1, 'dislikesCount' => $initialCount->dislikesCount + 1]);
             });

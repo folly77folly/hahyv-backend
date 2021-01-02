@@ -59,8 +59,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::resource('picture', Api\PictureController::class);
     
     Route::GET('post/userspost', 'Api\PostController@usersPost');
-    Route::POST('post/likepost/{id}', 'Api\PostController@likePost');
-    Route::POST('post/dislikepost/{id}', 'Api\PostController@disLikePost');
+    Route::POST('post/likepost', 'Api\PostController@likePost');
+    Route::POST('post/dislikepost', 'Api\PostController@disLikePost');
     
     
     Route::apiResource('post', Api\PostController::class);
