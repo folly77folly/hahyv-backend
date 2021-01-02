@@ -43,13 +43,26 @@ class CommentController extends Controller
         //
         $id = Auth()->user()->id;
         $validatedData = $request->validated();
+
+        
+        $image = null;
+        $video = null;
+
+        if(isset($validatedData['image'])) {
+            $image = $validatedData['image'];
+        }
+        if(isset($validatedData['video'])) {
+            $video = $validatedData['video'];
+        }
+
         $data = [   
             'user_id' => $id,
             'post_id' => $validatedData['post_id'],
             'comment' => $validatedData['comment'],
-            'picture' => $validatedData['image'],
-            'video' => $validatedData['video']
+            'picture' => $image,
+            'video' => $video
         ];
+
 
         try{
 
@@ -59,8 +72,8 @@ class CommentController extends Controller
                 "user_id" => $comment["user_id"],
                 "post_id" => $comment["post_id"],
                 "comment" => $comment["comment"],
-                "image" => $comment["picture"],
-                "video" => $comment["video"],
+                "image" => $image,
+                "video" => $video,
                 "created_at" => $comment["created_at"],
                 "updated_at" => $comment["updated_at"]
             ];
