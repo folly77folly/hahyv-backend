@@ -25,7 +25,9 @@ class PostController extends Controller
     public function usersPost()
     {
         $id = Auth()->user()->id;
-        $post = Post::where('user_id', $id)->with(array('Comment'))->with('user')->latest()->get();
+        $post = Post::where('user_id', $id)->with(array('Comment', 'user'))->with(['likes' => function($query){
+            return $query->where('liked', 1)->with('user');
+        }])->latest()->get();
 
         return response()->json([
             "status" => "success",
@@ -129,6 +131,7 @@ class PostController extends Controller
         ], StatusCodes::SUCCESS);
     }
 
+    //user liking a post
     public function postLike(Request $request)
     {
         $post = Post::find($request->post_id);
@@ -141,11 +144,8 @@ class PostController extends Controller
         ])->first();
 
         $data = [
-            'user_id' => $id,
-            'post_id' => $post->id,
-            'liked' => 1,
-            'created_at' => now(),
-            'updated_at' => now()
+            'user_id' => $id, 
+            'post_id' => $post->id
         ];
 
         if (!$like) {
@@ -155,8 +155,8 @@ class PostController extends Controller
             
             return response()->json([
                 "status" => "success",
-                "message" => "Like successfully.", 
-                "data" => Like::find($createPost->id)
+                "message" => "Like successfully.",
+                "data" => Like::find($createPost->id)->load('user')
             ], StatusCodes::SUCCESS);
         } else {
             if ($like->liked == 1) {
@@ -167,7 +167,7 @@ class PostController extends Controller
                 return response()->json([
                     "status" => "success",
                     "message" => "Unlike successfully",
-                    "data" => $like
+                    "data" => $like->load('user')
                 ], StatusCodes::SUCCESS);
             }
             $like->update(['liked' => 1]);
@@ -177,7 +177,7 @@ class PostController extends Controller
             return response()->json([
                 "status" => "success",
                 "message" => "Like successfully",
-                "data" => $like
+                "data" => $like->load('user')
             ], StatusCodes::SUCCESS);
         }
     }
