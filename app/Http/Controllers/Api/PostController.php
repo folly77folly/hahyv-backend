@@ -148,17 +148,22 @@ class PostController extends Controller
             'post_id' => $post->id
         ];
 
-        if(!$like) {
+        if (!$like) {
             $createPost = Like::create($data);
-
+            
+            $this->initialCount($createPost->post_id);
+            
             return response()->json([
                 "status" => "success",
                 "message" => "Like successfully.",
                 "data" => Like::find($createPost->id)->load('user')
             ], StatusCodes::SUCCESS);
         } else {
-            if($like->liked == 1) {
+            if ($like->liked == 1) {
                 $like->update(['liked' => 0]);
+
+                $this->decreaseCount($like->post_id);
+
                 return response()->json([
                     "status" => "success",
                     "message" => "Unlike successfully",
@@ -166,13 +171,15 @@ class PostController extends Controller
                 ], StatusCodes::SUCCESS);
             }
             $like->update(['liked' => 1]);
+
+            $this->increaseCount($like->post_id);
+
             return response()->json([
                 "status" => "success",
                 "message" => "Like successfully",
                 "data" => $like->load('user')
             ], StatusCodes::SUCCESS);
         }
-
     }
 
     public function likePost(Request $request)
@@ -233,7 +240,8 @@ class PostController extends Controller
 
         $postUser = User::find($post_user_id);
 
-        $like = DB::table('likes')->where([['liking_userId', $authUser->id], ['user_id', $postUser->id], ['post_id', $post]])->first();
+        // $like = DB::table('likes')->where([['liking_userId', $authUser->id], ['user_id', $postUser->id], ['post_id', $post]])->first();
+        $like = DB::table('likes')->where([['user_id', $authUser->id], ['post_id', $post]])->first();
 
         if (!$like) {
             DB::transaction(function ()  use ($postUser, $authUser, $post) {
@@ -262,5 +270,26 @@ class PostController extends Controller
                 DB::table('posts')->where('id', $post)->update(['likesCount' => $initialCount->likesCount - 1, 'dislikesCount' => $initialCount->dislikesCount + 1]);
             });
         }
+    }
+
+    public function initialCount($post_id)
+    {
+        $post = Post::find($post_id);
+
+        $post->update(['likesCount' => $post->likesCount + 1]);
+    }
+
+    public function increaseCount($post_id)
+    {
+        $post = Post::find($post_id);
+
+        $post->update(['likesCount' => $post->likesCount + 1]);
+    }
+
+    public function decreaseCount($post_id)
+    {
+        $post = Post::find($post_id);
+
+        $post->update(['likesCount' => $post->likesCount - 1]);
     }
 }
