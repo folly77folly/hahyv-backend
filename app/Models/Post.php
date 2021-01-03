@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\User;
+use App\Models\Like;
 use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,7 +26,6 @@ class Post extends Model
         'videos' =>'array',
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -34,5 +34,10 @@ class Post extends Model
     public function comment()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 }
