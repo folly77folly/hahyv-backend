@@ -137,12 +137,11 @@ class PostController extends Controller
 
         $like = Like::where([
             'post_id' => $request->post_id,
-            'liking_userId' => $id
+            'user_id' => $id
         ])->first();
 
         $data = [
-            'liking_userId' => $id, 
-            'user_id' => $post->user_id, 
+            'user_id' => $id, 
             'post_id' => $post->id, 
             'liked' => 1,
             'created_at' => now(), 
