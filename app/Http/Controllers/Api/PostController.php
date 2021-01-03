@@ -162,7 +162,7 @@ class PostController extends Controller
                 return response()->json([
                     "status" => "success",
                     "message" => "Unlike successfully",
-                    "data" => $like
+                    "data" => $like->load('user')
                 ], StatusCodes::SUCCESS);
             }
             $like->update(['liked' => 1]);
