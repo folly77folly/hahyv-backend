@@ -62,6 +62,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::POST('post/likepost', 'Api\PostController@likePost');
     Route::POST('post/dislikepost', 'Api\PostController@disLikePost');
     Route::POST('post/postlike', 'Api\PostController@postLike');
+
+    Route::GET('hometimeline', 'Api\HomeTimelineController@index');
     
     
     Route::apiResource('post', Api\PostController::class);
