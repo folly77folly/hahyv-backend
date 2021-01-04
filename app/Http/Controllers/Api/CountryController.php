@@ -69,6 +69,21 @@ class CountryController extends Controller
     public function show($id)
     {
         //
+        $country = Country::find($id);
+        if (!isset($country->id)){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => "Country not found.",
+            ], StatusCodes::BAD_REQUEST);
+        }
+        
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "Country fetched successfully.",
+            "data" => $country
+        ], StatusCodes::SUCCESS);
     }
 
     /**
