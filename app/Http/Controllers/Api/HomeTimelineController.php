@@ -60,7 +60,7 @@ class HomeTimelineController extends Controller
 
     private function getLikeUsersPost($array)
     {
-        $allPost = Post::where('user_id', [$array])->with('Comment')->with(['likes' => function($query) {
+        $allPost = Post::whereIn('user_id', $array)->with('Comment')->with(['likes' => function($query) {
             return $query->where('liked', 1)->with('user');
         }])->latest()->get();
 
@@ -72,12 +72,12 @@ class HomeTimelineController extends Controller
 
         $id = Auth()->user()->id;
 
-        $followingUsersID = Follower::where('following_userId', $id)->select('id')->get();
+        $followingUsersID = Follower::where('user_id', $id)->select('following_userId')->get();
 
         $allUsersId = array($id);
 
         foreach ($followingUsersID as $usersId) {
-            array_push($allUsersId, $usersId->id);
+            array_push($allUsersId, $usersId->following_userId);
         }
 
         return $allUsersId;
