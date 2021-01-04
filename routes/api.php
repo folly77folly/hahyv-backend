@@ -72,5 +72,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::resource('comment', Api\CommentController::class);
     Route::POST('/comment_unlike', 'Api\CommentLikeController@comment_unlike');
     Route::resource('commentlike', Api\CommentLikeController::class);
+
+    //Country
+    Route::resource('country', Api\CountryController::class);
 });
 
