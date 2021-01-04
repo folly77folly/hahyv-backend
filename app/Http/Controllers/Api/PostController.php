@@ -27,19 +27,20 @@ class PostController extends Controller
     {
         $id = Auth()->user()->id;
 
-        if($post = Redis::get('posts.'.$id)){
-            return response()->json([
-                "status" => "success",
-                "message" => "All Posts fetched successfully.",
-                "data" => json_decode($post)
-            ], StatusCodes::SUCCESS);
-        }
+        // if($post = Redis::get('posts.'.$id)){
+        //     return response()->json([
+        //         "status" => "success",
+        //         "message" => "All Posts fetched successfully.",
+        //         "data" => json_decode($post)
+        //     ], StatusCodes::SUCCESS);
+        // }
+        
         $post = Post::where('user_id', $id)->with(array('Comment', 'user'))->with(['likes' => function($query){
             return $query->where('liked', 1)->with('user');
         }])->latest()->get();
 
         //store data in redis for 24hrs
-        Redis::setex('posts.'.$id, 60*60*24, $post);
+        // Redis::setex('posts.'.$id, 60*60*24, $post);
 
         return response()->json([
             "status" => "success",
