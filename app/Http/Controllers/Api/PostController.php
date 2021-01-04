@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\User;
+use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\Like;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 
 class PostController extends Controller
 {
@@ -25,9 +26,20 @@ class PostController extends Controller
     public function usersPost()
     {
         $id = Auth()->user()->id;
+
+        if($post = Redis::get('posts.'.$id)){
+            return response()->json([
+                "status" => "success",
+                "message" => "All Posts fetched successfully.",
+                "data" => json_decode($post)
+            ], StatusCodes::SUCCESS);
+        }
         $post = Post::where('user_id', $id)->with(array('Comment', 'user'))->with(['likes' => function($query){
             return $query->where('liked', 1)->with('user');
         }])->latest()->get();
+
+        //store data in redis for 24hrs
+        Redis::setex('posts.'.$id, 60*60*24, $post);
 
         return response()->json([
             "status" => "success",
