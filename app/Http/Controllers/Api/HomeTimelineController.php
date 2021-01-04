@@ -25,16 +25,16 @@ class HomeTimelineController extends Controller
             $userIdArray = $this->getAllUsersIdWithSamePreference();
 
             $allPost = $this->getLikeUsersPost($userIdArray);
-            
+
             return response()->json([
                 "status" => "success",
                 "message" => "You are not following anyone.",
                 "data" => $allPost->load('user'),
             ], StatusCodes::SUCCESS);
         }
-        
+
         $userIdArray = $this->getFollowing();
-        
+
         $allPost = $this->getLikeUsersPost($userIdArray);
 
         return response()->json([
@@ -52,20 +52,23 @@ class HomeTimelineController extends Controller
 
         $allUsersId = array();
 
-        foreach($usersWithSamePreference as $usersId) {
+        foreach ($usersWithSamePreference as $usersId) {
             array_push($allUsersId, $usersId->id);
         }
         return $allUsersId;
     }
 
-    private function getLikeUsersPost($array) {
-
-        $allPost = Post::where('user_id', [$array])->orderBy('created_at', 'DESC')->get();
+    private function getLikeUsersPost($array)
+    {
+        $allPost = Post::where('user_id', [$array])->with('Comment')->with(['likes' => function($query) {
+            return $query->where('liked', 1)->with('user');
+        }])->latest()->get();
 
         return $allPost;
     }
 
-    private function getFollowing() {
+    private function getFollowing()
+    {
 
         $id = Auth()->user()->id;
 
@@ -73,7 +76,7 @@ class HomeTimelineController extends Controller
 
         $allUsersId = array($id);
 
-        foreach($followingUsersID as $usersId) {
+        foreach ($followingUsersID as $usersId) {
             array_push($allUsersId, $usersId->id);
         }
 
