@@ -66,6 +66,14 @@ class PostController extends Controller
         $post->user_id = $id;
         $post->poll = $request->input('poll');
 
+        if($request->input('height') != null ){
+            $post->height = $request->input('height');
+        }elseif($request->input('width') != null ){
+            $post->height = $request->input('width');
+        }elseif($request->input('orientation') != null ){
+            $post->height = $request->input('orientation');
+        }
+
         $post->save();
 
         return response()->json([

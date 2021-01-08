@@ -81,5 +81,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::post('/resolve', 'Api\BankDetailsController@resolveAccountNumber');
     Route::post('/resolves', 'Api\BankDetailsController@resolveAccount');
     Route::resource('bank_details', Api\BankDetailsController::class);
+
+    //Bookmark
+    Route::resource('bookmark', Api\BookmarkController::class);
 });
 

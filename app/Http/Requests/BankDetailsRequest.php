@@ -13,7 +13,7 @@ class BankDetailsRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,6 +25,20 @@ class BankDetailsRequest extends FormRequest
     {
         return [
             //
+            'bank_id' => ['required'],
+            'bank_name' => ['required'],
+            'first_name' => ['required'],
+            'last_name' => ['required'],
+            'account_no' => ['required','digits:10'],
+            'bvn' => ['required','digits:11'],
+            'phone_no' => ['required'],
+            'zip_code' => ['nullable'],
+            'country_id' => ['required','exists:countries,id'],
+            'instagram' => ['nullable'],
+            'twitter' => ['nullable'],
+            'date_of_birth' => ['required','date'],
+            'identification_image' => ['required'],
+            'identification_exp_date' => ['required','date'],
         ];
     }
 }
