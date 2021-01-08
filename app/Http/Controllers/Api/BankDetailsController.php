@@ -35,7 +35,7 @@ class BankDetailsController extends Controller
         }catch(Exception $e){
             $commonFunction = new CommonFunctionsController;
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
-            return response()->json(array_json_return);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
     }
 
@@ -73,7 +73,7 @@ class BankDetailsController extends Controller
         }catch(Exception $e){
             $commonFunction = new CommonFunctionsController;
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
-            return response()->json(array_json_return);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
 
     }
@@ -98,7 +98,7 @@ class BankDetailsController extends Controller
         }catch(Exception $e){
             $commonFunction = new CommonFunctionsController;
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
-            return response()->json(array_json_return);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
 
     }
@@ -138,7 +138,7 @@ class BankDetailsController extends Controller
         }catch(Exception $e){
             $commonFunction = new CommonFunctionsController;
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
-            return response()->json(array_json_return);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
     }
 
@@ -169,7 +169,7 @@ class BankDetailsController extends Controller
         }catch(Exception $e){
             $commonFunction = new CommonFunctionsController;
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
-            return response()->json(array_json_return);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
 
 
