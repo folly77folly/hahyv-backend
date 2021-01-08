@@ -23,7 +23,11 @@ class BookmarkController extends Controller
         $id = Auth()->user()->id;
         try{
             $bookmark = Bookmark::where('user_id', $id)->where('status', true)->with(['post'=>function($query){
-                $query->with(['user', 'comment', 'likes']);
+                $query->with(['user', 'comment'=>function($query_comment){
+                    $query_comment->with('user');
+                }, 'likes'=>function($query_likes){
+                    $query_likes->with('user');
+                }]);
             }])->get();
             return response()->json([
                 "status" =>"success",
@@ -73,7 +77,11 @@ class BookmarkController extends Controller
                     $existing_bookmark->status = 0;
                     $existing_bookmark->save();
                     $result = $existing_bookmark->load(['post' => function($query){
-                        $query->with(['user', 'comment', 'likes']);
+                        $query->with(['user', 'comment'=>function($query_comment){
+                            $query_comment->with('user');
+                        }, 'likes'=>function($query_likes){
+                            $query_likes->with('user');
+                        }]);
                     }]);
                     return response()->json([
                         "status" =>"success",
@@ -85,7 +93,11 @@ class BookmarkController extends Controller
                     $existing_bookmark->status = 1;
                     $existing_bookmark->save();
                     $result = $existing_bookmark->load(['post' => function($query){
-                        $query->with(['user', 'comment', 'likes']);
+                        $query->with(['user', 'comment'=>function($query_comment){
+                            $query_comment->with('user');
+                        }, 'likes'=>function($query_likes){
+                            $query_likes->with('user');
+                        }]);
                     }]);
                     return response()->json([
                         "status" =>"success",
@@ -102,7 +114,11 @@ class BookmarkController extends Controller
             ];
             $new_bookmark = Bookmark::create($data);
             $result = Bookmark::find($new_bookmark->id)->load(['post' => function($query){
-                $query->with(['user', 'comment', 'likes']);
+                $query->with(['user', 'comment'=>function($query_comment){
+                    $query_comment->with('user');
+                }, 'likes'=>function($query_likes){
+                    $query_likes->with('user');
+                }]);
             }]);
             return response()->json([
                 "status" =>"success",
