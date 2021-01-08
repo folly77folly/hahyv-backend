@@ -22,7 +22,9 @@ class BookmarkController extends Controller
         //
         $id = Auth()->user()->id;
         try{
-            $bookmark = Bookmark::where('user_id', $id)->where('status', true)->with(['user', 'post'])->get();
+            $bookmark = Bookmark::where('user_id', $id)->where('status', true)->with(['post'=>function($query){
+                $query->with(['user', 'comment', 'likes']);
+            }])->get();
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
@@ -32,7 +34,7 @@ class BookmarkController extends Controller
         }catch(\Exception  $e){
             $commonFunction = new CommonFunctionsController;
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
-            return response()->json(array_json_return);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
 
     }
@@ -64,14 +66,15 @@ class BookmarkController extends Controller
         // print_r ($validatedData);
         try{
             $bookmark = Bookmark::where('user_id', $id)->where('post_id', $validatedData['post_id'])->first();
-            // echo $bookmark->id;
             if($bookmark){
                 //record exists
                 $existing_bookmark = Bookmark::find($bookmark->id);
                 if($bookmark->status == 1){
                     $existing_bookmark->status = 0;
                     $existing_bookmark->save();
-                    $result = $existing_bookmark->load(['user','post']);
+                    $result = $existing_bookmark->load(['post' => function($query){
+                        $query->with(['user', 'comment', 'likes']);
+                    }]);
                     return response()->json([
                         "status" =>"success",
                         "status_code" =>StatusCodes::SUCCESS,
@@ -81,7 +84,9 @@ class BookmarkController extends Controller
                 }else{
                     $existing_bookmark->status = 1;
                     $existing_bookmark->save();
-                    $result = $existing_bookmark->load(['user','post']);
+                    $result = $existing_bookmark->load(['post' => function($query){
+                        $query->with(['user', 'comment', 'likes']);
+                    }]);
                     return response()->json([
                         "status" =>"success",
                         "status_code" =>StatusCodes::SUCCESS,
@@ -96,8 +101,9 @@ class BookmarkController extends Controller
                 'post_id' => $validatedData['post_id']
             ];
             $new_bookmark = Bookmark::create($data);
-            $result = Bookmark::find($new_bookmark->id)->load(['user', 'post']);
-
+            $result = Bookmark::find($new_bookmark->id)->load(['post' => function($query){
+                $query->with(['user', 'comment', 'likes']);
+            }]);
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
@@ -107,7 +113,7 @@ class BookmarkController extends Controller
         }catch(Exception $e){
             $commonFunction = new CommonFunctionsController;
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
-            return response()->json(array_json_return);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
  
 
