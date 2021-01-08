@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Models\Crypto;
+use App\Models\Card;
+use App\Models\Like;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Follower;
@@ -109,12 +112,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
     public function like() 
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Like::class);
     }
 
     //relationship between user and comment
     public function comment() 
     {
         return $this->hasMany(Comment::class);
+    }
+    
+    public function card() 
+    {
+        return $this->hasMany(Card::class);
+    }
+    
+    public function crypto() 
+    {
+        return $this->hasMany(Crypto::class);
     }
 }
