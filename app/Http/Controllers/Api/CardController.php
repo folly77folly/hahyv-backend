@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Card;
 use Illuminate\Http\Request; 
 use App\Http\Requests\CardVerificationRequest;
+use App\Http\Requests\CardVerifyRequest;
 use App\User;
 
 
@@ -67,7 +68,7 @@ class CardController extends Controller
 
         if($noOfCards == 0) {
             return response()->json([
-                "status" => "success",
+                "status" => "failue",
                 "message" => "You have not added a card yet."
             ], StatusCodes::NOT_FOUND);
         }
@@ -76,8 +77,63 @@ class CardController extends Controller
             "status" => "success",
             "message" => "Cards retrieved successfully.",
             "cards" => $cards->load('user')
-        ], StatusCodes::NOT_FOUND);
+        ], StatusCodes::SUCCESS);
         
+    }
+
+    public function editCard(CardVerifyRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        $CardNumber = $validatedData["card_number"];
+
+        $card = Card::where('cardNo', $CardNumber)->first();
+
+        if(!$card) {
+            return response()->json([
+                "status" => "failure",
+                "message" => "Card not found."
+            ], StatusCodes::NOT_FOUND);
+
+        }
+
+        $cardType = $this->getCardBrand($CardNumber);
+
+        $user_id = Auth()->user()->id;
+                
+        $card->cardName = $cardType;
+        $card->cardNo = $validatedData["card_number"];
+        $card->cardExpiringMonth = $validatedData["expiration_month"];
+        $card->cardExpiringYear = $validatedData["expiration_year"];
+        $card->cardCVV = $validatedData["cvc"];
+        $card->user_id = $user_id;
+
+        $card->save();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Cards updated successfully.",
+            "cards" => $card->load('user')
+        ], StatusCodes::SUCCESS);
+    }
+
+    public function delete(Request $request) 
+    {
+        $card = Card::where('cardNo', $request->card_number)->first();
+
+        if(!$card) {
+            return response()->json([
+                "status" => "failure",
+                "message" => "Card not found."
+            ], StatusCodes::NOT_FOUND);
+        }
+
+        $card->delete();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Cards updated successfully." 
+        ], StatusCodes::SUCCESS);
     }
 
     /**
@@ -98,9 +154,9 @@ class CardController extends Controller
      * @param  \App\Models\Card  $card
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Card $card)
+    public function update(CardVerificationRequest $request, $card)
     {
-        //
+
     }
 
     /**
