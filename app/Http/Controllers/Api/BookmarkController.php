@@ -22,7 +22,7 @@ class BookmarkController extends Controller
         //
         $id = Auth()->user()->id;
         try{
-            $bookmark = Bookmark::where('user_id', $id)->with(['user', 'post'])->get();
+            $bookmark = Bookmark::where('user_id', $id)->where('status', true)->with(['user', 'post'])->get();
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
