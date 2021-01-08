@@ -78,5 +78,17 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::resource('comment', Api\CommentController::class);
     Route::POST('/comment_unlike', 'Api\CommentLikeController@comment_unlike');
     Route::resource('commentlike', Api\CommentLikeController::class);
+
+    //Country
+    Route::resource('country', Api\CountryController::class);
+
+    //Bank Details
+    Route::get('/banks', 'Api\BankDetailsController@getCommercialBanks');
+    Route::post('/resolve', 'Api\BankDetailsController@resolveAccountNumber');
+    Route::post('/resolves', 'Api\BankDetailsController@resolveAccount');
+    Route::resource('bank_details', Api\BankDetailsController::class);
+
+    //Bookmark
+    Route::resource('bookmark', Api\BookmarkController::class);
 });
 
