@@ -54,6 +54,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'cover_image_url'
     ];
 
+    public function getFollowingAttribute(){
+        
+    }
+
     /**
      * The attributes that should be hidden for arrays.
      *
