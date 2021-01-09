@@ -65,9 +65,9 @@ class PostNotificationController extends Controller
             // print_r($existing_notification);
             if(!$existing_notification){
                 $new_postNotification = PostNotification::create($data);
-                event(new PostNotificationEvent($new_postNotification));
+                broadcast(new PostNotificationEvent($new_postNotification))->toOthers();
             }else{
-                event(new PostNotificationEvent($existing_notification));
+                broadcast(new PostNotificationEvent($existing_notification))->toOthers();
             }
         }catch(Exception $e){
             return $e;

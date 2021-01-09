@@ -68,7 +68,7 @@
           <script>
         
             // Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true;
+            // Pusher.logToConsole = true;
         
             var pusher = new Pusher('30b40ac3acc26d1a0504', {
               cluster: 'eu'
@@ -79,7 +79,7 @@
             //   alert(JSON.stringify(data));
             // });
             var pchannel = pusher.subscribe('notification-2');
-            pchannel.bind('PostNotificationEvent', function(data) {
+            pchannel.bind('App\\Events\\PostNotificationEvent', function(data) {
               alert(JSON.stringify(data));
             });
           </script>
