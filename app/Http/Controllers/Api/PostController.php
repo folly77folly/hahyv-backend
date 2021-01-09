@@ -7,10 +7,12 @@ use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
+use App\Models\PostNotification;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
+use App\Http\Controllers\Api\PostNotificationController;
 
 class PostController extends Controller
 {
@@ -158,6 +160,7 @@ class PostController extends Controller
         $post = Post::find($request->post_id);
 
         $id = Auth()->user()->id;
+        $username = Auth()->user()->username;
 
         $like = Like::where([
             'post_id' => $request->post_id,
@@ -173,7 +176,10 @@ class PostController extends Controller
             $createPost = Like::create($data);
             
             $this->initialCount($createPost->post_id);
-            
+
+            // insert into post notification for like
+            $this->notify($post, $username, 'liked');
+
             return response()->json([
                 "status" => "success",
                 "message" => "Like successfully.",
@@ -185,6 +191,9 @@ class PostController extends Controller
 
                 $this->decreaseCount($like->post_id);
 
+            // unlike a user post
+            $this->notify($post, $username, 'unlike');
+
                 return response()->json([
                     "status" => "success",
                     "message" => "Unlike successfully",
@@ -195,6 +204,9 @@ class PostController extends Controller
 
             $this->increaseCount($like->post_id);
 
+            // Re-liking a post
+            $this->notify($post, $username, 'like');
+
             return response()->json([
                 "status" => "success",
                 "message" => "Like successfully",
@@ -203,31 +215,6 @@ class PostController extends Controller
         }
     }
 
-    public function likePost(Request $request)
-    {
-
-        $post = Post::find($request->post_id);
-
-        $postId = $request->post_id;
-
-        $postUser = User::find($post->user_id);
-
-        $likedUser = Auth()->user()->id;
-
-        if (!$likedUser) {
-            return response()->json([
-                "status" => "failure",
-                "message" => "You did not login."
-            ], StatusCodes::UNPROCESSABLE);
-        }
-
-        $this->increasingLikes($likedUser, $postUser->id, $postId);
-
-        return response()->json([
-            "status" => "success",
-            "message" => "Like successfully."
-        ], StatusCodes::SUCCESS);
-    }
 
     public function disLikePost(Request $request)
     {
@@ -313,4 +300,14 @@ class PostController extends Controller
 
         $post->update(['likesCount' => $post->likesCount - 1]);
     }
+
+    public function notify($post, $username, $type){
+        $post_notify = new PostNotificationController();
+        $result = $post_notify->store([
+            'message'=> "$username $type your post",
+            'post_id' => $post->id,
+            'user_id' => $post->user->id
+        ]);
+    }
 }
+

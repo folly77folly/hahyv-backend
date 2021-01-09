@@ -74,8 +74,12 @@
               cluster: 'eu'
             });
         
-            var channel = pusher.subscribe('channel-name');
-            channel.bind('LikeComment', function(data) {
+            // var channel = pusher.subscribe('channel-name');
+            // channel.bind('LikeComment', function(data) {
+            //   alert(JSON.stringify(data));
+            // });
+            var pchannel = pusher.subscribe('notification-2');
+            pchannel.bind('PostNotificationEvent', function(data) {
               alert(JSON.stringify(data));
             });
           </script>
@@ -102,7 +106,8 @@
                 </div>
 
                 <div class="links">
-                    <a href="https://documenter.getpostman.com/view/8806253/TVsrF97w">API-Docs</a>
+                    <a href="https://documenter.getpostman.com/view/8806253/TVsrF97w">API-Docs1</a>
+                    <a href="https://documenter.getpostman.com/view/8806253/TVzPnJpe#e86af4f4-d855-4b14-b57b-a140a1cbfc15">API-Docs2</a>
                 </div>
             </div>
         </div>
