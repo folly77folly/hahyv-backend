@@ -21,11 +21,11 @@ class PostNotificationController extends Controller
         //
         $id = Auth()->user()->id;
         try{
-            $postNotification = PostNotification::where('user_id', $id)->where('read', false)->with('user')->get();
+            $postNotification = PostNotification::where('user_id', $id)->where('read', false)->with(['user', 'post'])->get();
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
-                "message" =>"bookmarks retrieved",
+                "message" =>"notifications retrieved",
                 "data" => $postNotification
                 ],StatusCodes::SUCCESS);
 
@@ -65,9 +65,11 @@ class PostNotificationController extends Controller
             // print_r($existing_notification);
             if(!$existing_notification){
                 $new_postNotification = PostNotification::create($data);
-                broadcast(new PostNotificationEvent($new_postNotification))->toOthers();
+                $notification = $new_postNotification->with(['user', 'post'])->get();
+                broadcast(new PostNotificationEvent($notification[0]))->toOthers();
             }else{
-                broadcast(new PostNotificationEvent($existing_notification))->toOthers();
+                $notification = $existing_notification->with(['user', 'post'])->get();
+                broadcast(new PostNotificationEvent($notification[0]))->toOthers();
             }
         }catch(Exception $e){
             return $e;

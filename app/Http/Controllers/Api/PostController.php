@@ -192,7 +192,7 @@ class PostController extends Controller
                 $this->decreaseCount($like->post_id);
 
             // unlike a user post
-            $this->notify($post, $username, 'unlike');
+            // $this->notify($post, $username, 'unlike');
 
                 return response()->json([
                     "status" => "success",
