@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Collections\StatusCodes;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
-use App\Collections\StatusCodes;
+use Illuminate\Auth\Events\Registered;
+use App\Http\Requests\ChangePasswordRequest;
 
 class AuthController extends Controller
 {
@@ -20,6 +23,37 @@ class AuthController extends Controller
     public function index()
     {
         //
+        $id = Auth()->user()->id;
+        $users = User::all(
+            'id',
+            'name',
+            'username',
+            'email',
+            'description',
+            'profile_image_url',
+            'cover_image_url',
+            'preference_id',
+            'created_at',
+            'updated_at',
+            )
+            ->where('id', '!=', $id)
+            ->toArray();
+
+        if(!$users){
+
+            return response()->json([
+                "status"=> "failure",
+                "status_code"=> StatusCodes::UNPROCESSABLE,
+                "message"=>"No users found",
+                ],StatusCodes::UNPROCESSABLE);
+        }
+
+            return response()->json([
+                "status"=> "success",
+                "status_code"=> StatusCodes::SUCCESS,
+                "message"=>"Users found",
+                "data"=> array_values($users)
+                ],StatusCodes::SUCCESS);
     }
 
     /**
@@ -91,22 +125,38 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $validatedData = $request->validated();
+
+
         $validatedData["password"] = Hash::make($request["password"]);
+        $validatedData["otp"] = OTP();
         $user = User::create($validatedData);
+        
+        if (!empty($validatedData["provider_name"])){
+            $user->email_verified_at = Carbon::now();
+            $user->save();
+        }
+        event(new Registered($user));
         $accessToken = $user->createToken('authToken')->accessToken;
         return response()->json([
-            "status"=> 1,
+            "status"=> "success",
             "message"=>"Registration Successful",
             "data"=> [
-                "user"=>$user,
-                "token" => $accessToken
+                "name"=>$user->name,
+                "username"=>$user->username,
+                "email"=>$user->email,
+                "id"=>$user->id,
+                "token" => $accessToken,
+                "created_at" => $user->created_at,
+                "updated_at" => $user->updated_at,
             ]
             ],StatusCodes::CREATED);
     }
 
     public function login(LoginRequest $request)
     {
+
         $validatedData = $request->validated();
+
 
         if (!Auth()->attempt($validatedData)){
             return response()->json([
@@ -116,13 +166,48 @@ class AuthController extends Controller
             ], StatusCodes::UNAUTHORIZED);
         }
 
+
+        if(!Auth()->user()->hasVerifiedEmail()){
+            return response()->json([
+                "status"=>"failure",
+                "status_code" => StatusCodes::UNAUTHORIZED,
+                "message"=>"Email has not been Verified"
+            ], StatusCodes::UNAUTHORIZED);
+        }
+
         $accessToken = Auth()->user()->createToken("authToken")->accessToken;
         return response()->json([
             "status"=>"success",
             "status_code"=> StatusCodes::SUCCESS,
-            "user"=> Auth()->user(),
+            "name"=> Auth()->user()->name,
+            "username"=> Auth()->user()->username,
+            "email"=> Auth()->user()->email,
+            "id"=> Auth()->user()->id,
             "token" => $accessToken
         ],StatusCodes::SUCCESS);
     }
 
+    public function changePassword(ChangePasswordRequest $request)
+    {       
+            $validatedData = $request->validated();
+
+            $user = User::find(Auth()->user()->id);
+
+           if(!Hash::check($validatedData["current_password"], $user->password)){
+               return response()->json([
+                   "status" =>"failure",
+                   "status_code" => StatusCodes::UNPROCESSABLE,
+                   "message" => "Invalid current password",
+               ],StatusCodes::UNPROCESSABLE,);
+           }
+
+            $newPassword = $validatedData['new_password'];
+            $user->password = Hash::make($newPassword);
+            $user->save();
+            return response()->json([
+                "status" => "success",
+                "status_code" => StatusCodes::SUCCESS,
+                "message" => "Password changed successfully",
+            ],StatusCodes::SUCCESS,);
+    }
 }

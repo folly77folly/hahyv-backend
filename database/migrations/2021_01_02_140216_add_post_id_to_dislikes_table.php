@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddMoreFieldsToUsersTable extends Migration
+class AddPostIdToDislikesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class AddMoreFieldsToUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('provider_id');
-            $table->string('provider_name');
-            $table->string('name')->nullable()->change();
-            $table->string('email')->nullable()->change();
+        Schema::table('dislikes', function (Blueprint $table) {
+            $table->unsignedBigInteger('post_id');
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
         });
     }
 
@@ -28,7 +26,7 @@ class AddMoreFieldsToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('dislikes', function (Blueprint $table) {
             //
         });
     }

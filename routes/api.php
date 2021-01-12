@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\FollowerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //user Email Signup Route
 Route::POST('/register', 'Api\AuthController@register')->name('register');
-Route::POST('/login', 'Api\AuthController@login')->name('login');
+Route::POST('/login', 'Api\AuthController@login');
+// ->middleware('emailverifier');
 
 //password Reset
 Route::POST('/password/email', 'Api\ForgotPasswordController@sendResetLinkEmail')->name('forgot_password');
@@ -90,5 +92,9 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     //Bookmark
     Route::resource('bookmark', Api\BookmarkController::class);
+
+    //Notifications
+    Route::GET('/notifications', 'Api\PostNotificationController@index');
+    Route::DELETE('/notifications/{id}', 'Api\PostNotificationController@destroy');
 });
 

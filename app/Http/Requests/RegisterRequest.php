@@ -38,8 +38,12 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name'=> 'required|max:50',
+            'username' => 'required|string|unique:users',
             'email'=> 'required|email|unique:users',
             'password'=> 'required|confirmed',
+            "otp"=> "string",
+            "provider_name" => '',
+            "provider_id" => '',
         ];
     }
 }
