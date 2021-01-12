@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\User;
 use App\Models\Post;
+use App\Models\PostType;
 use Illuminate\Database\Eloquent\Model;
 
 class PostNotification extends Model
@@ -13,7 +14,9 @@ class PostNotification extends Model
         'message',
         'post_id',
         'user_id',
+        'post_type_id',
     ];
+
 
     protected $casts = [
         'read' => 'boolean'
@@ -24,5 +27,8 @@ class PostNotification extends Model
     }
     public function post(){
         return $this->belongsTo(Post::class);
+    }
+    public function post_type(){
+        return $this->belongsTo(PostType::class);
     }
 }

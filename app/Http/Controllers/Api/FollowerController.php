@@ -6,9 +6,11 @@ namespace App\Http\Controllers\API;
 use App\User;
 use App\Models\Follower;
 use Illuminate\Http\Request;
+use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FollowerRequest;
+use App\Http\Controllers\Api\PostNotificationController;
 
 class FollowerController extends Controller
 {
@@ -46,6 +48,7 @@ class FollowerController extends Controller
         $validatedData = $request->validated();
 
         $id_auth_user = Auth()->user()->id;
+        $username = Auth()->user()->username;
         $id_other_user = $validatedData["following_userId"];
         if($id_auth_user == $id_other_user){
             return response()->json([
@@ -74,8 +77,11 @@ class FollowerController extends Controller
         // saving a following
         $follower = Follower::create($data);
 
-        //fire an event to increase
+        //fire an event to increase follower count
         $this->increaseFollowing($id_auth_user, $id_other_user );
+
+        //fire a following event notification
+        $this->notify($username, $validatedData["following_userId"], 'follows');
 
         return response()->json([
             "status" => "success",
@@ -203,6 +209,16 @@ class FollowerController extends Controller
         $newuser->save();
     }
 
+    public function notify($username, $id_other_user, $type)
+    {
+        $post_notify = new PostNotificationController();
+        $result = $post_notify->store([
+            'message'=> "$username started following you",
+            'user_id' => $id_other_user,
+            'post_type_id' => Constants::NOTIFICATION["FOLLOW"]
+        ]);
+    }
+
     public function decreaseFollowing($id_auth_user, $id_other_user)
     {
         // $this->id_auth_user, $this->id_other_user
@@ -214,4 +230,6 @@ class FollowerController extends Controller
         $user->followingCount = $user->followingCount  - 1;
         $user->save();
     }
+
+
 }

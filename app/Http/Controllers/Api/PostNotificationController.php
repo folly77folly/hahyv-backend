@@ -21,7 +21,7 @@ class PostNotificationController extends Controller
         //
         $id = Auth()->user()->id;
         try{
-            $postNotification = PostNotification::where('user_id', $id)->where('read', false)->with(['user', 'post'])->get();
+            $postNotification = PostNotification::where('user_id', $id)->where('read', false)->with(['user', 'post', 'post_type:id,name'])->get();
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
@@ -55,21 +55,26 @@ class PostNotificationController extends Controller
     public function store(Array $data)
     {
         //
-
+        // print_r($data['post_id']= null);
+        // 
+        // if(isset($data['post_id'])){
+        //     print
+        // }
         try{
             $existing_notification = PostNotification::where([
                 'message'=> $data['message'],
-                'post_id' => $data['post_id'],
-                'user_id' => $data['user_id']
+                'post_id' => isset($data['post_id'])?$data['post_id']:null,
+                'user_id' => $data['user_id'],
+                'post_type_id' => $data['post_type_id']
             ])->first();
-            // print_r($existing_notification);
             if(!$existing_notification){
                 $new_postNotification = PostNotification::create($data);
-                $notification = $new_postNotification->with(['user', 'post'])->get();
-                broadcast(new PostNotificationEvent($notification[0]))->toOthers();
+                $new_postNotification = PostNotification::find($new_postNotification->id);
+                $notification = $new_postNotification->load(['user', 'post', 'post_type:id,name']);
+                broadcast(new PostNotificationEvent($notification))->toOthers();
             }else{
-                $notification = $existing_notification->with(['user', 'post'])->get();
-                broadcast(new PostNotificationEvent($notification[0]))->toOthers();
+                $notification = $existing_notification->load(['user', 'post', 'post_type:id,name']);
+                broadcast(new PostNotificationEvent($notification))->toOthers();
             }
         }catch(Exception $e){
             return $e;
