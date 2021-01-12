@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Collections\StatusCodes;
-use App\Http\Controllers\Controller;
 use App\User;
+use App\Models\Follower;
 use Illuminate\Http\Request;
+use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class UserProfileController extends Controller
 {
@@ -179,6 +180,13 @@ class UserProfileController extends Controller
         $userP = Auth()->user()->preference_id;
         $id = Auth()->user()->id;
         
+        //array of following
+        $my_followers= [];
+        $followings = Follower::where('user_id', '=', Auth()->user()->id)->get(['following_userId AS id'])->toArray();
+        foreach($followings as $following){
+            array_push($my_followers, $following['id']);
+        }
+
         if ($userP != 1){
             $suggestions = User::all(
                 'id',
@@ -194,6 +202,7 @@ class UserProfileController extends Controller
             )
             ->where('preference_id', '==', $userP)
             ->where('id', '!=', $id )
+            ->whereNotIn('id', $my_followers)
             ->toArray();
 
             return response()->json([

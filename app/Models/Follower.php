@@ -14,12 +14,12 @@ class Follower extends Model
     ];
 
     //Make it available in the json response
-    protected $appends = ['is_follow_back'];    
+    // protected $appends = ['is_follow_back'];    
     
-    public function getIsFollowBackAttribute(){
+    // public function getIsFollowBackAttribute(){
     
-            return true;
-    }
+    //         return true;
+    // }
 
     public function user(){
         return $this->belongsTo(User::class);
