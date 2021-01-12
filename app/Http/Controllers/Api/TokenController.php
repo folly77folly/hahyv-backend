@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\TokenRateRequest;
+use App\User;
 
 class TokenController extends Controller
 {
@@ -21,6 +22,77 @@ class TokenController extends Controller
     }
 
     public function buyToken(Request $request)
+    {
+
+        $request->validate([
+            'amount' => 'required|integer',
+        ]);
+
+        $user = Auth()->user();
+
+        $walletBalance = $user->walletBalance;
+        
+        $amountToPurchase = $request->amount;
+
+        if ($amountToPurchase > $walletBalance) {
+            return response()->json([
+                "status" => "failue",
+                "message" => "You have insufficient Wallet Balance to make the purchase.",
+                "Wallet Balance" => $user->walletBalance,
+                "Amount to Purchase" => (int)$amountToPurchase
+            ], StatusCodes::UNPROCESSABLE);
+        }
+
+
+        $tokenRate = DB::table('tokenrates')->latest()->first();
+
+        $presentTokenRate = $tokenRate->dollarTokenRate;
+
+        $tokenBalance = $user->tokenBalance;
+
+        $tokenToPurchase = number_format((float)($amountToPurchase / $presentTokenRate), 2, '.', '');
+
+        DB::transaction(function ()  use ($walletBalance, $user, $tokenBalance, $amountToPurchase, $tokenToPurchase) {
+            $walletReduction  = $walletBalance - $amountToPurchase;
+
+            DB::table('users')->where('id', $user->id)->update([
+                'walletBalance' => $walletReduction,
+                'tokenBalance' => $tokenBalance + $tokenToPurchase,
+                'updated_at' => now()
+            ]);
+
+            DB::table('wallet_transactions')->insert([
+                'user_id' => $user->id,
+                'previousWalletBalance' => $walletBalance,
+                'presentWalletBalance' => $walletReduction,
+                'amountCredited' => 0,
+                'amountDebited' => $amountToPurchase,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            DB::table('token_transactions')->insert([
+                'user_id' => $user->id,
+                'previousTokenBalance' => $tokenBalance,
+                'presentTokenBalance' => $tokenBalance + $tokenToPurchase,
+                'tokenCredited' => $tokenToPurchase,
+                'tokenDebited' => 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+        });
+
+        $user = User::find($user->id);
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Cards retrieved successfully.",
+            "token Purchase" => $tokenToPurchase,
+            'user' => $user
+        ], StatusCodes::SUCCESS);
+    }
+    public function buyTokenToken(Request $request)
     {
 
         $request->validate([
