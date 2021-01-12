@@ -21,7 +21,7 @@ class TokenController extends Controller
         //
     }
 
-    public function buyToken(Request $request)
+    public function buyTokenAmount(Request $request)
     {
 
         $request->validate([
@@ -92,7 +92,7 @@ class TokenController extends Controller
             'user' => $user
         ], StatusCodes::SUCCESS);
     }
-    public function buyTokenToken(Request $request)
+    public function buyToken(Request $request)
     {
 
         $request->validate([
@@ -153,12 +153,14 @@ class TokenController extends Controller
             ]);
         });
 
+        $user = User::find($user->id);
+
 
         return response()->json([
             "status" => "success",
             "message" => "Cards retrieved successfully.",
             "token Purchase" => $noOfTokenRequested,
-            'user' => Auth()->user()
+            'user' => $user
         ], StatusCodes::SUCCESS);
     }
 
