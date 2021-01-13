@@ -66,8 +66,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('hometimeline', 'Api\HomeTimelineController@index');
 
     Route::GET('card/usercards', 'Api\CardController@userCards');
-    Route::PUT('card/editcard', 'Api\CardController@editCard');
-    Route::DELETE('card/delete', 'Api\CardController@delete');
+    Route::PUT('card/editcard/{id}', 'Api\CardController@editCard');
+    Route::DELETE('card/delete/{id}', 'Api\CardController@delete');
 
     Route::POST('buytoken', 'Api\TokenController@buyToken');
     Route::PUT('tokenrate', 'Api\TokenController@tokenRate');
