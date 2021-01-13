@@ -142,9 +142,22 @@ class CardController extends Controller
      * @param  \App\Models\Card  $card
      * @return \Illuminate\Http\Response
      */
-    public function show(Card $card)
+    public function show($id)
     {
-        //
+        $card = Card::where('id', $id)->first();
+
+        if(!$card) {
+            return response()->json([
+                "status" => "failure",
+                "message" => "Card not found."
+            ], StatusCodes::NOT_FOUND);
+        }
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Card retrieved successfully.",
+            "card" =>$card
+        ], StatusCodes::SUCCESS);
     }
 
     /**
