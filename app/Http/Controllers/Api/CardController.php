@@ -117,12 +117,9 @@ class CardController extends Controller
         ], StatusCodes::SUCCESS);
     }
 
-    public function delete(Request $request, $id) 
+    public function delete($id) 
     {
-        // $card = Card::where('cardNo', $request->card_number)->first();
-
         $card = Card::where('id', $id)->first();
-
 
         if(!$card) {
             return response()->json([
@@ -135,7 +132,7 @@ class CardController extends Controller
 
         return response()->json([
             "status" => "success",
-            "message" => "Cards deleted successfully." 
+            "message" => "Card deleted successfully." 
         ], StatusCodes::SUCCESS);
     }
 
