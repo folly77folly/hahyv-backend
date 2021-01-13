@@ -44,7 +44,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_blocked',
         'followerCount',
         'followingCount',
-        'fansCount',
         'postCount',
         'tokenBalance',
         'subscription_plan',
