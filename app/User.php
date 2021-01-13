@@ -46,7 +46,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'followingCount',
         'fansCount',
         'postCount',
-        'walletBalance',
         'tokenBalance',
         'subscription_plan',
         'is_monetize',

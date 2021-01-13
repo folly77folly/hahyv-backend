@@ -209,8 +209,8 @@ class UserProfileController extends Controller
                 "status"=>"success",
                 "status_code" => StatusCodes::SUCCESS,
                 "message" => "suggestions successfully fetched",
-                "data" => array_values($suggestions),
-                "data2" => $my_followers
+                "followers" => $my_followers,
+                "data" => array_values($suggestions)
             ]);
         }
 
