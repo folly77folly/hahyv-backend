@@ -81,13 +81,13 @@ class CardController extends Controller
         
     }
 
-    public function editCard(CardVerifyRequest $request)
+    public function editCard(CardVerifyRequest $request, $id)
     {
         $validatedData = $request->validated();
 
         $CardNumber = $validatedData["card_number"];
 
-        $card = Card::where('cardNo', $CardNumber)->first();
+        $card = Card::where('id', $id)->first();
 
         if(!$card) {
             return response()->json([
@@ -117,9 +117,9 @@ class CardController extends Controller
         ], StatusCodes::SUCCESS);
     }
 
-    public function delete(Request $request) 
+    public function delete($id) 
     {
-        $card = Card::where('cardNo', $request->card_number)->first();
+        $card = Card::where('id', $id)->first();
 
         if(!$card) {
             return response()->json([
@@ -132,7 +132,7 @@ class CardController extends Controller
 
         return response()->json([
             "status" => "success",
-            "message" => "Cards updated successfully." 
+            "message" => "Card deleted successfully." 
         ], StatusCodes::SUCCESS);
     }
 
@@ -142,9 +142,22 @@ class CardController extends Controller
      * @param  \App\Models\Card  $card
      * @return \Illuminate\Http\Response
      */
-    public function show(Card $card)
+    public function show($id)
     {
-        //
+        $card = Card::where('id', $id)->first();
+
+        if(!$card) {
+            return response()->json([
+                "status" => "failure",
+                "message" => "Card not found."
+            ], StatusCodes::NOT_FOUND);
+        }
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Card retrieved successfully.",
+            "card" =>$card
+        ], StatusCodes::SUCCESS);
     }
 
     /**
