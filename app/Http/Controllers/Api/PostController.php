@@ -60,7 +60,7 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'description' => 'required',
+            'description' => 'required_if:images,==,[]',
         ]);
         
         $id = Auth()->user()->id;

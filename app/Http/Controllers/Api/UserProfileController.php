@@ -208,8 +208,7 @@ class UserProfileController extends Controller
             return response()->json([
                 "status"=>"success",
                 "status_code" => StatusCodes::SUCCESS,
-                "message" => "suggestions successfully fetched",
-                "followers" => $my_followers,
+                "message" => "suggestions successfully",
                 "data" => array_values($suggestions)
             ]);
         }
@@ -227,6 +226,7 @@ class UserProfileController extends Controller
             'updated_at'
         )
         ->where('id', '!=', $id )
+        ->whereNotIn('id', $my_followers)
         ->toArray();
 
         return response()->json([
