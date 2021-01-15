@@ -53,7 +53,7 @@ class PostNotificationEvent implements ShouldBroadcast
     {
         Log::debug ($this->postNotification);
         // Log::debug ('notification-'.$this->postNotification->user_id);
-        return new Channel('notification-'.$this->postNotification->user_id);
+        return new Channel('notification-'.$this->postNotification->broadcast_id);
     }
 
     public function broadcastWith(){

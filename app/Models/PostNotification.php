@@ -14,6 +14,7 @@ class PostNotification extends Model
         'message',
         'post_id',
         'user_id',
+        'broadcast_id',
         'post_type_id',
     ];
 
