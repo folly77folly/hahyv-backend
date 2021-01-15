@@ -20,5 +20,6 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 Broadcast::channel('notification-{user_id}', function ($user, $user_id) {
     Log::info($user->id);
     Log::info($user_id);
-    return (int) $user->id === (int) $user_id;
+    return true;
+    // return (int) $user->id === (int) $user_id;
 });
