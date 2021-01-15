@@ -15,6 +15,7 @@ class BankDetail extends Model
         'last_name',
         'account_no',
         'account_name',
+        'address',
         'bvn',
         'phone_no',
         'zip_code',
