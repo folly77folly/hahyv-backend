@@ -214,7 +214,8 @@ class FollowerController extends Controller
         $post_notify = new PostNotificationController();
         $result = $post_notify->store([
             'message'=> "$username started following you",
-            'user_id' => $id_other_user,
+            'user_id' => Auth()->user()->id,
+            'broadcast_id' => $id_other_user,
             'post_type_id' => Constants::NOTIFICATION["FOLLOW"]
         ]);
     }

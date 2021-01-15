@@ -310,7 +310,8 @@ class PostController extends Controller
         $result = $post_notify->store([
             'message'=> "$username $type your post",
             'post_id' => $post->id,
-            'user_id' => $post->user->id,
+            'user_id' => Auth()->user()->id,
+            'broadcast_id' => $post->user->id,
             'post_type_id' => 1,
         ]);
     }
