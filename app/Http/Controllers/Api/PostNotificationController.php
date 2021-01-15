@@ -54,17 +54,13 @@ class PostNotificationController extends Controller
      */
     public function store(Array $data)
     {
-        //
-        // print_r($data['post_id']= null);
-        // 
-        // if(isset($data['post_id'])){
-        //     print
-        // }
+            $logged_user = Auth()->user()->id;
         try{
             $existing_notification = PostNotification::where([
                 'message'=> $data['message'],
                 'post_id' => isset($data['post_id'])?$data['post_id']:null,
-                'user_id' => $data['user_id'],
+                'user_id' => $logged_user,
+                'broadcast_id' => $data['user_id'],
                 'post_type_id' => $data['post_type_id']
             ])->first();
             if(!$existing_notification){
