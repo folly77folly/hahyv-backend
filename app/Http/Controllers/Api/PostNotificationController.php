@@ -21,7 +21,7 @@ class PostNotificationController extends Controller
         //
         $id = Auth()->user()->id;
         try{
-            $postNotification = PostNotification::where('user_id', $id)->where('read', false)->with(['user', 'post', 'post_type:id,name'])->get();
+            $postNotification = PostNotification::where('broadcast_id', $id)->where('read', false)->with(['user', 'post', 'post_type:id,name'])->get();
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
