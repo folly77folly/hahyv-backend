@@ -68,17 +68,30 @@
           <script>
         
             // Enable pusher logging - don't include this in production
-            // Pusher.logToConsole = true;
+            Pusher.logToConsole = true;
         
+            // var pusher = new Pusher('30b40ac3acc26d1a0504', {
+            //   cluster: 'eu',
+            //   auth: {
+            //     headers: {
+            //     'X-CSRF-Token': "{{ csrf_token() }}"
+            //     }
+            //   }
+            // });
+
             var pusher = new Pusher('30b40ac3acc26d1a0504', {
-              cluster: 'eu'
+                cluster: 'eu',
+                authTransport: 'jsonp',
+                authEndpoint: 'https://hahyv.herokuapp.com/pusher/auth'
             });
+
+ 
         
             // var channel = pusher.subscribe('channel-name');
             // channel.bind('LikeComment', function(data) {
             //   alert(JSON.stringify(data));
             // });
-            var pchannel = pusher.subscribe('notification-2');
+            var pchannel = pusher.subscribe('private-notification-101');
             pchannel.bind('App\\Events\\PostNotificationEvent', function(data) {
               alert(JSON.stringify(data));
             });

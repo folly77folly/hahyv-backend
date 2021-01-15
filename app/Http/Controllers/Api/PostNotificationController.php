@@ -60,7 +60,7 @@ class PostNotificationController extends Controller
                 'message'=> $data['message'],
                 'post_id' => isset($data['post_id'])?$data['post_id']:null,
                 'user_id' => $logged_user,
-                'broadcast_id' => $data['user_id'],
+                'broadcast_id' => $data['broadcast_id'],
                 'post_type_id' => $data['post_type_id']
             ])->first();
             if(!$existing_notification){
