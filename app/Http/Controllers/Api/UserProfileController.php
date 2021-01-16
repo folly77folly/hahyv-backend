@@ -103,7 +103,7 @@ class UserProfileController extends Controller
                 'email.email' => 'The email address is not correct'
             ]
         );
-
+        
         $user = User::Where('id', $id)->first();
 
         if (!$user) {
