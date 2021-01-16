@@ -74,9 +74,11 @@ class PostController extends Controller
 
         if($request->input('height') != null ){
             $post->height = $request->input('height');
-        }elseif($request->input('width') != null ){
+        }
+        if($request->input('width') != null ){
             $post->width = $request->input('width');
-        }elseif($request->input('orientation') != null ){
+        }
+        if($request->input('orientation') != null ){
             $post->orientation = $request->input('orientation');
         }
 
