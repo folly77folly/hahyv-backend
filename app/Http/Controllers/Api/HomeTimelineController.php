@@ -68,7 +68,7 @@ class HomeTimelineController extends Controller
                 return $query->with('user');
             }])->with(['likes' => function ($query) {
                 return $query->where('liked', 1)->with('user');
-            }])->with('user')->latest()->simplePaginate(Constants::PAGE_LIMIT);
+            }])->with('user')->latest()->Paginate(Constants::PAGE_LIMIT);
         
         return $allPost;
     }
