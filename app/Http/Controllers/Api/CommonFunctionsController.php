@@ -20,4 +20,16 @@ class CommonFunctionsController extends Controller
 		);
 		return $array_json_return;
 	}
+
+	public function stripe_default_fail_response($fxname, \Stripe\Exception\CardException $e) {
+		\Log::alert('API Exception : ' . $fxname . ' : ' . $e->getError()->message);
+		\Log::debug($e);
+		$array_json_return = array(
+			'status' => 'failure',
+			'status_code' => StatusCodes::BAD_REQUEST,
+			'message' => 'Error. Please try again.'.$e->getError()->message
+			
+		);
+		return $array_json_return;
+	}
 }

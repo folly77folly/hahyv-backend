@@ -6,6 +6,7 @@ use App\User;
 use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use App\Models\PostNotification;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +40,7 @@ class PostController extends Controller
         
         $post = Post::where('user_id', $id)->with(array('Comment', 'user'))->with(['likes' => function($query){
             return $query->where('liked', 1)->with('user');
-        }])->latest()->get();
+        }])->latest()->paginate(Constants::PAGE_LIMIT);
 
         //store data in redis for 24hrs
         // Redis::setex('posts.'.$id, 60*60*24, $post);
