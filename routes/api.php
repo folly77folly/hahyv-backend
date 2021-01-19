@@ -99,6 +99,9 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::DELETE('/notifications/{id}', 'Api\PostNotificationController@destroy');
 
     //payment
-    Route::GET('/payment','Api\PaymentController@subscribe');
+    Route::POST('/card_payment','Api\PaymentController@cardPayment');
+
+    //transactions
+    Route::get('/card_transactions', 'Api\CardTransactionController@index');
 });
 

@@ -73,7 +73,9 @@ class PostNotificationController extends Controller
                 broadcast(new PostNotificationEvent($notification))->toOthers();
             }
         }catch(Exception $e){
-            return $e;
+            $commonFunction = new CommonFunctionsController;
+            $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
     }
 

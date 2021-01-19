@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\User;
+use App\Models\Post;
+use App\Models\Follower;
+use Illuminate\Http\Request;
+use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
-use App\Models\Follower;
-use App\Models\Post;
-use App\User;
-use Illuminate\Http\Request;
 
 class HomeTimelineController extends Controller
 {
@@ -24,24 +25,26 @@ class HomeTimelineController extends Controller
 
             $userIdArray = $this->getAllUsersIdWithSamePreference();
 
-            $allPost = $this->getLikeUsersPost($userIdArray);
+            $allPosts = $this->getLikeUsersPost($userIdArray);
 
             return response()->json([
                 "status" => "success",
                 "message" => "You are not following anyone.",
-                "data" => $allPost->load('user'),
+                "data" => $allPosts,
+            ], StatusCodes::SUCCESS);
+        }else{
+
+            $userIdArray = $this->getFollowing();
+        
+            $allPosts = $this->getLikeUsersPost($userIdArray);
+            return response()->json([
+                "status" => "success",
+                "message" => "Home Timeline Retrieved Successfully.",
+                "data" => $allPosts
             ], StatusCodes::SUCCESS);
         }
 
-        $userIdArray = $this->getFollowing();
 
-        $allPost = $this->getLikeUsersPost($userIdArray);
-
-        return response()->json([
-            "status" => "success",
-            "message" => "Home Timeline Retrieved Successfully.",
-            "data" => $allPost->load('user')
-        ], StatusCodes::SUCCESS);
     }
 
     private function getAllUsersIdWithSamePreference()
@@ -65,8 +68,8 @@ class HomeTimelineController extends Controller
                 return $query->with('user');
             }])->with(['likes' => function ($query) {
                 return $query->where('liked', 1)->with('user');
-            }])->latest()->get();
-
+            }])->with('user')->latest()->simplePaginate(Constants::PAGE_LIMIT);
+        
         return $allPost;
     }
 
