@@ -62,6 +62,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::POST('post/likepost', 'Api\PostController@likePost');
     Route::POST('post/dislikepost', 'Api\PostController@disLikePost');
     Route::POST('post/postlike', 'Api\PostController@postLike');
+    Route::POST('post/{id}', 'Api\PostController@show');
 
     Route::GET('hometimeline', 'Api\HomeTimelineController@index');
 
@@ -100,6 +101,9 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     //payment
     Route::POST('/card_payment','Api\PaymentController@cardPayment');
+    Route::POST('fund_wallet','Api\WalletController@fundWallet');
+    Route::GET('wallet_transactions','Api\WalletController@index');
+    Route::resource('wallet', 'Api\WalletController');
 
     //transactions
     Route::get('/card_transactions', 'Api\CardTransactionController@index');

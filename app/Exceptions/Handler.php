@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use App\Collections\StatusCodes;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
@@ -50,6 +52,20 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        return parent::render($request, $exception);
+        // if ($exception){
+        //     // log the error
+        //     if ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+        //         $code = $exception->getStatusCode();
+        //       }else{
+        //           $code = StatusCodes::BAD_REQUEST;
+        //       }
+        //     return response()->json([
+        //         'status' => 'failed',
+        //         'status_code' => $code,
+        //         'message' => $exception->getMessage()
+        //     ], $code);
+        //     }
+        Log::info($exception->getMessage());
+            return parent::render($request, $exception);
     }
 }
