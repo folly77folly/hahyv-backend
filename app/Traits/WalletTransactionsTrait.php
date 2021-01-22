@@ -27,5 +27,25 @@ Trait WalletTransactionsTrait{
     
         });
     }
+
+    public function debitWallet($amount, $description){
+        $user = Auth()->user();
+        $walletBalance = $user->walletBalance;
+        DB::transaction(function ()  use ($walletBalance, $user, $amount, $description) {
+    
+            $user->walletBalance = $walletBalance + $amount;
+            $user->save();
+    
+            WalletTransaction::create([
+                'user_id' => $user->id,
+                'description'=> $description,
+                'previousWalletBalance' => $walletBalance,
+                'presentWalletBalance' => $walletBalance - $amount,
+                'amountCredited' => 0,
+                'amountDebited' => $amount,
+            ]);
+    
+        });
+    }
     
 }
