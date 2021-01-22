@@ -24,6 +24,9 @@ class Post extends Model
     protected $casts = [
         'images' =>'array',
         'videos' =>'array',
+        'disable_comment' => 'boolean',
+        'accept_tip' => 'boolean',
+        'is_paid' => 'boolean',
     ];
 
     public function user()

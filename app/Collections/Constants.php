@@ -13,4 +13,10 @@ class Constants{
 
     //pagination
     Const PAGE_LIMIT = 10;
+
+    //Currency
+    Const CURRENCY = 'usd';
+
+    //Stripe cents conversion
+    Const STRIPE_VALUE = 100;
 }

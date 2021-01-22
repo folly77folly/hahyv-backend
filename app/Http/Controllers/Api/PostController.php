@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Api\PostNotificationController;
+use Exception;
 
 class PostController extends Controller
 {
@@ -100,7 +101,22 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        try{
+
+            $_post = $post->load(array('Comment', 'user'))->load(['likes' => function($query){
+                return $query->where('liked', 1)->with('user');
+            }]);
+    
+            return response()->json([
+                "status" => "success",
+                "message" => "Post fetched successfully.",
+                "data" => $_post
+            ], StatusCodes::SUCCESS);
+        }catch(Exception  $e){
+            $commonFunction = new CommonFunctionsController;
+            $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
+        }
     }
 
     /**
