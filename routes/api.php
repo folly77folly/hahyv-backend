@@ -105,6 +105,14 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('wallet_transactions','Api\WalletController@index');
     Route::resource('wallet', 'Api\WalletController');
 
+    //subscription 
+    Route::POST('/subscribe_wallet', 'Api\SubscribeController@withWallet');
+    Route::POST('/subscribe_card', 'Api\SubscribeController@withCard');
+    
+    //fans
+    Route::resource('fans', Api\FanController::class);
+
+
     //transactions
     Route::get('/card_transactions', 'Api\CardTransactionController@index');
 });
