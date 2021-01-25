@@ -108,6 +108,10 @@ Route::group(['middleware'=>'auth:api'], function(){
     //subscription 
     Route::POST('/subscribe_wallet', 'Api\SubscribeController@withWallet');
     Route::POST('/subscribe_card', 'Api\SubscribeController@withCard');
+    
+    //fans
+    Route::resource('fans', Api\FanController::class);
+
 
     //transactions
     Route::get('/card_transactions', 'Api\CardTransactionController@index');
