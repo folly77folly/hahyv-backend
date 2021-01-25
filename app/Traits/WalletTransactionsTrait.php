@@ -1,7 +1,7 @@
 <?php
 namespace App\Traits;
 
-use App\models\Card;
+use App\Models\Card;
 use App\Collections\Constants;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
