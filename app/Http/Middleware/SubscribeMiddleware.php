@@ -49,6 +49,16 @@ class SubscribeMiddleware
                     'message'=>'This subscription is active cannot continue'
                 ],StatusCodes::BAD_REQUEST);
             }
+            // Can't subscribe to your own content
+                $user_id = Auth()->user()->id;
+                $creator_id = $request->creator_id;
+                if($user_id == $creator_id){
+                    return response()->json([
+                        'status' => 'failure',
+                        'status_code' => StatusCodes::BAD_REQUEST,
+                        'message'=>"Can't subscribe to your own content"
+                    ],StatusCodes::BAD_REQUEST);
+                }
         return $next($request);
     }
 }
