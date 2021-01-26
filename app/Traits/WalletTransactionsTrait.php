@@ -33,7 +33,7 @@ Trait WalletTransactionsTrait{
         $walletBalance = $user->walletBalance;
         DB::transaction(function ()  use ($walletBalance, $user, $amount, $description) {
     
-            $user->walletBalance = $walletBalance + $amount;
+            $user->walletBalance = $walletBalance - $amount;
             $user->save();
     
             WalletTransaction::create([
