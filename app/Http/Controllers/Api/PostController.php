@@ -370,5 +370,27 @@ class PostController extends Controller
             'post_type_id' => 1,
         ]);
     }
+
+    public function userPost(int $s_id)
+    {
+        $user = User::find($s_id);
+
+        
+        $post = Post::where('user_id', $user->id)->with(array('Comment', 'user'))
+        ->with(['polls'=>function($query){
+            return $query->with('votes');
+        }])
+        ->with(['likes' => function($query){
+            return $query->where('liked', 1)->with('user');
+        }])->latest()->paginate(Constants::PAGE_LIMIT);
+
+
+        return response()->json([
+            "status" => "success",
+            "message" => "All Posts fetched successfully.",
+            "data" => $post
+        ], StatusCodes::SUCCESS);
+    }
+
 }
 
