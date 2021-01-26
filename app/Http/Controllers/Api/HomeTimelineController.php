@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Follower;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
+use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
 
@@ -68,7 +69,12 @@ class HomeTimelineController extends Controller
                 return $query->with('user');
             }])->with(['likes' => function ($query) {
                 return $query->where('liked', 1)->with('user');
-            }])->with('user')->latest()->Paginate(Constants::PAGE_LIMIT);
+            }])->with(['user' => function($query){
+                return $query->with(['subscribers' => function($query){
+                    return $query->where('expiry', '>', Carbon::now());
+                }]);
+            }])
+            ->latest()->Paginate(Constants::PAGE_LIMIT);
         
         return $allPost;
     }

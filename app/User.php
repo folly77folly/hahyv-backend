@@ -2,13 +2,14 @@
 
 namespace App;
 
-use App\Models\Crypto;
 use App\Models\Card;
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\Crypto;
 use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\Preference;
+use App\Models\SubscribersList;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -132,5 +133,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function crypto() 
     {
         return $this->hasMany(Crypto::class);
+    }
+
+    //users subscribed to me
+    public function subscribers()
+    {
+        return $this->hasMany(SubscribersList::class, 'creator_id');
     }
 }
