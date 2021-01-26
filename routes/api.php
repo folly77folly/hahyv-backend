@@ -73,9 +73,10 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::POST('buytoken', 'Api\TokenController@buyToken');
     Route::PUT('tokenrate', 'Api\TokenController@tokenRate');
     
-    
+    //post
     Route::apiResource('post', Api\PostController::class);
 
+    //Card
     Route::apiResource('card', Api\CardController::class);
 
     //Comments
@@ -114,6 +115,9 @@ Route::group(['middleware'=>'auth:api'], function(){
 
 
     //transactions
-    Route::get('/card_transactions', 'Api\CardTransactionController@index');
+    Route::GET('/card_transactions', 'Api\CardTransactionController@index');
+
+    //Poll Vote
+    Route::POST('/vote', 'Api\PollVotingController@vote');
 });
 
