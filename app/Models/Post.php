@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\User;
 use App\Models\Like;
+use App\Models\Poll;
 use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,6 +25,7 @@ class Post extends Model
     protected $casts = [
         'images' =>'array',
         'videos' =>'array',
+        'poll' =>'array',
         'disable_comment' => 'boolean',
         'accept_tip' => 'boolean',
         'is_paid' => 'boolean',
@@ -42,5 +44,10 @@ class Post extends Model
     public function likes()
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function polls()
+    {
+        return $this->hasMany(Poll::class);
     }
 }

@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Api\PostNotificationController;
 use Exception;
+use Validator;
+use Illuminate\Support\Carbon;
 
 class PostController extends Controller
 {
@@ -39,7 +41,11 @@ class PostController extends Controller
         //     ], StatusCodes::SUCCESS);
         // }
         
-        $post = Post::where('user_id', $id)->with(array('Comment', 'user'))->with(['likes' => function($query){
+        $post = Post::where('user_id', $id)->with(array('Comment', 'user'))
+        ->with(['polls'=>function($query){
+            return $query->with('votes');
+        }])
+        ->with(['likes' => function($query){
             return $query->where('liked', 1)->with('user');
         }])->latest()->paginate(Constants::PAGE_LIMIT);
 
@@ -61,14 +67,27 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'description' => 'required_if:images,==,[]',
+        $validator = Validator::make($request->all(),[
+            'poll' => ['array'],
+            'poll_duration' => ['int'],
+            'images' => ['array'],
+            'videos' => ['array'],
+            
         ]);
-        
+
+        if ($validator->fails())
+        {
+            return response()->json([
+                "status" => "failure",
+                "message" => "Error.",
+                "data" => $validator->errors()
+            ], StatusCodes::CREATED);
+        }
+
         $id = Auth()->user()->id;
         $post = new Post;
 
-        $post->description = $request->input('description');
+        $post->description = $request->description;
         $post->images = $request->input('images');
         $post->videos = $request->input('videos');
         $post->user_id = $id;
@@ -83,13 +102,28 @@ class PostController extends Controller
         if($request->input('orientation') != null ){
             $post->orientation = $request->input('orientation');
         }
+        if($request->input('poll_duration') != null ){
+            $post->poll_expiry = Carbon::now()->addDays($request->input('poll_duration'));
+        }
 
         $post->save();
+        if (!empty($request->poll)){
+
+            $data = [];
+            foreach ($request->poll as $choice){
+                $the_choice = [
+                    'post_id' => $post->id,
+                    'choices' => $choice
+                ];
+                array_push($data, $the_choice);
+            }
+            $post->polls()->createMany($data);
+        }
 
         return response()->json([
             "status" => "success",
             "message" => "Post created successfully.",
-            "data" => Post::find($post->id)->load('user')
+            "data" => Post::find($post->id)->load('user')->load('polls')
         ], StatusCodes::CREATED);
     }
 
@@ -105,6 +139,8 @@ class PostController extends Controller
 
             $_post = $post->load(array('Comment', 'user'))->load(['likes' => function($query){
                 return $query->where('liked', 1)->with('user');
+            }])->load(['polls' => function($query){
+                return $query->with('votes');
             }]);
     
             return response()->json([
