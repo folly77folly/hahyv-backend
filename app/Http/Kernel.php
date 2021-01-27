@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'comment' => \App\Http\Middleware\CommentMiddleWare::class,
         'subscribe' => \App\Http\Middleware\SubscribeMiddleware::class,
         'wallet_balance' => \App\Http\Middleware\WalletBalance::class,
+        'poll_expiry' => \App\Http\Middleware\VotingExpiryMiddleware::class,
     ];
 }
