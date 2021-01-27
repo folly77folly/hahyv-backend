@@ -68,7 +68,7 @@ class CardController extends Controller
 
         if($noOfCards == 0) {
             return response()->json([
-                "status" => "failue",
+                "status" => "failure",
                 "message" => "You have not added a card yet."
             ], StatusCodes::NOT_FOUND);
         }
