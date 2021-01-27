@@ -73,6 +73,8 @@ class HomeTimelineController extends Controller
                 return $query->with(['subscribers' => function($query){
                     return $query->where('expiry', '>', Carbon::now());
                 }]);
+            }])->with(['polls'=>function($query){
+                return $query->with('votes');
             }])
             ->latest()->Paginate(Constants::PAGE_LIMIT);
         

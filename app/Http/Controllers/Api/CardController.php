@@ -76,7 +76,7 @@ class CardController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "Cards retrieved successfully.",
-            "cards" => $cards->load('user')
+            "data" => $cards->load('user')
         ], StatusCodes::SUCCESS);
         
     }
@@ -113,7 +113,7 @@ class CardController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "Cards updated successfully.",
-            "cards" => $card->load('user')
+            "data" => $card->load('user')
         ], StatusCodes::SUCCESS);
     }
 
@@ -156,7 +156,7 @@ class CardController extends Controller
         return response()->json([
             "status" => "success",
             "message" => "Card retrieved successfully.",
-            "card" =>$card
+            "data" =>$card
         ], StatusCodes::SUCCESS);
     }
 

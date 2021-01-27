@@ -119,6 +119,6 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('/card_transactions', 'Api\CardTransactionController@index');
 
     //Poll Vote
-    Route::POST('/vote', 'Api\PollVotingController@vote');
+    Route::POST('/vote', 'Api\PollVotingController@vote')->middleware(['poll_expiry']);
 });
 
