@@ -64,7 +64,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'emailverifier' => \App\Http\Middleware\EmailVerifiedMiddleWare::class,
-        'comment' => \App\Http\Middleware\CommentMiddleWare::class,
+        'comment' => \App\Http\Middleware\CommentMiddleware::class,
         'subscribe' => \App\Http\Middleware\SubscribeMiddleware::class,
         'wallet_balance' => \App\Http\Middleware\WalletBalance::class,
         'poll_expiry' => \App\Http\Middleware\VotingExpiryMiddleware::class,
