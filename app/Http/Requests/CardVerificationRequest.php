@@ -28,6 +28,7 @@ class CardVerificationRequest extends FormRequest
     public function rules()
     {
         return [
+            'account_name' => ['required','string'],
             'card_number' => ['required', 'unique:cards,cardNo', new CardNumber],
             'expiration_year' => ['required', new CardExpirationYear($this->get('expiration_month'))],
             'expiration_month' => ['required', new CardExpirationMonth($this->get('expiration_year'))],

@@ -15,7 +15,12 @@ class Card extends Model
         'cardNo',
         'cardExpiringMonth',
         'cardExpiringYear',
-        'cardCVV'
+        'cardCVV',
+        'account_name'
+    ];
+
+    protected $casts = [
+        'default' => 'boolean'
     ];
 
     public function user()
