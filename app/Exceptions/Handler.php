@@ -52,19 +52,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($exception){
-            // log the error
-            if ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
-                $code = $exception->getStatusCode();
-              }else{
-                  $code = StatusCodes::BAD_REQUEST;
-              }
-            return response()->json([
-                'status' => 'failed',
-                'status_code' => $code,
-                'message' => $exception->getMessage()
-            ], $code);
-            }
+        // if ($exception){
+        //     // log the error
+        //     if ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+        //         $code = $exception->getStatusCode();
+        //       }else{
+        //           $code = StatusCodes::BAD_REQUEST;
+        //       }
+        //     return response()->json([
+        //         'status' => 'failed',
+        //         'status_code' => $code,
+        //         'message' => $exception->getMessage()
+        //     ], $code);
+        //     }
         Log::info($exception->getMessage());
             return parent::render($request, $exception);
     }

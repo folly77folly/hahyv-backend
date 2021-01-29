@@ -78,6 +78,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::apiResource('post', Api\PostController::class);
 
     //Card
+    Route::POST('card/default', 'Api\CardController@default');
     Route::apiResource('card', Api\CardController::class);
 
     //Comments
@@ -110,6 +111,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     //subscription 
     Route::POST('/subscribe_wallet', 'Api\SubscribeController@withWallet');
     Route::POST('/subscribe_card', 'Api\SubscribeController@withCard');
+    Route::POST('/tip', 'Api\SubscribeController@tipWithWallet');
+    
     
     //fans
     Route::resource('fans', Api\FanController::class);

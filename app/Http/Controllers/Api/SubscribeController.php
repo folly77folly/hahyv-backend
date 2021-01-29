@@ -9,6 +9,7 @@ use App\Collections\Constants;
 use App\Models\SubscribersList;
 use App\Collections\StatusCodes;
 use App\Traits\CardPaymentTrait;
+use App\Http\Requests\TipRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WalletRequest;
 use App\Http\Requests\SubscribeRequest;
@@ -56,10 +57,13 @@ class SubscribeController extends Controller
         $validatedData = $request->validated();
         $creator_id = $validatedData['creator_id'];
         $user = User::find($creator_id);
+        $subscriber_username = Auth()->user()->username;
         $description = "Subscribed to $user->username content";
+        $creator_description = "$subscriber_username Subscribed to your content";
         $amount =$user->subscription_amount;
 
-        $this->debitWallet($amount, $description);
+        $this->debitWallet(Auth()->user()->id,$amount, $description);
+        $this->creditWallet($creator_id,$amount, $creator_description);
 
 
         $this->store([
@@ -103,5 +107,34 @@ class SubscribeController extends Controller
             'broadcast_id' => $id_other_user,
             'post_type_id' => Constants::NOTIFICATION["SUBSCRIBED"]
         ]);
+    }
+
+    public function tipWithWallet(TipRequest $request){
+        $validatedData = $request->validated();
+        
+        $creator_id = $validatedData['creator_id'];
+        $amount = $validatedData['amount'];
+        $user = User::find($creator_id);
+        $subscriber_username = Auth()->user()->username;
+        $description = "Tip sent to $user->username for free";
+        $creator_description = "$subscriber_username tipped your post";
+
+        $this->debitWallet(Auth()->user()->id,$amount, $description);
+        $this->creditWallet($creator_id,$amount, $creator_description);
+
+        $data = [
+            'user_id' =>Auth()->user()->id,
+            'creator_id' => $creator_id
+            ];
+        $fan = Fan::firstOrCreate($data);
+
+        $this->notify(Auth()->user()->username, $creator_id, 'tipped');
+
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "tip successfully made.",
+        ],StatusCodes::SUCCESS);
+
     }
 }

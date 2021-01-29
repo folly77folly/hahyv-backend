@@ -111,7 +111,7 @@ class WalletController extends Controller
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $response['result']);
             return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
-        $this->creditWallet($amount, $description);
+        $this->creditWallet(Auth()->user()->id, $amount, $description);
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,

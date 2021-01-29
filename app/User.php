@@ -75,6 +75,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_monetize' => 'boolean',
+        'is_active' => 'boolean',
+        'is_reported' => 'boolean',
+        'theme' => 'boolean',
     ];
 
     public function sendPasswordResetNotification($token)

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\CardVerificationRequest;
 use App\Http\Requests\CardVerifyRequest;
 use App\User;
+use Validator;
 
 
 class CardController extends Controller
@@ -48,6 +49,7 @@ class CardController extends Controller
         $newCard->cardExpiringMonth = $validatedData["expiration_month"];
         $newCard->cardExpiringYear = $validatedData["expiration_year"];
         $newCard->cardCVV = $validatedData["cvc"];
+        $newCard->account_name = $validatedData["account_name"];
         $newCard->user_id = $user_id;
 
         $newCard->save();
@@ -280,5 +282,38 @@ class CardController extends Controller
         }
 
         return "unknown"; //unknown for this system
+    }
+
+    public function default(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'card_id' => 'required|exists:cards,id|int'
+        ]);
+        if ($validator->fails()){
+            return response()->json([
+                'status' => 'failure',
+                'status_code' => StatusCodes::BAD_REQUEST,
+                'message' => $validator->errors()
+            ],StatusCodes::BAD_REQUEST);
+        }
+        $user_id = Auth()->user()->id;
+
+        $cards = Card::where('user_id', $user_id)->get();
+        foreach ($cards as $card){
+                $update_card = Card::find($card->id);
+                if($card->id == $request->card_id){
+                    $update_card->default = 1;
+                }else{
+                    $update_card->default = 0;
+                }
+                $update_card->save();
+        }
+        $setCard = Card::where('user_id', $user_id)->where('default', true)->first();
+        return response()->json([
+            'status' => 'success',
+            'status_code' => StatusCodes::SUCCESS,
+            'message' => 'Default card set successfully',
+            'data' => $setCard
+        ],StatusCodes::SUCCESS);
     }
 }
