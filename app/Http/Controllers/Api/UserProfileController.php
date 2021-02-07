@@ -43,6 +43,7 @@ class UserProfileController extends Controller
 
         $user = User::Where('id', $id)
             ->select(
+                'id',
                 'name',
                 'username',
                 'email',
