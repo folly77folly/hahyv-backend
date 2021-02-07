@@ -28,7 +28,7 @@ class SubscribeMiddleware
                 'message'=>'This Profile is not Monetized'
             ],StatusCodes::BAD_REQUEST);
         }
-        // subscriber/creator subscription ampount is not set
+        // subscriber/creator subscription amount is not set
         if($user->subscription_amount == 0){
             return response()->json([
                 'status' => 'failure',

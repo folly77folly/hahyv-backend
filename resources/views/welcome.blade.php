@@ -120,7 +120,8 @@
 
                 <div class="links">
                     <a href="https://documenter.getpostman.com/view/8806253/TVsrF97w">API-Docs1</a>
-                    <a href="https://documenter.getpostman.com/view/8806253/TVzPnJpe#e86af4f4-d855-4b14-b57b-a140a1cbfc15">API-Docs2</a>
+                    <a href="https://documenter.getpostman.com/view/8806253/TW74jR5o">API-Docs2</a>
+                    {{-- <a href="https://documenter.getpostman.com/view/8806253/TVzPnJpe#e86af4f4-d855-4b14-b57b-a140a1cbfc15">API-Docs2</a> --}}
                 </div>
             </div>
         </div>

@@ -123,5 +123,9 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     //Poll Vote
     Route::POST('/vote', 'Api\PollVotingController@vote')->middleware(['poll_expiry']);
+
+    //messages
+    Route::POST('/history', 'Api\MessageController@history');
+    Route::apiResource('message', Api\MessageController::class);
 });
 
