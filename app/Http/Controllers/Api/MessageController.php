@@ -28,19 +28,19 @@ class MessageController extends Controller
     public function index()
     {
         //
-        $id = Auth()->user()->id;
-        $conversation_one = Conversation::where([
-            'user_one' => $id,
-            ])->get('id');
-        $conversation_two = Conversation::where([
-            'user_two' => $id,
-            ])->get('id');
-        $conversation_three = Conversation::whereOr([
-            'user_one' => $id,
-            'user_two' => $id,
-            ])->with('messages')->get();
-        print($conversation_three);
-        // $messages = Message::where('sender_id', $id)->with('recipient')->latest()->get();
+        // $id = Auth()->user()->id;
+        // $conversation_one = Conversation::where([
+        //     'user_one' => $id,
+        //     ])->get('id');
+        // $conversation_two = Conversation::where([
+        //     'user_two' => $id,
+        //     ])->get('id');
+        // $conversation_three = Conversation::whereOr([
+        //     'user_one' => $id,
+        //     'user_two' => $id,
+        //     ])->with('messages')->get();
+        // print($conversation_three);
+        $messages = Message::where('sender_id', $id)->with('recipient')->latest()->get();
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
