@@ -7,6 +7,7 @@ use App\Events\MessageEvent;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HistoryRequest;
 use App\Http\Requests\MessageRequest;
@@ -29,23 +30,27 @@ class MessageController extends Controller
     {
         //
         $id = Auth()->user()->id;
-        // $conversation_one = Conversation::where([
-        //     'user_one' => $id,
-        //     ])->get('id');
-        // $conversation_two = Conversation::where([
-        //     'user_two' => $id,
-        //     ])->get('id');
-        // $conversation_three = Conversation::whereOr([
-        //     'user_one' => $id,
-        //     'user_two' => $id,
-        //     ])->with('messages')->get();
-        // print($conversation_three);
-        $messages = Message::where('sender_id', $id)->with('recipient')->latest()->get();
+        $conversation_one = Conversation::where([
+            'user_one' => $id,
+            ])->get('id');
+        $conversation_two = Conversation::whereOr([
+            'user_one' => $id,
+            'user_two' => $id,
+            ])->get('id');
+        $conversation_three = Conversation::whereOr([
+            'user_one' => $id,
+            'user_two' => $id,
+            ])
+
+            ->with(['messages' => function($query){
+                 $query->orderBy('created_at', 'asc');
+            }])->get();
+        print($conversation_two);
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
             'message' => 'messages retrieved',
-            'data' => $messages
+            'data' => $conversation_three
         ],StatusCodes::SUCCESS);  
     }
 
@@ -151,6 +156,7 @@ class MessageController extends Controller
         }else{
             $conversation_id = $conversation_one->id;
         }
+        Log::alert($conversation_id);
         $messages = Message::where([
             'conversation_id'=> $conversation_id,
             ])->with('recipient')->latest()->get();
