@@ -134,10 +134,7 @@ class MessageController extends Controller
                 'user_two' => Auth()->user()->id,
                 ])->first();
 
-                if($conversation_two->id){
-
-                    $conversation_id = $conversation_two->id;
-                }else{
+                if(!$conversation_two){
                     //create_conversation
                     return response()->json([
                         'status' => 'success',
@@ -146,6 +143,9 @@ class MessageController extends Controller
                         'data' => []
                     ],StatusCodes::SUCCESS); 
 
+                    
+                }else{
+                    $conversation_id = $conversation_two->id;
                 }
 
         }else{
