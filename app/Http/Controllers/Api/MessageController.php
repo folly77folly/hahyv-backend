@@ -42,7 +42,7 @@ class MessageController extends Controller
         //         $query->latest()->first();
         //     })->get();
         // print($conversation_three);
-        $messages = Conversation::where('sender_id', $id)->with('recipient')->latest()->get();
+        $messages = Message::where('sender_id', $id)->with('recipient')->latest()->get();
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
