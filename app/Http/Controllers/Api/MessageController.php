@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Message;
+use App\Models\Conversation;
 use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
@@ -55,9 +56,38 @@ class MessageController extends Controller
     public function store(MessageRequest $request)
     {
         //
+        $conversation_id = "";
         $id = Auth()->user()->id;
         $validatedData = $request->validated();
         $validatedData['sender_id'] = Auth()->user()->id;
+        $conversation_one = Conversation::where([
+            'user_one' => $id,
+            'user_two' => $request->recipient_id,
+            ])->first();
+        if (!$conversation_one){
+
+            $conversation_two = Conversation::where([
+                'user_one' => $request->recipient_id,
+                'user_two' => $id,
+                ])->first();
+
+                if(!$conversation_two){
+
+                    //create_conversation
+                    $data = [
+                        'user_one' => $id,
+                        'user_two' => $request->recipient_id,
+                    ];
+                    $conversation = Conversation::create($data);
+                    $conversation_id = $conversation->id;
+                }else{
+                    $conversation_id = $conversation_two->id;
+                }
+        }else{
+            $conversation_id = $conversation_one->id;
+        }
+        $validatedData['conversation_id'] = $conversation_id;
+        
         $message = Message::create($validatedData);
         if ($message){
             $this->debitToken($id, 1, $request->message);
@@ -78,11 +108,38 @@ class MessageController extends Controller
      */
     public function show($id)
     {
-        //
-        
+        //\
+        $conversation_id = "";
+        $conversation_one = Conversation::where([
+            'user_one' => Auth()->user()->id,
+            'user_two' => $id,
+            ])->first();
+        if(!$conversation_one){
+
+            $conversation_two = Conversation::where([
+                'user_one' => $id,
+                'user_two' => Auth()->user()->id,
+                ])->first();
+
+                if($conversation_two){
+
+                    $conversation_id = $conversation_two->id;
+                }else{
+                    //create_conversation
+                    return response()->json([
+                        'status' => 'success',
+                        'status_code' => StatusCodes::SUCCESS,
+                        'message' => 'messages retrieved',
+                        'data' => []
+                    ],StatusCodes::SUCCESS); 
+
+                }
+
+        }else{
+            $conversation_id = $conversation_one->id;
+        }
         $messages = Message::where([
-            'sender_id'=> Auth()->user()->id,
-            'recipient_id'=> $id
+            'conversation_id'=> $conversation_id,
             ])->with('recipient')->latest()->get();
         return response()->json([
             'status' => 'success',
@@ -128,7 +185,7 @@ class MessageController extends Controller
 
     public function history(HistoryRequest $request){
         $validatedData = $request->validated();
-        
+
         $messages = Message::where([
             'sender_id'=> Auth()->user()->id,
             'recipient_id'=> $request->recipient_id
