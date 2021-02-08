@@ -45,7 +45,6 @@ class MessageController extends Controller
             ->with(['messages' => function($query){
                  $query->orderBy('created_at', 'asc');
             }])->get();
-        print($conversation_two);
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
