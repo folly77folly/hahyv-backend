@@ -162,7 +162,7 @@ class MessageController extends Controller
         Log::alert($conversation_id);
         $messages = Message::where([
             'conversation_id'=> $conversation_id,
-            ])->with('recipient')->latest()->get();
+            ])->with(['recipient', 'sender'])->latest()->get();
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
