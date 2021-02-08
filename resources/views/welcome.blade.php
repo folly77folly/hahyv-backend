@@ -95,6 +95,12 @@
             pchannel.bind('App\\Events\\PostNotificationEvent', function(data) {
               alert(JSON.stringify(data));
             });
+
+
+            var pchannelChat = pusher.subscribe('private-chat-1');
+            pchannelChat.bind('App\\Events\\MessageEvent', function(data) {
+              alert(JSON.stringify(data));
+            });
           </script>
     </head>
     <body>

@@ -2,15 +2,16 @@
 
 namespace App\Events;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class MessageEvent implements shouldBroadCast
+class MessageEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $message;
@@ -32,8 +33,9 @@ class MessageEvent implements shouldBroadCast
      */
     public function broadcastOn()
     {
-        $sender_id = Auth()->user()->id;
-        return new PrivateChannel('chat-'.$sender_id.'-');
+        $conversation_id = $this->message->conversation_id;
+        Log::debug ($this->message);
+        return new PrivateChannel('chat-'.$conversation_id);
     }
 
     public function broadcastWith(){

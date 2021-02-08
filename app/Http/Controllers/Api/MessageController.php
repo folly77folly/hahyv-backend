@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Message;
+use App\Events\MessageEvent;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
@@ -28,13 +29,26 @@ class MessageController extends Controller
     {
         //
         $id = Auth()->user()->id;
-        $messages = Message::where('sender_id', $id)->with('recipient')->latest()->get();
-        return response()->json([
-            'status' => 'success',
-            'status_code' => StatusCodes::SUCCESS,
-            'message' => 'messages retrieved',
-            'data' => $messages
-        ],StatusCodes::SUCCESS);  
+        $conversation_one = Conversation::where([
+            'user_one' => $id,
+            ])->get('id');
+        $conversation_two = Conversation::where([
+            'user_two' => $id,
+            ])->get('id');
+        $conversation_three = Conversation::whereOr([
+            'user_one' => $id,
+            'user_two' => $id,
+            ])->with('messages',function($query){
+                $query->latest()->first();
+            })->get();
+        print($conversation_three);
+        // $messages = Conversation::where('sender_id', $id)->with('recipient')->latest()->get();
+        // return response()->json([
+        //     'status' => 'success',
+        //     'status_code' => StatusCodes::SUCCESS,
+        //     'message' => 'messages retrieved',
+        //     'data' => $messages
+        // ],StatusCodes::SUCCESS);  
     }
 
     /**
@@ -92,6 +106,7 @@ class MessageController extends Controller
         if ($message){
             $this->debitToken($id, 1, $request->message);
         }
+        broadcast(new MessageEvent($message))->toOthers();
     return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::CREATED,
