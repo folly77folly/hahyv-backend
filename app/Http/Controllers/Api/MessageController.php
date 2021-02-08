@@ -112,12 +112,13 @@ class MessageController extends Controller
         if ($message){
             $this->debitToken($id, 1, $request->message);
         }
-        broadcast(new MessageEvent($message))->toOthers();
+        $sentMessage = Message::find($message->id)->load(['recipient', 'sender']);
+        broadcast(new MessageEvent($sentMessage))->toOthers();
     return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::CREATED,
             'message' => 'message sent successfully',
-            'data' => Message::find($message->id)->load('recipient')
+            'data' => $sentMessage
         ],StatusCodes::CREATED);    
     }
 
