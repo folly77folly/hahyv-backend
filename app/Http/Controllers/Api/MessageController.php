@@ -29,20 +29,18 @@ class MessageController extends Controller
     {
         //
         $id = Auth()->user()->id;
-        // $conversation_one = Conversation::where([
-        //     'user_one' => $id,
-        //     ])->get('id');
-        // $conversation_two = Conversation::where([
-        //     'user_two' => $id,
-        //     ])->get('id');
-        // $conversation_three = Conversation::whereOr([
-        //     'user_one' => $id,
-        //     'user_two' => $id,
-        //     ])->with('messages',function($query){
-        //         $query->latest()->first();
-        //     })->get();
-        // print($conversation_three);
-        $messages = Message::where('sender_id', $id)->with('recipient')->latest()->get();
+        $conversation_one = Conversation::where([
+            'user_one' => $id,
+            ])->get('id');
+        $conversation_two = Conversation::where([
+            'user_two' => $id,
+            ])->get('id');
+        $conversation_three = Conversation::whereOr([
+            'user_one' => $id,
+            'user_two' => $id,
+            ])->with('messages')->get();
+        print($conversation_three);
+        // $messages = Message::where('sender_id', $id)->with('recipient')->latest()->get();
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
@@ -136,7 +134,7 @@ class MessageController extends Controller
                 'user_two' => Auth()->user()->id,
                 ])->first();
 
-                if($conversation_two){
+                if($conversation_two->id){
 
                     $conversation_id = $conversation_two->id;
                 }else{

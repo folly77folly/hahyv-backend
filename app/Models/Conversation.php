@@ -10,7 +10,8 @@ class Conversation extends Model
     //
     protected $guarded =[];
 
-    public function messages (){
+    public function messages()
+    {
         $this->hasMany(Message::class);
     }
 }
