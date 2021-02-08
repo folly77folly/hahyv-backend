@@ -30,26 +30,30 @@ class MessageController extends Controller
     {
         //
         $id = Auth()->user()->id;
-        $conversation_one = Conversation::where([
-            'user_one' => $id,
-            ])->get('id');
-        $conversation_two = Conversation::whereOr([
-            'user_one' => $id,
-            'user_two' => $id,
-            ])->get('id');
-        $conversation_three = Conversation::whereOr([
-            'user_one' => $id,
-            'user_two' => $id,
-            ])
+        // $conversation_one = Conversation::where([
+        //     'user_one' => $id,
+        //     ])->get('id');
+        // $conversation_two = Conversation::whereOr([
+        //     'user_one' => $id,
+        //     'user_two' => $id,
+        //     ])->get('id');
+        // $conversation_three = Conversation::whereOr([
+        //     'user_one' => $id,
+        //     'user_two' => $id,
+        //     ])
 
-            ->with(['messages' => function($query){
-                 $query->orderBy('created_at', 'asc');
-            }])->get();
+        //     ->with(['messages' => function($query){
+        //          $query->orderBy('created_at', 'asc');
+        //     }])->get();
+        $messages = Message::whereOr([
+            'sender_id'=> $id,
+            'recipient_id'=> $id
+            ])->with(['recipient', 'sender'])->orderBy('created_at', 'asc')->get();
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
             'message' => 'messages retrieved',
-            'data' => $conversation_three
+            'data' => $messages
         ],StatusCodes::SUCCESS);  
     }
 
