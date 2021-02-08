@@ -28,7 +28,7 @@ class MessageController extends Controller
     public function index()
     {
         //
-        // $id = Auth()->user()->id;
+        $id = Auth()->user()->id;
         // $conversation_one = Conversation::where([
         //     'user_one' => $id,
         //     ])->get('id');
