@@ -8,17 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Message extends Model
 {
     //
-    protected $fillable = [
-        'sender_id',
-        'recipient_id',
-        'message'
-    ];
+    protected $guarded = [];
 
     public function sender(){
-        return $this->hasMany(User::class, 'id');
+        return $this->belongsTo(User::class, 'sender_id');
     }
 
     public function recipient(){
-        return $this->hasMany(User::class, 'id');
+        return $this->belongsTo(User::class, 'recipient_id');
     }
 }
