@@ -34,8 +34,10 @@ class MessageEvent implements ShouldBroadcast
     public function broadcastOn()
     {
         $conversation_id = $this->message->conversation_id;
+        $id = Auth()->user()->id;
         Log::debug ($this->message);
-        return new PrivateChannel('chat-'.$conversation_id);
+        // return new PrivateChannel('chat-'.$conversation_id);
+        return new PrivateChannel('chat-'.$id);
     }
 
     public function broadcastWith(){
