@@ -19,4 +19,10 @@ class Constants{
 
     //Stripe cents conversion
     Const STRIPE_VALUE = 100;
+
+    //Transaction Type
+    Const TRANSACTION = [
+        "CREDIT" => 1,
+        "DEBIT" => 2,
+        ];
 }
