@@ -14,12 +14,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\WalletRequest;
 use App\Http\Requests\SubscribeRequest;
 use App\Traits\WalletTransactionsTrait;
+use App\Traits\EarningTransactionsTrait;
 use App\Http\Controllers\Api\PostNotificationController;
 
 class SubscribeController extends Controller
 {
     //
-    use CardPaymentTrait, WalletTransactionsTrait;
+    use CardPaymentTrait, WalletTransactionsTrait, EarningTransactionsTrait;
 
     public function __construct(){
         $this->middleware('subscribe', ['only'=>['withCard', 'withWallet']]);
@@ -29,7 +30,9 @@ class SubscribeController extends Controller
         $validatedData = $request->validated();
         $creator_id = $validatedData['creator_id'];
         $card_id = $validatedData['card_id'];
+        $subscriber_username = Auth()->user()->username;
         $user = User::find($creator_id);
+        $creator_description = "$subscriber_username Subscribed to your content";
         $description = "Subscribed to $user->username content";
         $validatedData['description'] = $description;
         $validatedData['card_id'] = $card_id;
@@ -42,6 +45,10 @@ class SubscribeController extends Controller
             $array_json_return =$commonFunction->api_default_fail_response(__function__, $response['result']);
             return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
         }
+
+        //crediting the creator wallet
+        $this->creditEarning($creator_id, $validatedData['amount'], $creator_description);
+
         $this->store([
             'user_id' =>Auth()->user()->id,
              'creator_id' => $creator_id
@@ -63,7 +70,8 @@ class SubscribeController extends Controller
         $amount =$user->subscription_amount;
 
         $this->debitWallet(Auth()->user()->id,$amount, $description);
-        $this->creditWallet($creator_id,$amount, $creator_description);
+        //crediting the creator wallet
+        $this->creditEarning($creator_id,$amount, $creator_description);
 
 
         $this->store([
@@ -120,7 +128,7 @@ class SubscribeController extends Controller
         $creator_description = "$subscriber_username tipped your post";
 
         $this->debitWallet(Auth()->user()->id,$amount, $description);
-        $this->creditWallet($creator_id,$amount, $creator_description);
+        $this->creditEarning($creator_id,$amount, $creator_description);
 
         $data = [
             'user_id' =>Auth()->user()->id,
