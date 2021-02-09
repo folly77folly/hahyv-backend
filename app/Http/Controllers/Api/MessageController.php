@@ -220,4 +220,32 @@ class MessageController extends Controller
             'data' => $messages
         ],StatusCodes::SUCCESS); 
     }
+
+    public function getConversation(int $id){
+        $conversation_one ="";
+        $conversation_one = Conversation::where([
+            'user_one' => Auth()->user()->id,
+            'user_two' => $id,
+            ])->select('id as conversation_id')->first();;
+        if(!$conversation_one){
+            $conversation_one = Conversation::where([
+                'user_one' => $id,
+                'user_two' => Auth()->user()->id,
+                ])->select('id as conversation_id')->first();
+
+                if(!$conversation_one){
+                    return response()->json([
+                        'status' => 'failure',
+                        'status_code' => StatusCodes::BAD_REQUEST,
+                        'message' => 'not found',
+                    ],StatusCodes::BAD_REQUEST); 
+                }
+            }
+        return response()->json([
+            'status' => 'success',
+            'status_code' => StatusCodes::SUCCESS,
+            'message' => 'conversation retrieved',
+            'data' => $conversation_one
+        ],StatusCodes::SUCCESS); 
+    }
 }
