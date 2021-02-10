@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Models\SubscribersList;
 use App\Collections\StatusCodes;
+use App\Models\SubscriptionRate;
 use App\Traits\CardPaymentTrait;
 use App\Http\Requests\TipRequest;
 use App\Http\Controllers\Controller;
@@ -32,11 +33,12 @@ class SubscribeController extends Controller
         $card_id = $validatedData['card_id'];
         $subscriber_username = Auth()->user()->username;
         $user = User::find($creator_id);
+        $subscription = SubscriptionRate::find($validatedData['subscription_id']);
         $creator_description = "$subscriber_username Subscribed to your content";
         $description = "Subscribed to $user->username content";
         $validatedData['description'] = $description;
         $validatedData['card_id'] = $card_id;
-        $validatedData['amount'] = $user->subscription_amount;
+        $validatedData['amount'] = $subscription->amount;
         $stripe = new \Stripe\StripeClient("sk_test_51I8w9TFSTnpmya5shzFVTfBqBl5hefx32VScM5aZJfSOysNrnhMF9qtcKtnywOqbvHpRd5F6ZprE04wmYll0Cxyl00hzXI0HH5");
         $response = $this->chargeCard($validatedData, $stripe);
 
@@ -64,10 +66,11 @@ class SubscribeController extends Controller
         $validatedData = $request->validated();
         $creator_id = $validatedData['creator_id'];
         $user = User::find($creator_id);
+        $subscription = SubscriptionRate::find($validatedData['subscription_id']);
         $subscriber_username = Auth()->user()->username;
         $description = "Subscribed to $user->username content";
         $creator_description = "$subscriber_username Subscribed to your content";
-        $amount =$user->subscription_amount;
+        $amount =$subscription->amount;
 
         $this->debitWallet(Auth()->user()->id,$amount, $description);
         //crediting the creator wallet

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class WalletRequest extends FormRequest
+class SubscriptionTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,9 @@ class WalletRequest extends FormRequest
     public function rules()
     {
         return [
-            'creator_id' => ['required', 'exists:users,id'],
-            'subscription_id' => ['required', 'exists:subscription_rates,id']
+            //
+            'name' => ['required', 'string'],
+            'period' => ['required', 'int']
         ];
     }
 }
