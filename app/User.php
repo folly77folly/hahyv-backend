@@ -9,9 +9,12 @@ use App\Models\Crypto;
 use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\Preference;
+use App\Models\MonetizeBenefit;
 use App\Models\SubscribersList;
+use App\Models\SubscriptionRate;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
+use App\Models\SubscriptionBenefit;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\PasswordNotification;
 use App\Notifications\EmailVerifyNotification;
@@ -142,5 +145,23 @@ class User extends Authenticatable implements MustVerifyEmail
     public function subscribers()
     {
         return $this->hasMany(SubscribersList::class, 'creator_id');
+    }
+
+    // monetization benefits
+    public function monetizeBenefits()
+    {
+        return $this->hasMany(MonetizeBenefit::class,);
+    }
+
+    // subscription benefits
+    public function subscriptionBenefits()
+    {
+        return $this->hasMany(SubscriptionBenefit::class,);
+    }
+
+    // subscription rates
+    public function subscriptionRates()
+    {
+        return $this->hasMany(SubscriptionRate::class,);
     }
 }

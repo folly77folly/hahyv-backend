@@ -128,5 +128,20 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::POST('/history', 'Api\MessageController@history');
     Route::GET('/conversation/{id}', 'Api\MessageController@getConversation');
     Route::apiResource('message', Api\MessageController::class);
+
+    //earnings
+    Route::apiResource('earnings', Api\EarningController::class);
+
+    //subscription types 
+    Route::apiResource('subscription_type', Api\SubscriptionTypeController::class);
+
+    //subscription rate 
+    Route::apiResource('subscription_rate', Api\SubscriptionRateController::class);
+
+    //Monetize Benefits 
+    Route::apiResource('monetize_benefits', Api\MonetizeBenefitController::class);
+
+    //Subscription Benefits 
+    Route::apiResource('subscription_benefits', Api\SubscriptionBenefitController::class);
 });
 

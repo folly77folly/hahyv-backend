@@ -6,6 +6,7 @@ use Closure;
 use App\User;
 use App\Models\SubscribersList;
 use App\Collections\StatusCodes;
+use App\Models\SubscriptionRate;
 use Illuminate\Support\Facades\Log;
 
 class SubscribeMiddleware
@@ -29,12 +30,16 @@ class SubscribeMiddleware
             ],StatusCodes::BAD_REQUEST);
         }
         // subscriber/creator subscription amount is not set
-        if($user->subscription_amount == 0){
-            return response()->json([
-                'status' => 'failure',
-                'status_code' => StatusCodes::BAD_REQUEST,
-                'message'=>'This user subscription amount is not set'
-            ],StatusCodes::BAD_REQUEST);
+        $subscription = SubscriptionRate::find($request->subscription_id);
+        if($subscription){
+
+            if($subscription->amount == 0){
+                return response()->json([
+                    'status' => 'failure',
+                    'status_code' => StatusCodes::BAD_REQUEST,
+                    'message'=>'This user subscription amount is not set'
+                ],StatusCodes::BAD_REQUEST);
+            }
         }
         // checking is subscription exists
         $subscription = SubscribersList::where([

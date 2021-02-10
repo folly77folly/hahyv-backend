@@ -70,7 +70,14 @@ class UserProfileController extends Controller
                 'created_at',
                 'updated_at'
             )
-            ->first();
+            ->with([
+                'monetizeBenefits:user_id,benefits', 
+                'subscriptionBenefits:user_id,benefits', 
+                ])->with([
+                    'subscriptionRates' => function($query){
+                        $query->with('subscription:id,name,period');
+                    }
+                ])->first();
         // $user = User::Where('id', $id)->first();
 
         if (!$user) {
