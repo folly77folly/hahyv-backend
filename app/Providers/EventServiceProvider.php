@@ -24,6 +24,14 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\LogVerifiedUser',
         ],
 
+        UrlShortenerEvent::class => [
+            'App\Listeners\ShortenUrl', 
+        ],
+        
+        'App\Events\ReferralEvent' => [
+            'App\Listeners\Referral',  
+        ],
+
         Following::class => [
             AddFollowing::class,
         ],

@@ -62,13 +62,15 @@ class UserProfileController extends Controller
                 'postCount',
                 'walletBalance',
                 'tokenBalance',
+                'earningBalance',
                 'subscription_plan',
                 'is_monetize',
                 'subscription_amount',
                 'cover_image_url',
                 'location',
                 'created_at',
-                'updated_at'
+                'updated_at',
+                'theme',
             )
             ->with([
                 'monetizeBenefits:user_id,benefits', 

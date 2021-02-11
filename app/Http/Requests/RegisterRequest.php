@@ -44,6 +44,7 @@ class RegisterRequest extends FormRequest
             "otp"=> "string",
             "provider_name" => '',
             "provider_id" => '',
+            "ip_address" => 'nullable',
         ];
     }
 }

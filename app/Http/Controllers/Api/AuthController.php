@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Events\ReferralEvent;
 use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
+use App\Providers\UrlShortenerEvent;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Auth\Events\Registered;
@@ -15,6 +18,7 @@ use App\Http\Requests\ChangePasswordRequest;
 
 class AuthController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -129,6 +133,9 @@ class AuthController extends Controller
 
         $validatedData["password"] = Hash::make($request["password"]);
         $validatedData["otp"] = OTP();
+        $token = Str::uuid()->toString();
+        $validatedData["rf_token"] = $token;
+        $url = env('BASE_URL','http://127.0.0.1:3001').'/signup/?rf_token='.$token;
         $user = User::create($validatedData);
         
         if (!empty($validatedData["provider_name"])){
@@ -136,7 +143,12 @@ class AuthController extends Controller
             $user->save();
         }
         event(new Registered($user));
+        event(new UrlShortenerEvent($user, $url));
         $accessToken = $user->createToken('authToken')->accessToken;
+
+        if (!empty($request->referral_id)){
+            event(new ReferralEvent($user->id, $request->referral_id));
+        }
         return response()->json([
             "status"=> "success",
             "message"=>"Registration Successful",

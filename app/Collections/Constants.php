@@ -8,7 +8,8 @@ class Constants{
     "SUBSCRIBED" => 2,
     "TIPPED" => 3,
     "MESSAGED" => 4,
-    "FOLLOW" => 5
+    "FOLLOW" => 5,
+    "BOOKMARK" => 6
     ];
 
     //pagination
