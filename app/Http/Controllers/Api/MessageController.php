@@ -6,12 +6,14 @@ use App\Models\Message;
 use App\Events\MessageEvent;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
+use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HistoryRequest;
 use App\Http\Requests\MessageRequest;
 use App\Traits\TokenTransactionsTrait;
+use App\Http\Controllers\Api\PostNotificationController;
 
 class MessageController extends Controller
 {
@@ -78,6 +80,8 @@ class MessageController extends Controller
         //
         $conversation_id = "";
         $id = Auth()->user()->id;
+        $username = Auth()->user()->username;
+
         $validatedData = $request->validated();
         $validatedData['sender_id'] = Auth()->user()->id;
         $conversation_one = Conversation::where([
@@ -114,12 +118,28 @@ class MessageController extends Controller
         }
         $sentMessage = Message::find($message->id)->load(['recipient', 'sender']);
         broadcast(new MessageEvent($sentMessage))->toOthers();
+
+        //notify that you received a message
+        $this->notify($username, $request->recipient_id, 'sent');
+        
     return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::CREATED,
             'message' => 'message sent successfully',
             'data' => $sentMessage
         ],StatusCodes::CREATED);    
+    }
+
+
+    public function notify($username, $id_other_user, $type)
+    {
+        $post_notify = new PostNotificationController();
+        $result = $post_notify->store([
+            'message'=> "$username $type you a message",
+            'user_id' => Auth()->user()->id,
+            'broadcast_id' => $id_other_user,
+            'post_type_id' => Constants::NOTIFICATION["MESSAGED"]
+        ]);
     }
 
     /**

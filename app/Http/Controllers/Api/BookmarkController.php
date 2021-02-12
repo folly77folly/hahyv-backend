@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Post;
 use App\Models\Bookmark;
 use Illuminate\Http\Request;
+use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookmarkRequest;
 use App\Http\Controllers\Api\CommonFunctionsController;
+use App\Http\Controllers\Api\PostNotificationController;
 
 class BookmarkController extends Controller
 {
@@ -65,7 +68,8 @@ class BookmarkController extends Controller
     {
         //
         $id = Auth()->user()->id;
-        
+        $username = Auth()->user()->username;
+
         $validatedData = $request->validated();
         // print_r ($validatedData);
         try{
@@ -99,6 +103,8 @@ class BookmarkController extends Controller
                             $query_likes->with('user');
                         }]);
                     }]);
+                    // Notify the owner of the post
+
                     return response()->json([
                         "status" =>"success",
                         "status_code" =>StatusCodes::SUCCESS,
@@ -120,6 +126,11 @@ class BookmarkController extends Controller
                     $query_likes->with('user');
                 }]);
             }]);
+            
+            //Notify Owner of Post
+            $post = Post::find($request->post_id);
+            $this->notify($post, $username, 'bookmark');
+
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
@@ -133,6 +144,17 @@ class BookmarkController extends Controller
         }
  
 
+    }
+
+    public function notify($post, $username, $type){
+        $post_notify = new PostNotificationController();
+        $result = $post_notify->store([
+            'message'=> "$username $type your post",
+            'post_id' => $post->id,
+            'user_id' => Auth()->user()->id,
+            'broadcast_id' => $post->user->id,
+            'post_type_id' => Constants::NOTIFICATION['BOOKMARK'],
+        ]);
     }
 
     /**

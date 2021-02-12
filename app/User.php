@@ -53,7 +53,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'subscription_plan',
         'is_monetize',
         'subscription_amount',
-        'cover_image_url'
+        'cover_image_url',
+        'rf_token',
+        'referral_url'
     ];
 
     public function getFollowingAttribute(){

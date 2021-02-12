@@ -54,29 +54,32 @@ class PostNotificationController extends Controller
      */
     public function store(Array $data)
     {
-            $logged_user = Auth()->user()->id;
-        try{
-            $existing_notification = PostNotification::where([
-                'message'=> $data['message'],
-                'post_id' => isset($data['post_id'])?$data['post_id']:null,
-                'user_id' => $logged_user,
-                'broadcast_id' => $data['broadcast_id'],
-                'post_type_id' => $data['post_type_id']
-            ])->first();
-            if(!$existing_notification){
-                $new_postNotification = PostNotification::create($data);
-                $new_postNotification = PostNotification::find($new_postNotification->id);
-                $notification = $new_postNotification->load(['user', 'post', 'post_type:id,name']);
-                broadcast(new PostNotificationEvent($notification))->toOthers();
-            }else{
-                $notification = $existing_notification->load(['user', 'post', 'post_type:id,name']);
-                broadcast(new PostNotificationEvent($notification))->toOthers();
+        $logged_user = Auth()->user()->id;
+        if($logged_user != $data['broadcast_id']){
+            try{
+                $existing_notification = PostNotification::where([
+                    'message'=> $data['message'],
+                    'post_id' => isset($data['post_id'])?$data['post_id']:null,
+                    'user_id' => $logged_user,
+                    'broadcast_id' => $data['broadcast_id'],
+                    'post_type_id' => $data['post_type_id']
+                ])->first();
+                if(!$existing_notification){
+                    //Don't Notify logged in User
+                    $new_postNotification = PostNotification::firstOrCreate($data);
+                    $new_postNotification = PostNotification::find($new_postNotification->id);
+                    $notification = $new_postNotification->load(['user', 'post', 'post_type:id,name']);
+                    broadcast(new PostNotificationEvent($notification))->toOthers();
+                }else{
+                    $notification = $existing_notification->load(['user', 'post', 'post_type:id,name']);
+                    broadcast(new PostNotificationEvent($notification))->toOthers();
+                }
+            }catch(Exception $e){
+                $commonFunction = new CommonFunctionsController;
+                $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
+                return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
             }
-        }catch(Exception $e){
-            $commonFunction = new CommonFunctionsController;
-            $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
-            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
-        }
+         }
     }
 
     /**
@@ -108,9 +111,15 @@ class PostNotificationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update()
     {
         //
+        $notifications = PostNotification::where('broadcast_id', Auth()->user()->id)->update(['read' => 1]);
+        return response()->json([
+            "status" =>"success",
+            "status_code" =>StatusCodes::SUCCESS,
+            "message" =>"notifications read",
+            ],StatusCodes::SUCCESS);
     }
 
     /**
@@ -132,7 +141,7 @@ class PostNotificationController extends Controller
                     "message" =>"notification not found",
                     ],StatusCodes::BAD_REQUEST); 
             }
-            $notification->read = 0;
+            $notification->read = 1;
             $notification->update();
             return response()->json([
                 "status" =>"success",
