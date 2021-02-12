@@ -18,7 +18,9 @@ class DatabaseSeeder extends Seeder
         // $this->call(PreferenceSeeder::class);
         // $this->call(SubscriptionTypeSeeder::class);
         // $this->call(TypeSeeder::class);
+
         $this->call(RoleSeeder::class);
         $this->call(ReferEarnSeeder::class);
+        $this->call(ReferralSeeder::class);
     }
 }

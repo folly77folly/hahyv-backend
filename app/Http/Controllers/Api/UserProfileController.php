@@ -71,6 +71,7 @@ class UserProfileController extends Controller
                 'created_at',
                 'updated_at',
                 'theme',
+                'referral_url'
             )
             ->with([
                 'monetizeBenefits:user_id,benefits', 
