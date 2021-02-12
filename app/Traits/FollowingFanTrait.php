@@ -4,6 +4,7 @@ namespace App\Traits;
 use App\User;
 use App\Models\Fan;
 
+use App\Models\Bookmark;
 use App\Models\Follower;
 use App\Models\Referral;
 use App\Models\ReferEarnSetup;
@@ -33,6 +34,20 @@ Trait FollowingFanTrait{
         }
 
         return true;
+    }
+
+    public function bookmark($post_id){
+        
+        $bookmark = Bookmark::where([
+            'user_id'=> Auth()->user()->id,
+            'post_id'=> $post_id
+            ])->first();
+                    
+        if(!$bookmark){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     public function shortUrl($longUrl)

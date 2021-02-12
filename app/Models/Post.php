@@ -34,11 +34,17 @@ class Post extends Model
         'accept_tip' => 'boolean',
         'is_paid' => 'boolean',
     ];
-    protected $appends = array('canComment');
+    protected $appends = array('canComment', 'is_bookmark');
 
     public function getCanCommentAttribute(){
         return $this->check($this->user_id);
     }
+
+    public function getIsBookmarkAttribute(){
+
+        return $this->bookmark($this->id);
+    }
+
 
     public function user()
     {
