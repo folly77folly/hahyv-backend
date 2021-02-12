@@ -15,6 +15,7 @@ class CommentController extends Controller
     
     public function __construct(){
         $this->middleware('comment', ['only'=>['store']]);
+        $this->middleware('comment_like', ['only'=>['store']]);
     }
     /**
      * Display a listing of the resource.

@@ -6,10 +6,14 @@ use App\User;
 use App\Models\Like;
 use App\Models\Poll;
 use App\Models\Comment;
+use App\Providers\Following;
+use App\Traits\FollowingFanTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
+    use FollowingFanTrait;
+    
     protected $fillable = [
         'description',
         'images',
@@ -30,6 +34,11 @@ class Post extends Model
         'accept_tip' => 'boolean',
         'is_paid' => 'boolean',
     ];
+    protected $appends = array('canComment');
+
+    public function getCanCommentAttribute(){
+        return $this->check($this->user_id);
+    }
 
     public function user()
     {

@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\Crypto;
 use App\Models\Comment;
 use App\Models\Follower;
+use App\Models\BankDetail;
 use App\Models\Preference;
 use App\Models\MonetizeBenefit;
 use App\Models\SubscribersList;
@@ -153,18 +154,24 @@ class User extends Authenticatable implements MustVerifyEmail
     // monetization benefits
     public function monetizeBenefits()
     {
-        return $this->hasMany(MonetizeBenefit::class,);
+        return $this->hasMany(MonetizeBenefit::class);
     }
 
     // subscription benefits
     public function subscriptionBenefits()
     {
-        return $this->hasMany(SubscriptionBenefit::class,);
+        return $this->hasMany(SubscriptionBenefit::class);
     }
 
     // subscription rates
     public function subscriptionRates()
     {
-        return $this->hasMany(SubscriptionRate::class,);
+        return $this->hasMany(SubscriptionRate::class);
+    }
+
+    // Bank Details 
+    public function bankDetail()
+    {
+        return $this->hasOne(BankDetail::class);
     }
 }
