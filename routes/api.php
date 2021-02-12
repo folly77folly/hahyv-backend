@@ -101,6 +101,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     //Notifications
     Route::GET('/notifications', 'Api\PostNotificationController@index');
     Route::DELETE('/notifications/{id}', 'Api\PostNotificationController@destroy');
+    Route::DELETE('/notifications', 'Api\PostNotificationController@clearAll');
     Route::PUT('/notifications', 'Api\PostNotificationController@update');
 
     //payment

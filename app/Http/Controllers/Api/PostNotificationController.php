@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use App\Collections\Constants;
+use App\Collections\StatusCodes;
 use App\Models\PostNotification;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Events\PostNotificationEvent;
-use App\Collections\StatusCodes;
 
 class PostNotificationController extends Controller
 {
@@ -21,7 +22,7 @@ class PostNotificationController extends Controller
         //
         $id = Auth()->user()->id;
         try{
-            $postNotification = PostNotification::where('broadcast_id', $id)->where('read', false)->with(['user', 'post', 'post_type:id,name'])->get();
+            $postNotification = PostNotification::where('broadcast_id', $id)->with(['user', 'post', 'post_type:id,name'])->paginate(Constants::PAGE_LIMIT);
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
@@ -122,6 +123,17 @@ class PostNotificationController extends Controller
             ],StatusCodes::SUCCESS);
     }
 
+    public function clearAll()
+    {
+        //
+        $notifications = PostNotification::where('broadcast_id', Auth()->user()->id)->delete();
+        return response()->json([
+            "status" =>"success",
+            "status_code" =>StatusCodes::SUCCESS,
+            "message" =>"all notifications cleared",
+            ],StatusCodes::SUCCESS);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -141,12 +153,13 @@ class PostNotificationController extends Controller
                     "message" =>"notification not found",
                     ],StatusCodes::BAD_REQUEST); 
             }
-            $notification->read = 1;
-            $notification->update();
+            PostNotification::destroy($id);
+            // $notification->read = 1;
+            // $notification->update();
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
-                "message" =>"notification read",
+                "message" =>"notification deleted",
                 "data" => $notification
                 ],StatusCodes::SUCCESS);
         }catch(Exception $e){
