@@ -20,6 +20,12 @@ use Illuminate\Support\Carbon;
 
 class PostController extends Controller
 {
+
+    public function __construct(){
+        $this->middleware('comment_like', ['only' => ['postLike']]);
+        $this->middleware('post', ['only' => ['store']]);
+
+    }
     /**
      * Display a listing of the resource.
      *

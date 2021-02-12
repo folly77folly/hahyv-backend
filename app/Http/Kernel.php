@@ -65,6 +65,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'emailverifier' => \App\Http\Middleware\EmailVerifiedMiddleWare::class,
         'comment' => \App\Http\Middleware\CommentMiddleware::class,
+        'comment_like' => \App\Http\Middleware\CommentLikeMiddleware::class,
+        'post' => \App\Http\Middleware\PostApproveMiddleware::class,
         'subscribe' => \App\Http\Middleware\SubscribeMiddleware::class,
         'wallet_balance' => \App\Http\Middleware\WalletBalance::class,
         'poll_expiry' => \App\Http\Middleware\VotingExpiryMiddleware::class,

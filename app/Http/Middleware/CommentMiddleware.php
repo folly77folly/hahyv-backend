@@ -3,7 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Models\Fan;
 use App\Models\Post;
+use App\Models\Follower;
 use App\Collections\StatusCodes;
 
 class CommentMiddleware
@@ -20,9 +22,13 @@ class CommentMiddleware
         $post = Post::find($request->post_id);
         if($post->disable_comment){
             return response()->json([
+                'status'=> 'failure',
+                'status_code'=> StatusCodes::BAD_REQUEST,
                 'message'=>'Comment has been disabled for this post'
             ],StatusCodes::BAD_REQUEST);
         }
+
+
         return $next($request);
     }
 }
