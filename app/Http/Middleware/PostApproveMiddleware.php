@@ -21,25 +21,25 @@ class PostApproveMiddleware
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>"You can't Post without Profile Image",
+                'message'=>"You are unable to post any more content until you have uploaded a Profile Image",
             ],StatusCodes::BAD_REQUEST);
         }elseif(!Auth()->user()->cover_image_url){
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>"You can't Post without Cover Image"
+                'message'=>"You are unable to post any more content until you have uploaded a Cover Image"
             ],StatusCodes::BAD_REQUEST);
         }elseif(!Auth()->user()->description){
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>"You can't Post without bio"
+                'message'=>"You are unable to post any more content until you fill your bio"
             ],StatusCodes::BAD_REQUEST);
         }elseif(!Auth()->user()->bankDetail){
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>"You can't Post without adding bank details",
+                'message'=>"You are unable to post any more content until you have uploaded bank details",
             ],StatusCodes::BAD_REQUEST);
         }
         else{
