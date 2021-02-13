@@ -378,7 +378,15 @@ class PostController extends Controller
         $user = User::find($s_id);
 
         
-        $post = Post::where('user_id', $user->id)->with(array('Comment', 'user'))
+        $post = Post::where('user_id', $user->id)->with('Comment')->with(['user' => function($query){
+            $query->with([
+                'monetizeBenefits:user_id,benefits', 
+                'subscriptionBenefits:user_id,benefits', 
+                ])->with([
+                    'subscriptionRates' => function($query){
+                        $query->with('subscription:id,name,period');
+                    }]);
+        }])
         ->with(['polls'=>function($query){
             return $query->with('votes');
         }])

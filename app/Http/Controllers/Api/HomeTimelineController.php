@@ -70,9 +70,16 @@ class HomeTimelineController extends Controller
             }])->with(['likes' => function ($query) {
                 return $query->where('liked', 1)->with('user');
             }])->with(['user' => function($query){
+                
                 return $query->with(['subscribers' => function($query){
                     return $query->where('expiry', '>', Carbon::now());
-                }]);
+                }])->with([
+                    'monetizeBenefits:user_id,benefits', 
+                    'subscriptionBenefits:user_id,benefits', 
+                    ])->with([
+                        'subscriptionRates' => function($query){
+                            $query->with('subscription:id,name,period');
+                        }]);
             }])->with(['polls'=>function($query){
                 return $query->with('votes');
             }])
