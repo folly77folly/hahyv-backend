@@ -37,12 +37,16 @@ class Post extends Model
 
     public function getShowTipAttribute(){
 
-        if ($this->user->is_monetize == false){
-            return true;
+        if(count($this->images) > 0 || count($this->videos)> 0 ){
+            
+            if ($this->user->is_monetize == false){
+                return true;
+            }
+            if ($this->user->is_monetize == true && $this->accept_tip){
+                return true;
+            }
         }
-        if ($this->user->is_monetize == true && $this->accept_tip){
-            return true;
-        }
+
         return false;
     }
 
