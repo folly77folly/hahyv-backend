@@ -49,7 +49,17 @@ class SubscriptionRateController extends Controller
         
         $validatedData = $request->validated();
         $validatedData['user_id'] = Auth()->user()->id;
-        $subRate = SubscriptionRate::firstOrCreate($validatedData);
+        $subRate = SubscriptionRate::where([
+            'user_id' => Auth()->user()->id,
+            'subscription_type_id' => $validatedData['subscription_type_id'],
+            ])->first();
+        if($subRate){
+            $subRate->amount = $validatedData['amount'];
+            $subRate->save();
+        }else{
+
+            $subRate = SubscriptionRate::Create($validatedData);
+        }
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
