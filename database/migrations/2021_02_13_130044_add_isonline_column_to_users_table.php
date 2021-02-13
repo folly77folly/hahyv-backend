@@ -16,7 +16,7 @@ class AddIsonlineColumnToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             //
             $table->boolean('is_online')->default(0);
-            $table->float('walletBalance',8,2)->unsigned()->change();
+            // $table->float('walletBalance',8,2)->unsigned()->change();
             $table->integer('tokenBalance')->unsigned()->change();
         });
     }
