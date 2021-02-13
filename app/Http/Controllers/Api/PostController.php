@@ -177,15 +177,11 @@ class PostController extends Controller
                 "message" => "Post not found."
             ], StatusCodes::UNPROCESSABLE);
         }
+        $input = $request->all();
 
-        $post->description = $request->input('description');
-        $post->images = $request->input('images');
-        $post->videos = $request->input('videos');
-        $post->poll = $request->input('poll');
-        $post->likesCount = $request->input('likesCount');
-        $post->dislikesCount = $request->input('dislikesCount');
-
-        $post->save();
+        $post->fill($input)->save();
+        // Post::where('id',$id)->update($request->all());
+        // $post = Post::find($id);
 
         return response()->json([
             "status" => "success",

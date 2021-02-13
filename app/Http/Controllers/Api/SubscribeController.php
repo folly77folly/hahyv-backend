@@ -6,6 +6,7 @@ use App\User;
 use App\Models\Fan;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
+use Illuminate\Support\Carbon;
 use App\Models\SubscribersList;
 use App\Collections\StatusCodes;
 use App\Models\SubscriptionRate;
@@ -25,7 +26,7 @@ class SubscribeController extends Controller
 
     public function __construct(){
         $this->middleware('subscribe', ['only'=>['withCard', 'withWallet']]);
-        $this->middleware('wallet_balance', ['only'=>['withWallet']]);
+        $this->middleware('wallet_balance', ['only'=>['withWallet', 'tipWithWallet']]);
     }
     public function withCard(SubscribeRequest $request){
         $validatedData = $request->validated();
@@ -79,7 +80,9 @@ class SubscribeController extends Controller
 
         $this->store([
             'user_id' =>Auth()->user()->id,
-             'creator_id' => $creator_id
+             'creator_id' => $creator_id,
+             'period' => $subscription->subscription->period,
+             'expiry' => Carbon::now()->addMonths($subscription->subscription->period)
             ]);
         return response()->json([
             "status" => "success",
@@ -103,8 +106,12 @@ class SubscribeController extends Controller
             }
         }else{
 
-            SubscribersList::create($data);
-            Fan::create($data);
+            SubscribersList::firstOrCreate($data);
+            $fanData = [
+                'user_id' =>$data['user_id'],
+                'creator_id' => $data['creator_id'],
+            ];
+            Fan::firstOrCreate($fanData);
         }
         $this->notify(Auth()->user()->username, $creator_id, 'subscribes');
     }
