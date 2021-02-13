@@ -61,9 +61,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_online'
     ];
 
-    public function getFollowingAttribute(){
-        
-    }
+    // protected $appends = ['subscriptionBenefits'];
+
 
     /**
      * The attributes that should be hidden for arrays.
@@ -176,4 +175,5 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(BankDetail::class);
     }
+
 }
