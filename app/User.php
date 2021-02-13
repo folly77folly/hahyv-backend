@@ -57,7 +57,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'cover_image_url',
         'rf_token',
         'referral_url',
-        'ip_address'
+        'ip_address',
+        'is_online'
     ];
 
     public function getFollowingAttribute(){
@@ -85,6 +86,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active' => 'boolean',
         'is_reported' => 'boolean',
         'theme' => 'boolean',
+        'is_online' => 'boolean',
     ];
 
     public function sendPasswordResetNotification($token)
