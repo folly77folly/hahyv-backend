@@ -14,17 +14,7 @@ class Post extends Model
 {
     use FollowingFanTrait;
     
-    protected $fillable = [
-        'description',
-        'images',
-        'videos',
-        'poll',
-        'user_id',
-        'likesCount',
-        'dislikesCount',
-        'name',
-        'username'
-    ];
+    protected $guarded =[];
 
     protected $casts = [
         'images' =>'array',
@@ -34,7 +24,7 @@ class Post extends Model
         'accept_tip' => 'boolean',
         'is_paid' => 'boolean',
     ];
-    protected $appends = array('canComment', 'is_bookmark');
+    protected $appends = array('canComment', 'is_bookmark', 'showTip');
 
     public function getCanCommentAttribute(){
         return $this->check($this->user_id);
@@ -43,6 +33,17 @@ class Post extends Model
     public function getIsBookmarkAttribute(){
 
         return $this->bookmark($this->id);
+    }
+
+    public function getShowTipAttribute(){
+
+        if ($this->user->is_monetize == false){
+            return true;
+        }
+        if ($this->user->is_monetize == true && $this->accept_tip){
+            return true;
+        }
+        return false;
     }
 
 
