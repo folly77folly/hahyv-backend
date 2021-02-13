@@ -36,6 +36,24 @@ Trait FollowingFanTrait{
         return true;
     }
 
+    public function subscribed($user_id){
+        if(Auth()->user()->id != $user_id ){
+
+            $following = Follower::where([
+                'user_id'=> Auth()->user()->id,
+                'following_userId'=> $user_id
+                ])->first();
+                        
+            if(!$following){
+                return false;
+            }else{
+                return true;
+            }
+        }
+
+        return true;
+    }
+
     public function bookmark($post_id){
         
         $bookmark = Bookmark::where([

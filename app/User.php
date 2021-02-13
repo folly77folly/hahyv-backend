@@ -13,6 +13,7 @@ use App\Models\Preference;
 use App\Models\MonetizeBenefit;
 use App\Models\SubscribersList;
 use App\Models\SubscriptionRate;
+use App\Traits\FollowingFanTrait;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 use App\Models\SubscriptionBenefit;
@@ -24,7 +25,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable, HasApiTokens;
+    use Notifiable, HasApiTokens, FollowingFanTrait;
     public static $token;
     /**
      * The attributes that are mass assignable.
@@ -61,8 +62,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_online'
     ];
 
-    // protected $appends = ['subscriptionBenefits'];
+    protected $appends = ['isSubscribed'];
 
+    public function getIsSubscribedAttribute(){
+        return $this->subscribed($this->id);
+    }
 
     /**
      * The attributes that should be hidden for arrays.
