@@ -72,5 +72,6 @@ class Kernel extends HttpKernel
         'poll_expiry' => \App\Http\Middleware\VotingExpiryMiddleware::class,
         'token' => \App\Http\Middleware\TokenMiddleware::class,
         'walletTipBalance' => \App\Http\Middleware\WalletTipBalance::class,
+        'earning_balance' => \App\Http\Middleware\EarningWithdrawalMiddleware::class,
     ];
 }

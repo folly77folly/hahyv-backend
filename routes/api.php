@@ -145,5 +145,8 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     //Subscription Benefits 
     Route::apiResource('subscription_benefits', Api\SubscriptionBenefitController::class);
+
+    //Withdrawal
+    Route::apiResource('withdrawal', Api\WithdrawalRequestController::class);
 });
 
