@@ -29,7 +29,7 @@ class BankDetailsRequest extends FormRequest
             'bank_name' => ['required'],
             'first_name' => ['required'],
             'last_name' => ['required'],
-            'account_no' => ['required','digits:10'],
+            'account_no' => ['required','max:10'],
             'bvn' => ['required'],
             'address'=> ['string'],
             'phone_no' => ['required'],
