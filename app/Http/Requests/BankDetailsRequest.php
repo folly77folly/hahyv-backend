@@ -25,21 +25,28 @@ class BankDetailsRequest extends FormRequest
     {
         return [
             //
-            'bank_id' => ['required'],
-            'bank_name' => ['required'],
-            'first_name' => ['required'],
-            'last_name' => ['required'],
-            'account_no' => ['required','max:10'],
-            'bvn' => ['required'],
-            'address'=> ['string'],
-            'phone_no' => ['required'],
-            'zip_code' => ['nullable'],
+            'bank_id' => ['required', 'string'],
+            'bank_name' => ['required', 'string'],
+            'first_name' => ['required', 'string'],
+            'last_name' => ['required', 'string'],
+            'account_no' => ['required','max:10', 'string'],
+            'bvn' => ['required', 'max:11', 'string'],
+            'address'=> ['string','string'],
+            'phone_no' => ['required','string'],
+            'zip_code' => ['nullable','string'],
             'country_id' => ['required','exists:countries,id'],
-            'instagram' => ['nullable'],
-            'twitter' => ['nullable'],
-            'date_of_birth' => ['required','date'],
-            'identification_image' => ['required'],
-            'identification_exp_date' => ['required','date'],
+            'instagram' => ['nullable', 'string'],
+            'twitter' => ['nullable', 'string'],
+            'date_of_birth' => ['required','date','before:-18 years'],
+            'identification_image' => ['required','string'],
+            'identification_exp_date' => ['required','date','after:today'],
+        ];
+
+    }
+
+    public function messages(){
+        return [
+            'date_of_birth.before' => "You must be above 18 years"
         ];
     }
 }
