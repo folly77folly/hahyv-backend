@@ -108,10 +108,12 @@ class UserProfileController extends Controller
     {
         $request->validate(
             [
-                'email' => 'email'
+                'email' => 'email',
+                'date_of_birth' => ['before:-18 years']
             ],
             [
-                'email.email' => 'The email address is not correct'
+                'email.email' => 'The email address is not correct',
+                'date_of_birth.before' => 'Your date of birth indicates that you are under 18 years'
             ]
         );
         
