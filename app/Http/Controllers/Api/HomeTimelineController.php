@@ -31,7 +31,7 @@ class HomeTimelineController extends Controller
             return response()->json([
                 "status" => "success",
                 "message" => "You are not following anyone.",
-                "data" => $allPosts,
+                "data" => [],
             ], StatusCodes::SUCCESS);
         }else{
 
