@@ -37,6 +37,10 @@ class Post extends Model
 
     public function getShowTipAttribute(){
 
+        if ($this->user_id == Auth()->user()->id){
+            return false;
+        }
+
         if(count($this->images) > 0 || count($this->videos)> 0 ){
             
             if ($this->user->is_monetize == false){
