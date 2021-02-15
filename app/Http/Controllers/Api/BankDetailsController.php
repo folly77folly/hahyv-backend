@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use App\Models\BankDetail;
 use Illuminate\Http\Request;
 use App\Collections\StatusCodes;
+use App\Traits\BankDetailsTrait;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\BankDetailsRequest;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Api\CommonFunctionsController;
 
 class BankDetailsController extends Controller
 {
+    use BankDetailsTrait;
     /**
      * Display a listing of the resource.
      *
@@ -61,9 +63,20 @@ class BankDetailsController extends Controller
         $id = Auth()->user()->id;
         $validatedData = $request->validated();
         try{
+            $bvn = $validatedData['bvn'];
+            $mobile = $validatedData['phone_no'];
+            $response  = $this->check($bvn, $mobile);
+            // print_r($validatedData['bvn']);
+            if($response['status'] == false){
+                return response()->json([
+                    "status" =>"failure",
+                    "status_code" =>StatusCodes::BAD_REQUEST,
+                    "message" =>$response['message']
+                ],StatusCodes::BAD_REQUEST);
+            }
             $validatedData['user_id'] = $id;
             $validatedData['account_name'] = $validatedData['first_name'].' '.$validatedData['last_name'];
-            $bank_details = BankDetail::create($validatedData);
+            $bank_details = BankDetail::updateOrCreate(['user_id' => $id],$validatedData);
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
@@ -220,88 +233,7 @@ class BankDetailsController extends Controller
         // Send a request to https://foo.com/api/test
         $response = $client->request('GET', 'bank/resolve?account_number=0689928729&bank_code=044');
         print_r(json_encode($response));
- 
-
-        // $response = Http::withHeaders([
-        //     'Authorization'=> 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
-        //     'Content-Length'=> 100,
-        // ])->get(env('API_BASE_URL','https://api.paystack.co/').'bank/resolve',[
-        //     "account_number"=> $validatedData['account_number'],
-        //     "bank_code"=> $validatedData['bank_code'],
-        // ]);
-
-        // if ($response->status() == StatusCodes::SUCCESS){
-
-        //     $result = $response->json();
-        //     return response()->json([
-        //         "status" =>"success",
-        //         "status_code" =>StatusCodes::SUCCESS,
-        //         "message" =>"account retrieved",
-        //         "data" =>$result['data']
-        //     ],StatusCodes::SUCCESS);
-        // }else{
-        //     $result = $response->json();
-        //     return response()->json([
-        //         "status" =>"failure",
-        //         "status_code" =>StatusCodes::BAD_REQUEST,
-        //         "message" =>$result['message']
-        //     ],StatusCodes::BAD_REQUEST);
-        // }
     }
-
-//     public function resolveAccount(){
-//   $curl = curl_init();
-//   curl_setopt_array($curl, array(
-
-//     CURLOPT_URL => "https://api.paystack.co/bank/resolve?account_number=0689928729&bank_code=044",
-
-//     CURLOPT_RETURNTRANSFER => true,
-
-//     CURLOPT_ENCODING => "",
-
-//     CURLOPT_MAXREDIRS => 10,
-
-//     CURLOPT_TIMEOUT => 30,
-
-//     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-
-//     CURLOPT_CUSTOMREQUEST => "GET",
-
-//     CURLOPT_HTTPHEADER => array(
-
-//       "Authorization: Bearer "env('PAYSTACK_SECRET_KEY'),
-
-//       "Cache-Control: no-cache",
-
-//     ),
-
-//   ));
-
-//   $response = curl_exec($curl);
-
-//   $err = curl_error($curl);
-
-  
-
-//   curl_close($curl);
-
-  
-
-//   if ($err) {
-
-//     $result = $response->json();
-//     return response()->json([
-//         "status" =>"failure",
-//         "status_code" =>StatusCodes::BAD_REQUEST,
-//         "message" =>$err
-//     ],StatusCodes::BAD_REQUEST);
-
-//   } else {
-//     echo ('ji');
-//     echo $response;
-
-//   }
-//     }
 
 public function resolveAccount(AccountNumberRequest $request){
     $validatedData = $request->validated();
@@ -322,27 +254,78 @@ public function resolveAccount(AccountNumberRequest $request){
     ]);
 
     $response = json_decode(curl_exec($curl));
+    curl_close($curl);
+    if(isset($response->status)){
 
-    if ($response->status == 1){
-
-        return response()->json([
-            'status' =>'success',
-            'status_code' => StatusCodes::SUCCESS,
-            'message' => 'account retrieved',
-            'data'=> $response->data
-        ],StatusCodes::SUCCESS);
+        if ($response->status == 1){
+    
+            return response()->json([
+                'status' =>'success',
+                'status_code' => StatusCodes::SUCCESS,
+                'message' => 'account retrieved',
+                'data'=> $response->data
+            ],StatusCodes::SUCCESS);
+        }else{
+            return response()->json([
+                'status' =>'failure',
+                'status_code' => StatusCodes::BAD_REQUEST,
+                'message' => $response->message,
+            ],StatusCodes::BAD_REQUEST);
+        }
     }else{
         return response()->json([
             'status' =>'failure',
             'status_code' => StatusCodes::BAD_REQUEST,
-            'message' => $response->message,
+            'message' => "Error connecting to host bank. try again later",
         ],StatusCodes::BAD_REQUEST);
     }
 
+
     // ($response);
-    curl_close($curl);
+    // curl_close($curl);
     // $result = json_decode($response, true);
     // echo $response . PHP_EOL;
     // return ($result["ResponseCode"]);
 }
+    public function check($bvn, $mobile){
+        $response = $this->resolveBvn3($bvn);
+
+        if(isset($response->status)){
+            if($response->status == true){
+                if($response->data->mobile == $mobile){
+
+                    $result = [
+                        'status' => true,
+                    ];
+                }else{
+                    $result = [
+                        'status' => false,
+                        'message' => "Your bvn registered phone number doesn't match"
+                    ];
+                }
+                return($result);
+            }else{
+                if($response->message == "Free limit reached. You must be in live mode to make this request" ){
+                    $result = [
+                        'status' => false,
+                        'message' => "Can't verify your bvn at the moment try again Later"
+                    ];
+                    return($result);
+                }
+                $result = [
+                    'status' => false,
+                    'message' => $response->message
+                ];
+                return($result);
+            }
+        }else{
+
+            $result = [
+                'status' => false,
+                'message' => "Can't Verify your bvn now try again Later"
+            ];
+            return($result);
+        }
+    }
+
 }

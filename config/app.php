@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'payStack_base_url' => env('PAYSTACK_BASE_URL', 'https://api.paystack.co/'),
+
     'asset_url' => env('ASSET_URL', null),
 
     /*
