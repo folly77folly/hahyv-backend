@@ -93,6 +93,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::get('/banks', 'Api\BankDetailsController@getCommercialBanks');
     Route::post('/resolve', 'Api\BankDetailsController@resolveAccountNumber');
     Route::post('/resolves', 'Api\BankDetailsController@resolveAccount');
+    Route::get('/resolve_bvn', 'Api\BankDetailsController@check');
     Route::resource('bank_details', Api\BankDetailsController::class);
 
     //Bookmark

@@ -62,10 +62,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_online'
     ];
 
-    protected $appends = ['isSubscribed'];
+    protected $appends = ['isSubscribed', 'unlockFee'];
 
     public function getIsSubscribedAttribute(){
         return $this->subscribed($this->id);
+    }
+
+    public function getUnlockFeeAttribute(){
+        if($this->is_monetize){
+            return $this->subRate($this->id);
+        }
+        return 'None';
     }
 
     /**
