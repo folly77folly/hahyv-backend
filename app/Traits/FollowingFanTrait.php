@@ -8,6 +8,7 @@ use App\Models\Bookmark;
 use App\Models\Follower;
 use App\Models\Referral;
 use App\Models\ReferEarnSetup;
+use App\Models\SubscriptionRate;
 use Illuminate\Support\Facades\DB;
 Trait FollowingFanTrait{
 
@@ -98,25 +99,13 @@ Trait FollowingFanTrait{
 
     }
 
-    // public function debitWallet($id, $amount, $description){
-    //     // $user = Auth()->user();
-    //     $user = User::find($id);
-    //     $walletBalance = $user->walletBalance;
-    //     DB::transaction(function ()  use ($walletBalance, $user, $amount, $description) {
-    
-    //         $user->walletBalance = $walletBalance - $amount;
-    //         $user->save();
-    
-    //         WalletTransaction::create([
-    //             'user_id' => $user->id,
-    //             'description'=> $description,
-    //             'previousWalletBalance' => $walletBalance,
-    //             'presentWalletBalance' => $walletBalance - $amount,
-    //             'amountCredited' => 0,
-    //             'amountDebited' => $amount,
-    //         ]);
-    
-    //     });
-    // }
+    public function subRate($id){
+        $subscriptions = SubscriptionRate::where('user_id', $id)->orderBy('amount','ASC')->first();
+        if ($subscriptions){
+                return $subscriptions->amount;
+        }
+            
+            return 0;
+    }
     
 }
