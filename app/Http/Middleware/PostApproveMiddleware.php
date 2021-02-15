@@ -36,13 +36,13 @@ class PostApproveMiddleware
                 'message'=>"You are unable to post any more content until you fill your bio"
             ],StatusCodes::BAD_REQUEST);
         }
-        // elseif(!Auth()->user()->bankDetail){
-        //     return response()->json([
-        //         'status'=> 'failure',
-        //         'status_code'=> StatusCodes::BAD_REQUEST,
-        //         'message'=>"You are unable to post any more content until you have uploaded bank details",
-        //     ],StatusCodes::BAD_REQUEST);
-        // }
+        elseif(!Auth()->user()->bankDetail){
+            return response()->json([
+                'status'=> 'failure',
+                'status_code'=> StatusCodes::BAD_REQUEST,
+                'message'=>"You are unable to post any more content until you have uploaded bank details",
+            ],StatusCodes::BAD_REQUEST);
+        }
         else{
             return $next($request);
         }
