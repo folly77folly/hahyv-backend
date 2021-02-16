@@ -43,7 +43,8 @@ Trait FollowingFanTrait{
 
             $subscribed = SubscribersList::where([
                 'user_id'=> Auth()->user()->id,
-                'creator_id'=> $user_id
+                'creator_id'=> $user_id,
+                'is_active' => true
                 ])->first();
                         
             if(!$subscribed){
