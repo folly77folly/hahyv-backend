@@ -18,21 +18,21 @@ class EarningWithdrawalMiddleware
     public function handle($request, Closure $next)
     {
         $validatedData = Validator::make($request->all(),[
-           'amount' => ['required', 'numeric', 'between:1000,50000', 'regex:/^\d*(\.\d{1,2})?$/']
+           'amount' => ['required', 'numeric']
         ]);
 
         if ($validatedData->fails()){
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>'Your earning balance is zero',
+                'message'=>'Invalid data',
                 'errors'=> $validatedData->errors()
             ],StatusCodes::BAD_REQUEST);
         }
         $amount = $request->amount;
         
 
-        if(Auth()->user()->earningBalance == 0){
+        if(Auth()->user()->availableEarning == 0){
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
@@ -40,7 +40,7 @@ class EarningWithdrawalMiddleware
             ],StatusCodes::BAD_REQUEST);
         }
 
-        if(Auth()->user()->earningBalance < $amount){
+        if(Auth()->user()->availableEarning < $amount){
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,

@@ -40,12 +40,12 @@ Trait FollowingFanTrait{
     public function subscribed($user_id){
         if(Auth()->user()->id != $user_id ){
 
-            $following = Follower::where([
+            $subscribed = SubscribersList::where([
                 'user_id'=> Auth()->user()->id,
-                'following_userId'=> $user_id
+                'creator_id'=> $user_id
                 ])->first();
                         
-            if(!$following){
+            if(!$subscribed){
                 return false;
             }else{
                 return true;
