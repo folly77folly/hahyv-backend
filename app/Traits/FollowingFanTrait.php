@@ -8,6 +8,7 @@ use App\Models\Bookmark;
 use App\Models\Follower;
 use App\Models\Referral;
 use App\Models\ReferEarnSetup;
+use App\Models\SubscribersList;
 use App\Models\SubscriptionRate;
 use Illuminate\Support\Facades\DB;
 Trait FollowingFanTrait{
