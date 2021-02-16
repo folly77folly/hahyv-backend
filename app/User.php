@@ -13,7 +13,9 @@ use App\Models\Preference;
 use App\Models\MonetizeBenefit;
 use App\Models\SubscribersList;
 use App\Models\SubscriptionRate;
+use App\Models\WithdrawalRequest;
 use App\Traits\FollowingFanTrait;
+use App\Models\EarningTransaction;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 use App\Models\SubscriptionBenefit;
@@ -62,7 +64,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_online'
     ];
 
-    protected $appends = ['isSubscribed', 'unlockFee'];
+    
+
+    protected $appends = ['isSubscribed', 'unlockFee', 'pendingWithdrawal', 'availableEarning','allEarning'];
 
     public function getIsSubscribedAttribute(){
         return $this->subscribed($this->id);
@@ -75,6 +79,20 @@ class User extends Authenticatable implements MustVerifyEmail
         return 'None';
     }
 
+    public function getPendingWithdrawalAttribute(){
+        return $this->withdrawalRequests->where('approved',false)->sum('amount');
+    }
+
+    public function getAllEarningAttribute(){
+        return $this->earnings->sum('amount');
+    }
+
+    public function getAvailableEarningAttribute(){
+        $available = $this->getAllEarningAttribute() - $this->getPendingWithdrawalAttribute();
+        $this->earningBalance = $available;
+        return $available;
+    }
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -82,7 +100,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $hidden = [
         'password', 'remember_token', 'otp_expiry', 'otp',
-        'provider_id'
+        'provider_id','withdrawal_requests'
     ];
 
     /**
@@ -186,5 +204,18 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(BankDetail::class);
     }
+
+    // Withdrawal Requests 
+    public function withdrawalRequests()
+    {
+        return $this->hasMany(WithdrawalRequest::class);
+    }
+
+    // All Earnings 
+    public function earnings()
+    {
+        return $this->hasMany(EarningTransaction::class);
+    }
+
 
 }

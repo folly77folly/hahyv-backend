@@ -26,7 +26,7 @@ class FundWalletRequest extends FormRequest
         return [
             //
             'card_id' => ['required', 'exists:cards,id', 'integer'],
-            'amount' => ['required','gt:0.5'],
+            'amount' => ['required','gt:999'],
         ];
     }
 }
