@@ -16,7 +16,7 @@ class Constants{
     Const PAGE_LIMIT = 10;
 
     //Currency
-    Const CURRENCY = 'usd';
+    Const CURRENCY = 'ngn';
 
     //Stripe cents conversion
     Const STRIPE_VALUE = 100;
