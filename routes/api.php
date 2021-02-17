@@ -32,6 +32,13 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
         Route::PUT('/users', 'Api\Admin\DashboardController@deactivateUser');
         //send mail
         Route::POST('/send_mail', 'Api\Admin\DashboardController@sendMail');
+
+        Route::prefix('/send_mail')->group(function(){
+            Route::POST('/user', 'Api\Admin\MessageController@user');
+            Route::POST('/users', 'Api\Admin\MessageController@users');
+            Route::POST('/subscribers', 'Api\Admin\MessageController@subscribers');
+            Route::POST('/creators', 'Api\Admin\MessageController@creators');
+        });
     });
 
 });
@@ -139,6 +146,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::POST('/subscribe_wallet', 'Api\SubscribeController@withWallet');
     Route::POST('/subscribe_card', 'Api\SubscribeController@withCard');
     Route::POST('/tip', 'Api\SubscribeController@tipWithWallet');
+    Route::PUT('/unsubscribe', 'Api\SubscribeController@unsubscribe');
     
     
     //fans
