@@ -15,6 +15,29 @@ use App\Http\Controllers\API\FollowerController;
 |
 */
 
+//Admin Routes
+
+Route::prefix('admin')->group(function(){
+    Route::POST('/register', 'Api\Admin\AuthController@register');
+    Route::POST('/login', 'Api\Admin\AuthController@login');
+});
+
+Route::group(['middleware'=>['auth:api','admin']], function(){
+
+    Route::prefix('admin')->group(function(){
+        // change password
+        Route::POST('/change_password', 'Api\Admin\AuthController@changePassword');
+        //all users
+        Route::GET('/users', 'Api\Admin\DashboardController@allUsers');
+        Route::PUT('/users', 'Api\Admin\DashboardController@deactivateUser');
+        //send mail
+        Route::POST('/send_mail', 'Api\Admin\DashboardController@sendMail');
+    });
+
+});
+
+//Admin Routes
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -23,6 +46,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::POST('/register', 'Api\AuthController@register')->name('register');
 Route::POST('/login', 'Api\AuthController@login');
 // ->middleware('emailverifier');
+
 
 //password Reset
 Route::POST('/password/email', 'Api\ForgotPasswordController@sendResetLinkEmail')->name('forgot_password');
