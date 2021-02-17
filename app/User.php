@@ -61,7 +61,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'rf_token',
         'referral_url',
         'ip_address',
-        'is_online'
+        'is_online',
+        'role_id',
+        'email_verified_at'
     ];
 
     
