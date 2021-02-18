@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\User;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
+use App\Jobs\SendAnnouncement;
 use App\Mail\AnnouncementMail;
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
@@ -119,14 +120,16 @@ class DashboardController extends Controller
     public function sendMail(AnnouncementRequest $request){
         $mailDetails = $request->validated();
         $user  = User::find($mailDetails['user_id']);
-        $mailDetails['name'] =$user->name;
-        $email = $user->email;
-        Mail::to($email)->send(new AnnouncementMail($mailDetails));
+        // $users  = User::where('role_id', '!=', 1)->pluck('email');
+        // $users  = User::where('username', '!=', null)->pluck('email','username');
+        $users  = User::where('role_id', '!=', 1)->pluck('email','username');
+
+        \dispatch(new SendAnnouncement($mailDetails, $users));
+
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
-            "message" => "update successfully",
-            "data" => $user
+            "message" => "mail sent successfully",
         ],StatusCodes::SUCCESS,);
     }
 }

@@ -71,7 +71,10 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $appends = ['isSubscribed', 'unlockFee', 'pendingWithdrawal', 'availableEarning','allEarning'];
 
     public function getIsSubscribedAttribute(){
-        return $this->subscribed($this->id);
+        if ($this->is_monetize){
+            return $this->subscribed($this->id);
+        }
+        return true;
     }
 
     public function getUnlockFeeAttribute(){

@@ -72,7 +72,7 @@ class HomeTimelineController extends Controller
             }])->with(['user' => function($query){
                 
                 return $query->with(['subscribers' => function($query){
-                    return $query->where('expiry', '>', Carbon::now());
+                    return $query->where('is_active', true);
                 }])->with([
                     'monetizeBenefits:user_id,benefits', 
                     'subscriptionBenefits:user_id,benefits', 

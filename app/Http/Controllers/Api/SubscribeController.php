@@ -156,4 +156,22 @@ class SubscribeController extends Controller
         ],StatusCodes::SUCCESS);
 
     }
+
+    public function unsubscribe(Request $request){
+        //check is subscription exists
+        $creator_id = $request->creator_id;
+        // $creator_id = $data['creator_id'];
+        $subscription = SubscribersList::where([
+            'user_id'=> Auth()->user()->id,
+            'creator_id'=> $creator_id,
+            ])->first();
+        $subscription->is_active = 0;
+        $subscription->save();
+
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "unsubscribed successfully.",
+        ],StatusCodes::SUCCESS);
+    }
 }
