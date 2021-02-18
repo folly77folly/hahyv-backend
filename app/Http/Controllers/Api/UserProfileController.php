@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\User;
 use App\Models\Follower;
 use Illuminate\Http\Request;
+use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -251,5 +252,34 @@ class UserProfileController extends Controller
             "data" => array_values($suggestions)
         ]);
 
+    }
+
+    public function profileUsername(string $str){
+        $post = User::where('username' ,$str)
+        ->with(['post' => function($query){
+                $query->with('Comment')->with(['user' => function($query){
+                    $query->with([
+                        'monetizeBenefits:user_id,benefits',
+                        'subscriptionBenefits:user_id,benefits', 
+                        ])->with([
+                            'subscriptionRates' => function($query){
+                                $query->with('subscription:id,name,period');
+                            }]);
+                }])
+                ->with(['polls'=>function($query){
+                    return $query->with('votes');
+                }])
+                ->with(['likes' => function($query){
+                    return $query->where('liked', 1)->with('user');
+                }])->latest()->paginate(Constants::PAGE_LIMIT);
+
+        }])->get();
+
+
+        return response()->json([
+            "status" => "success",
+            "message" => "All Posts fetched successfully.",
+            "data" => $post
+        ], StatusCodes::SUCCESS);
     }
 }

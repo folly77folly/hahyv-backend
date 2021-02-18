@@ -29,7 +29,7 @@ class CardVerificationRequest extends FormRequest
     {
         return [
             'account_name' => ['required','string'],
-            'card_number' => ['required', 'unique:cards,cardNo', new CardNumber],
+            'card_number' => ['required', new CardNumber],
             'expiration_year' => ['required', new CardExpirationYear($this->get('expiration_month'))],
             'expiration_month' => ['required', new CardExpirationMonth($this->get('expiration_year'))],
             'cvc' => ['required', new CardCvc($this->get('card_number'))]
