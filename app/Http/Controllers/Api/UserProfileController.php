@@ -215,6 +215,7 @@ class UserProfileController extends Controller
             )
             ->where('preference_id', '==', $userP)
             ->where('id', '!=', $id )
+            ->where('role_id', '!=', 1)
             ->whereNotIn('id', $my_followers)
             ->toArray();
 
@@ -239,6 +240,7 @@ class UserProfileController extends Controller
             'updated_at'
         )
         ->where('id', '!=', $id )
+        ->where('role_id', '!=', 1)
         ->whereNotIn('id', $my_followers)
         ->toArray();
 
