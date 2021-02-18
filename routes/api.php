@@ -72,6 +72,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('profile/preference', 'Api\UserProfileController@preference');
     Route::PUT('profile/{id}', 'Api\UserProfileController@update')->name('userProfileUpdate');
     Route::GET('profile/{id}', 'Api\UserProfileController@profile')->name('userProfile');
+    Route::GET('{str}', 'Api\UserProfileController@profileUsername');
     // change password
     Route::POST('/changepassword', 'Api\AuthController@changePassword');
     
