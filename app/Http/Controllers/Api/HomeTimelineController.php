@@ -22,29 +22,14 @@ class HomeTimelineController extends Controller
     {
 
         $user = Auth()->user();
-        if ($user->followingCount == 0) {
-
-            $userIdArray = $this->getAllUsersIdWithSamePreference();
-
-            $allPosts = $this->getLikeUsersPost($userIdArray);
-
-            return response()->json([
-                "status" => "success",
-                "message" => "You are not following anyone.",
-                "data" => [],
-            ], StatusCodes::SUCCESS);
-        }else{
-
-            $userIdArray = $this->getFollowing();
-        
-            $allPosts = $this->getLikeUsersPost($userIdArray);
-            return response()->json([
-                "status" => "success",
-                "message" => "Home Timeline Retrieved Successfully.",
-                "data" => $allPosts
-            ], StatusCodes::SUCCESS);
-        }
-
+        $userIdArray = $this->getFollowing();
+    
+        $allPosts = $this->getLikeUsersPost($userIdArray);
+        return response()->json([
+            "status" => "success",
+            "message" => "Home Timeline Retrieved Successfully.",
+            "data" => $allPosts
+        ], StatusCodes::SUCCESS);
 
     }
 
