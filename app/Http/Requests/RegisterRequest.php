@@ -38,12 +38,12 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name'=> 'required|max:50',
-            'username' => 'required|string|unique:users',
+            'username' => 'required|string|unique:users|alpha_dash',
             'email'=> 'required|email|unique:users',
-            'password'=> 'required|confirmed',
             "otp"=> "string",
-            "provider_name" => '',
-            "provider_id" => '',
+            "provider_name" => 'nullable',
+            "provider_id" => 'nullable',
+            'password'=> ['required','confirmed','min:8','regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/'],
             "ip_address" => 'nullable',
         ];
     }
