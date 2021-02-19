@@ -235,6 +235,7 @@ class UserProfileController extends Controller
             'username',
             'email',
             'description',
+            'is_monetize',
             'profile_image_url',
             'cover_image_url',
             'preference_id',
