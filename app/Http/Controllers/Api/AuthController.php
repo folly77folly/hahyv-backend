@@ -204,7 +204,8 @@ class AuthController extends Controller
             "username"=> Auth()->user()->username,
             "email"=> Auth()->user()->email,
             "id"=> Auth()->user()->id,
-            "token" => $accessToken
+            "token" => $accessToken,
+            "verified_at" => Auth()->user()->email_verified_at
         ],StatusCodes::SUCCESS);
     }
 
