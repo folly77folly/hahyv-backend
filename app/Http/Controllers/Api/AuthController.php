@@ -160,6 +160,7 @@ class AuthController extends Controller
                 "token" => $accessToken,
                 "created_at" => $user->created_at,
                 "updated_at" => $user->updated_at,
+                "verified_at" => $user->email_verified_at,
             ]
             ],StatusCodes::CREATED);
     }
