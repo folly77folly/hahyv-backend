@@ -44,6 +44,7 @@ class AuthController extends Controller
                 "token" => $accessToken,
                 "created_at" => $user->created_at,
                 "updated_at" => $user->updated_at,
+                "verified_at" => $user->email_verified_at
             ]
             ],StatusCodes::CREATED);
     }
@@ -79,7 +80,8 @@ class AuthController extends Controller
             "username"=> Auth()->user()->username,
             "email"=> Auth()->user()->email,
             "id"=> Auth()->user()->id,
-            "token" => $accessToken
+            "token" => $accessToken,
+            "verified_at" => Auth()->user()->email_verified_at
         ],StatusCodes::SUCCESS);
     }
 
