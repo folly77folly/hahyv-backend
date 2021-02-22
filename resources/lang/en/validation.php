@@ -135,7 +135,16 @@ return [
         ],
         'password' => [
             'regex' => 'Your password should contain at-least 1 Uppercase, 1 Lowercase, 1 Numeric and 1 special character.'
-        ]
+        ],
+        'current_password' => [
+            'regex' => 'Your password should contain at-least 1 Uppercase, 1 Lowercase, 1 Numeric and 1 special character.'
+        ],
+        'new_password' => [
+            'regex' => 'Your password should contain at-least 1 Uppercase, 1 Lowercase, 1 Numeric and 1 special character.'
+        ],
+        'amount' => [
+            'regex' => 'Only 2 decimal places are allowed.'
+        ]        
     ],
 
     /*

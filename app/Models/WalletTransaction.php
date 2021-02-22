@@ -8,4 +8,8 @@ class WalletTransaction extends Model
 {
     //
     protected $guarded =[];
+
+    protected $casts = [
+        'status' => 'boolean'
+    ];
 }

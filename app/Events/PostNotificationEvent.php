@@ -51,8 +51,6 @@ class PostNotificationEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        Log::debug ($this->postNotification);
-        // Log::debug ('notification-'.$this->postNotification->user_id);
         return new PrivateChannel('notification-'.$this->postNotification->broadcast_id);
     }
 

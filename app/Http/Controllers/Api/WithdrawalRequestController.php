@@ -8,12 +8,15 @@ use App\Collections\StatusCodes;
 use App\Models\WithdrawalRequest;
 use App\Http\Requests\WithRequest;
 use App\Http\Controllers\Controller;
+use App\Traits\PayStackPaymentTrait;
+use App\Traits\WalletTransactionsTrait;
 
 class WithdrawalRequestController extends Controller
 {
+    use PayStackPaymentTrait, WalletTransactionsTrait;
 
     public function __construct(){
-        $this->middleware('earning_balance', ['only' => ['store']]);
+        $this->middleware('wallet_balance', ['only' => ['bankTransfer']]);
     }
     /**
      * Display a listing of the resource.
@@ -106,4 +109,92 @@ class WithdrawalRequestController extends Controller
     {
         //
     }
+
+    public function bankTransfer(WithRequest $request){
+        $validatedData = $request->validated();
+        $description = "transfer to bank";
+        $amount = $validatedData['amount'];
+
+        if(Auth()->user()->walletBalance < $amount){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => "you cannot withdraw more than your balance.",
+            ],StatusCodes::BAD_REQUEST);
+        }
+
+        if(!Auth()->user()->bankDetail){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => "bank details not found.",
+            ],StatusCodes::BAD_REQUEST);
+        }
+
+
+        $fields = [
+            'type' => "nuban",
+            'name' => Auth()->user()->bankDetail->account_name,
+            'account_number' => Auth()->user()->bankDetail->account_no,
+            'bank_code' => Auth()->user()->bankDetail->bank_id,
+            'currency' => "NGN"
+          ];
+        
+          $getReceipt = $this->transferRecipient($fields);
+        //   print_r($getReceipt);
+          if (!$getReceipt){
+                return response()->json([
+                    "status" => "failure",
+                    "status_code" => StatusCodes::BAD_REQUEST,
+                    "message" => "Issuer not reachable try again later.",
+                ],StatusCodes::BAD_REQUEST);
+          }
+          if (!$getReceipt->status){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => $getReceipt->message,
+            ],StatusCodes::BAD_REQUEST);
+          }
+          $recipient_code = $getReceipt->data->recipient_code;
+
+          //Transfer Area
+          $transferFields = [
+            'source' => "balance",
+            'amount' => $amount * 100,
+            'recipient' => $recipient_code,
+            'reason' => $description
+          ];
+
+          $response = $this->transfer($transferFields);
+
+          if($response){
+            // print_r($response->data->reference);
+                if($response->status){
+
+                    $this->debitWallet(Auth()->user()->id, $amount, $description, $response->data->reference, $response->data->transfer_code);
+
+                    return response()->json([
+                        "status" => "success",
+                        "status_code" => StatusCodes::SUCCESS,
+                        "message" => "withdrawal successfully sent.",
+                        // 'response'=> $response
+                    ],StatusCodes::SUCCESS);
+                }else{
+                    return response()->json([
+                        "status" => "failure",
+                        "status_code" => StatusCodes::BAD_REQUEST,
+                        "message" => $response->message,
+                    ],StatusCodes::BAD_REQUEST);
+                }
+
+          }else{
+                return response()->json([
+                    "status" => "failure",
+                    "status_code" => StatusCodes::BAD_REQUEST,
+                    "message" => "Host not reachable try again later.",
+                ],StatusCodes::BAD_REQUEST);
+          }
+    }
+
 }

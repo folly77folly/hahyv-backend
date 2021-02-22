@@ -16,7 +16,7 @@ class PreferenceController extends Controller
      */
     public function index()
     {
-        $preferences = Preference::select('id','preference', 'image_url', 'is_monetize')->get()->toArray();
+        $preferences = Preference::select('id','preference', 'image_url')->get()->toArray();
 
         return response()->json([
             "status" => "success",

@@ -4,6 +4,7 @@ namespace App\Traits;
 use App\User;
 use App\Models\Referral;
 
+use App\Collections\Constants;
 use App\Models\ReferEarnSetup;
 use Illuminate\Support\Facades\DB;
 Trait ReferralTrait{
@@ -50,8 +51,9 @@ Trait ReferralTrait{
             $noReferred = Referral::where('user_id', $data['user_id'])->count();
             $mod = fmod($noReferred, $number);
             $description = "earnings from referral";
+            $reference = "ref_".time();
             if ($mod == 0){
-                $this->creditEarning($data['user_id'], $amount, $description);
+                $this->creditEarning($data['user_id'], $amount, $description, $reference, $data['referred_id'], Constants::EARNING['REFERRAL']);
             }
         }
 

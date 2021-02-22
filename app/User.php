@@ -10,6 +10,7 @@ use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\BankDetail;
 use App\Models\Preference;
+use App\Models\CardTransaction;
 use App\Models\MonetizeBenefit;
 use App\Models\SubscribersList;
 use App\Models\SubscriptionRate;
@@ -68,7 +69,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     
 
-    protected $appends = ['isSubscribed', 'unlockFee', 'pendingWithdrawal', 'availableEarning','allEarning'];
+    protected $appends = ['isSubscribed', 'unlockFee', 'pendingWithdrawal', 'availableEarning','allEarning','earnRate'];
 
     public function getIsSubscribedAttribute(){
         if ($this->is_monetize){
@@ -88,12 +89,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->withdrawalRequests->where('approved',false)->sum('amount');
     }
 
+    public function getEarnRateAttribute(){
+        return $this->earnRate();
+    }
+
     public function getAllEarningAttribute(){
         return $this->earnings->sum('amount');
     }
 
     public function getAvailableEarningAttribute(){
-        $available = $this->getAllEarningAttribute() - $this->getPendingWithdrawalAttribute();
+        $available = ($this->getAllEarningAttribute() - $this->getPendingWithdrawalAttribute()) * $this->earnRate;
         $this->earningBalance = $available;
         return $available;
     }
@@ -220,6 +225,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function earnings()
     {
         return $this->hasMany(EarningTransaction::class);
+    }
+
+    // All Earnings 
+    public function cardTrans()
+    {
+        return $this->hasMany(CardTransaction::class, 'user');
     }
 
 

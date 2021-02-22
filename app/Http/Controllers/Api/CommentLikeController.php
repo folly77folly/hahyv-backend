@@ -89,7 +89,6 @@ class CommentLikeController extends Controller
                 'like' => $commentLike->liked,
             ];
             //use event to broadcast comment liking
-            // Log::debug(CommentLike::find($commentLike->id)->user->username);
             event(new LikeComment(CommentLike::find($commentLike->id)));
 
             return response()->json([

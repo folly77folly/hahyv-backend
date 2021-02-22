@@ -73,6 +73,7 @@ class Kernel extends HttpKernel
         'token' => \App\Http\Middleware\TokenMiddleware::class,
         'walletTipBalance' => \App\Http\Middleware\WalletTipBalance::class,
         'earning_balance' => \App\Http\Middleware\EarningWithdrawalMiddleware::class,
+        'wallet_balance' => \App\Http\Middleware\WalletBankTransfer::class,
         'admin' => \App\Http\Middleware\AdminRoleMiddleware::class,
     ];
 }

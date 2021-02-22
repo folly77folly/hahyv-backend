@@ -7,9 +7,11 @@ use App\Models\Fan;
 use App\Models\Bookmark;
 use App\Models\Follower;
 use App\Models\Referral;
+use App\Collections\Constants;
 use App\Models\ReferEarnSetup;
 use App\Models\SubscribersList;
 use App\Models\SubscriptionRate;
+use App\Models\PaymentPercentage;
 use Illuminate\Support\Facades\DB;
 Trait FollowingFanTrait{
 
@@ -94,8 +96,9 @@ Trait FollowingFanTrait{
             $noReferred = Referral::where('user_id', $data['user_id'])->count();
             $mod = fmod($noReferred, $number);
             $description = "earnings from referral";
+            $reference = "ref".time();
             if ($mod == 0){
-                $this->creditEarning($data['user_id'], $amount, $description);
+                $this->creditEarning($data['user_id'], $amount, $description, $reference, Auth()->user()->id, Constants::EARNING['REFERRAL']);
             }
         }
 
@@ -108,6 +111,16 @@ Trait FollowingFanTrait{
         }
             
             return 0;
+    }
+
+    public function earnRate(){
+        $amount = PaymentPercentage::first();
+        if ($amount){
+            $rate = number_format(($amount->rate)/100, 2);
+            return $rate;
+        }
+            
+        return 1;
     }
     
 }
