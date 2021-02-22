@@ -25,15 +25,7 @@ class WithRequest extends FormRequest
     {
         return [
             //
-            'amount' => ['required', 'numeric', 'between:1000,50000', 'regex:/^\d*(\.\d{1,2})?$/'],
-        ];
-    }
-
-    public function messages()
-    {
-            //
-        return [
-            'amount.between' => "The amount must be between N1,000.00 and N50,000.00.",
+            'amount' => ['required', 'numeric', 'regex:/^\d*(\.\d{1,2})?$/'],
         ];
     }
 }

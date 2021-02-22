@@ -64,8 +64,9 @@ Trait CardPaymentTrait{
                   'amount' => $validatedData['amount'],
                   'receipt_url' => $result->receipt_url,
                   'receipt_no' => $result->receipt_number,
-                  'card_details' => $result->payment_method_details->card->network .'-'. $result->payment_method_details->card->last4 
-
+                  'card_details' => $result->payment_method_details->card->network .'-'. $result->payment_method_details->card->last4, 
+                  'trans_type' => $validatedData['trans_type'],
+                  'user' => $validatedData['user'],
               ]);
                 return [
                     'code' => 1,

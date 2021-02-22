@@ -82,7 +82,6 @@ class PusherAuthController extends Controller
         $channel_name = $request->channel_name;
         $call_front = $request->callback;
         $signed = $pusher->socket_auth($channel_name,$socketID);
-        Log::alert($call_front);
         header('Content-Type: application/javascript');
         echo($call_front . '(' . $signed . ');');
     }

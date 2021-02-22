@@ -180,7 +180,6 @@ class MessageController extends Controller
         }else{
             $conversation_id = $conversation_one->id;
         }
-        Log::alert($conversation_id);
         $messages = Message::where([
             'conversation_id'=> $conversation_id,
             ])->with(['recipient', 'sender'])->latest()->get();

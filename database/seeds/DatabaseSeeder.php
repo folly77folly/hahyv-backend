@@ -19,8 +19,11 @@ class DatabaseSeeder extends Seeder
         // $this->call(SubscriptionTypeSeeder::class);
         // $this->call(TypeSeeder::class);
 
-        $this->call(RoleSeeder::class);
-        $this->call(ReferEarnSeeder::class);
-        $this->call(ReferralSeeder::class);
+        // $this->call(RoleSeeder::class);
+        // $this->call(ReferEarnSeeder::class);
+        // $this->call(ReferralSeeder::class);
+
+        $this->call(EarningTypeSeeder::class);
+        $this->call(PaymentPercentageSeeder::class);
     }
 }

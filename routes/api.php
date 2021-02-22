@@ -14,6 +14,9 @@ use App\Http\Controllers\API\FollowerController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+//webhook
+Route::webhooks('webhook-receiving-url', 'paystack');
+Route::POST('webhook-stripe-url', 'Api\WalletController@valentine');
 
 //Admin Routes
 
@@ -181,6 +184,13 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::apiResource('subscription_benefits', Api\SubscriptionBenefitController::class);
 
     //Withdrawal
-    Route::apiResource('withdrawal', Api\WithdrawalRequestController::class);
+    Route::POST('withdrawal', 'Api\WithdrawalRequestController@bankTransfer');
+    Route::GET('withdrawal', 'Api\WithdrawalRequestController@index');
+    // Route::apiResource('withdrawal', Api\WithdrawalRequestController::class);
+
+    Route::resource('fileupload', Api\FileuploadController::class);
+
+    //Transaction Fee
+    Route::apiResource('transaction_fee', Api\TransactionFeeController::class);
 });
 

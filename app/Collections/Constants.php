@@ -26,4 +26,12 @@ class Constants{
         "CREDIT" => 1,
         "DEBIT" => 2,
         ];
+    
+    //Earning Type
+    Const EARNING = [
+        "CARD" => 1,
+        "WALLET" => 2,
+        "REFERRAL" => 3,
+        "CRYPTO" => 4,
+        ];
 }

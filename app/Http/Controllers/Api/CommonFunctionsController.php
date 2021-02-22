@@ -10,8 +10,6 @@ class CommonFunctionsController extends Controller
 {
     //
     public function api_default_fail_response($fxname, \Exception $e) {
-		\Log::alert('API Exception : ' . $fxname . ' : ' . $e->getMessage());
-		\Log::debug($e);
 		$array_json_return = array(
 			'status' => 'failure',
 			'status_code' => StatusCodes::BAD_REQUEST,
@@ -22,8 +20,6 @@ class CommonFunctionsController extends Controller
 	}
 
 	public function stripe_default_fail_response($fxname, \Stripe\Exception\CardException $e) {
-		\Log::alert('API Exception : ' . $fxname . ' : ' . $e->getError()->message);
-		\Log::debug($e);
 		$array_json_return = array(
 			'status' => 'failure',
 			'status_code' => StatusCodes::BAD_REQUEST,
