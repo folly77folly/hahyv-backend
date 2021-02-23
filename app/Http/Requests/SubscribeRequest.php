@@ -30,4 +30,13 @@ class SubscribeRequest extends FormRequest
             'subscription_id' => ['required', 'exists:subscription_rates,id']
         ];
     }
+
+    public function messages()
+    {
+        return [
+            //
+            'card_id.required' => 'Please add your card and make it default',
+            'card_id.exists' => 'Please add your card and make it default',
+        ];
+    }
 }
