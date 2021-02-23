@@ -30,4 +30,10 @@ class CardPaymentRequest extends FormRequest
             'description' => ['required', 'string']
         ];
     }
+
+    public function messages(){
+        return [
+            'card_id.exists' => 'Please add a card and set it as default'
+        ];
+    }
 }
