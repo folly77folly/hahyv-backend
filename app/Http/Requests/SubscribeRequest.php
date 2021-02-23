@@ -27,7 +27,7 @@ class SubscribeRequest extends FormRequest
             //
             'creator_id' => ['required', 'exists:users,id'],
             'card_id' => ['required', 'exists:cards,id'],
-            'subscription_id' => ['required', 'exists:subscription_types,id']
+            'subscription_id' => ['required', 'exists:subscription_rates,id']
         ];
     }
 }
