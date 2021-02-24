@@ -28,7 +28,7 @@ class SubscribeController extends Controller
 
     public function __construct(){
         $this->middleware('subscribe', ['only'=>['withCard', 'withWallet']]);
-        $this->middleware('wallet_balance', ['only'=>['withWallet']]);
+        $this->middleware('wallet_balance_sub', ['only'=>['withWallet']]);
         $this->middleware('walletTipBalance', ['only'=>['tipWithWallet']]);
     }
     public function withCard(SubscribeRequest $request){

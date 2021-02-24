@@ -41,7 +41,7 @@ class WalletBalance
             return response()->json([
                 "status" => "failure",
                 "status_code" => StatusCodes::BAD_REQUEST,
-                "message" => "Invalid subscription ID.",
+                "message" => "Please add a card and make it default.",
             ],StatusCodes::BAD_REQUEST);
         }
         return $next($request);
