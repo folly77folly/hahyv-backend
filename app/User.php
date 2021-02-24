@@ -31,7 +31,6 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable, HasApiTokens, FollowingFanTrait, Searchable;
     public static $token;
-    public $id;
     /**
      * The attributes that are mass assignable.
      *
