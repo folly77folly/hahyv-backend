@@ -116,13 +116,17 @@ class SubscribeController extends Controller
         }else{
 
             SubscribersList::firstOrCreate($data);
-            $fanData = [
-                'user_id' =>$data['user_id'],
-                'creator_id' => $data['creator_id'],
-            ];
-            Fan::firstOrCreate($fanData);
         }
-        $this->notify(Auth()->user()->username, $creator_id, 'subscribes');
+
+        //Make Fan when you subscribe
+        $fanData = [
+            'user_id' =>$data['user_id'],
+            'creator_id' => $data['creator_id'],
+        ];
+        Fan::firstOrCreate($fanData);
+
+        // Send Notification for subscription
+        $this->notify(Auth()->user()->username, $creator_id, 'subscribed');
     }
 
     public function notify($username, $id_other_user, $type)

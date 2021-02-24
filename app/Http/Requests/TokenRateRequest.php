@@ -24,7 +24,8 @@ class TokenRateRequest extends FormRequest
     public function rules()
     {
         return [
-             'rate' => ['required', 'integer']
+             'rate' => ['required', 'numeric', 'regex:/^\d*(\.\d{1,2})?$/'],
+             'unit' => ['required', 'integer', 'gte:1']
         ];
     }
 
@@ -33,7 +34,8 @@ class TokenRateRequest extends FormRequest
     {
         return [
             'rate.required' => 'You must provide the rate of the token to dollar',
-            'rate.integer' => 'The token provided must be a number'
+            'rate.integer' => 'The token provided must be a number',
+            'unit.integer' => 'The unit provided must be an integer'
         ];
     }
 }
