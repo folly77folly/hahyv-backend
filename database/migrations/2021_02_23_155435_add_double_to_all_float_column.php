@@ -15,8 +15,8 @@ class AddDoubleToAllFloatColumn extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->decimal('walletBalance',19,2)->change();
-            $table->decimal('earningBalance',19,2)->change();
+            $table->decimal('walletBalance',19,2)->unsigned()->change();
+            $table->decimal('earningBalance',19,2)->unsigned()->change();
         });
     }
 
