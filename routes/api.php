@@ -37,6 +37,10 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
         //send mail
         Route::POST('/send_mail', 'Api\Admin\DashboardController@sendMail');
 
+        //setting token rate and unit 
+        Route::POST('/token_rate', 'Api\Admin\TokenController@store');
+        Route::GET('/token_rate', 'Api\Admin\TokenController@index');
+
         Route::prefix('/send_mail')->group(function(){
             Route::POST('/user', 'Api\Admin\MessageController@user');
             Route::POST('/users', 'Api\Admin\MessageController@users');
@@ -108,7 +112,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::DELETE('card/delete/{id}', 'Api\CardController@delete');
 
     Route::POST('buytoken', 'Api\TokenController@buyToken');
-    Route::PUT('tokenrate', 'Api\TokenController@tokenRate');
+    Route::GET('token_rate', 'Api\TokenController@index');
+
     
     //post
     Route::apiResource('post', Api\PostController::class);

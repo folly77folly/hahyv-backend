@@ -10,32 +10,33 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\CardTransactionController;
 Trait TokenTransactionsTrait{
 
-    public function creditToken($id, $amount, $description){
+    public function creditToken($id, $amount, $description, $reference){
         // $user = Auth()->user();
         $user = User::find($id);
-        $walletBalance = $user->walletBalance;
-        DB::transaction(function ()  use ($walletBalance, $user, $amount, $description) {
+        $tokenBalance = $user->tokenBalance;
+        DB::transaction(function ()  use ($tokenBalance, $user, $amount, $description, $reference) {
     
-            $user->walletBalance = $walletBalance + $amount;
+            $user->tokenBalance = $tokenBalance + $amount;
             $user->save();
     
-            WalletTransaction::create([
+            TokenTransaction::create([
                 'user_id' => $user->id,
                 'description'=> $description,
-                'previousTokenBalance' => $walletBalance,
-                'presentTokenBalance' => $walletBalance + $amount,
-                'amountCredited' => $amount,
-                'amountDebited' => 0,
+                'previousTokenBalance' => $tokenBalance,
+                'presentTokenBalance' => $tokenBalance + $amount,
+                'tokenCredited' => $amount,
+                'tokenDebited' => 0,
+                'reference' => $reference,
             ]);
     
         });
     }
 
-    public function debitToken($id, $amount, $description){
+    public function debitToken($id, $amount, $description, $reference){
 
         $user = User::find($id);
         $tokenBalance = $user->tokenBalance;
-        DB::transaction(function ()  use ($tokenBalance, $user, $amount, $description) {
+        DB::transaction(function ()  use ($tokenBalance, $user, $amount, $description, $reference) {
     
             $user->tokenBalance = $tokenBalance - $amount;
             $user->save();
@@ -47,6 +48,7 @@ Trait TokenTransactionsTrait{
                 'presentTokenBalance' => $tokenBalance - $amount,
                 'tokenCredited' => 0,
                 'tokenDebited' => $amount,
+                'reference' => $reference,
             ]);
     
         });

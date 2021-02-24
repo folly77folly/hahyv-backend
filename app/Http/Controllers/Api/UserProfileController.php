@@ -6,6 +6,7 @@ use App\User;
 use App\Models\Follower;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
+use App\Models\SubscribersList;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -202,6 +203,15 @@ class UserProfileController extends Controller
             array_push($my_followers, $following['id']);
         }
 
+        //array of subscribers_list
+        $my_subscribers= [];
+        $subscribers = SubscribersList::where('user_id', '=', Auth()->user()->id)
+        ->where('is_active', 1)
+        ->get(['creator_id AS id'])->toArray();
+        foreach($subscribers as $subscriber){
+            array_push($my_subscribers, $subscriber['id']);
+        }
+
         if ($userP != 1){
             $suggestions = User::all(
                 'id',
@@ -220,6 +230,7 @@ class UserProfileController extends Controller
             ->where('id', '!=', $id )
             ->where('role_id', '!=', 1)
             ->whereNotIn('id', $my_followers)
+            ->whereNotIn('id', $my_subscribers)
             ->toArray();
 
             return response()->json([
@@ -246,6 +257,7 @@ class UserProfileController extends Controller
         ->where('id', '!=', $id )
         ->where('role_id', '!=', 1)
         ->whereNotIn('id', $my_followers)
+        ->whereNotIn('id', $my_subscribers)
         ->toArray();
 
         return response()->json([

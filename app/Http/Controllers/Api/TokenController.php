@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Collections\StatusCodes;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\TokenRateRequest;
 use App\User;
+use App\Models\TokenRate;
+use Illuminate\Http\Request;
+use App\Collections\StatusCodes;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Traits\TokenTransactionsTrait;
+use App\Http\Requests\TokenRateRequest;
+use App\Traits\WalletTransactionsTrait;
 
 class TokenController extends Controller
 {
+    use WalletTransactionsTrait, TokenTransactionsTrait;
     /**
      * Display a listing of the resource.
      *
@@ -19,6 +23,13 @@ class TokenController extends Controller
     public function index()
     {
         //
+        $tokenRates = TokenRate::all();
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "Token rate retrieved.",
+            "data" => $tokenRates
+        ], StatusCodes::SUCCESS);
     }
 
     public function buyTokenAmount(Request $request)
@@ -44,7 +55,7 @@ class TokenController extends Controller
         }
 
 
-        $tokenRate = DB::table('tokenrates')->latest()->first();
+        $tokenRate = DB::table('token_rates')->latest()->first();
 
         $presentTokenRate = $tokenRate->dollarTokenRate;
 
@@ -98,117 +109,50 @@ class TokenController extends Controller
         $request->validate([
             'token' => 'required|integer',
         ]);
+        $tokenRate = TokenRate::first();
+        $unit = $tokenRate->unit;
+        $modulo = fmod($request->token, $unit);
+
+        if($modulo != 0){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::UNPROCESSABLE,
+                "message" => "You can only purchase in multiples of $unit.",
+            ], StatusCodes::UNPROCESSABLE);
+        }
 
         $user = Auth()->user();
 
         $tokenBalance = $user->tokenBalance;
         $walletBalance = $user->walletBalance;
 
-        $tokenRate = DB::table('tokenrates')->latest()->first();
+        $tokenRate = DB::table('token_rates')->latest()->first();
 
-        $presentTokenRate = $tokenRate->dollarTokenRate;
+        $presentTokenRate = $tokenRate->rate;
 
-        $noOfTokenRequested = $request->token;
-
-
+        $noOfTokenRequested = $request->token / $unit;
+        $reference = "wa_tk".time();
+        $description = "purchase of $noOfTokenRequested unit(s) of token";
         $calculateToken = $noOfTokenRequested * $presentTokenRate;
+        $formattedAmount = number_format($calculateToken,2,".",",");
+
 
         if ($calculateToken > $walletBalance) {
             return response()->json([
-                "status" => "failue",
-                "message" => "You have insufficient Wallet Balance to make the purchase.",
-                "Wallet Balance" => $user->walletBalance,
-                "Cost of Token" => $calculateToken
+                "status" => "failure",
+                "status_code" => StatusCodes::UNPROCESSABLE,
+                "message" => "You have insufficient Wallet Balance to make the purchase you will need $formattedAmount naira.",
             ], StatusCodes::UNPROCESSABLE);
         }
 
-
-        DB::transaction(function ()  use ($walletBalance, $user, $calculateToken, $tokenBalance, $noOfTokenRequested) {
-            $walletReduction  = $walletBalance - $calculateToken;
-
-            DB::table('users')->where('id', $user->id)->update([
-                'walletBalance' => $walletReduction,
-                'tokenBalance' => $tokenBalance + $noOfTokenRequested,
-                'updated_at' => now()
-            ]);
-
-            DB::table('wallet_transactions')->insert([
-                'user_id' => $user->id,
-                'previousWalletBalance' => $walletBalance,
-                'presentWalletBalance' => $walletReduction,
-                'amountCredited' => 0,
-                'amountDebited' => $calculateToken,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-            DB::table('token_transactions')->insert([
-                'user_id' => $user->id,
-                'previousTokenBalance' => $tokenBalance,
-                'presentTokenBalance' => $tokenBalance + $noOfTokenRequested,
-                'tokenCredited' => $noOfTokenRequested,
-                'tokenDebited' => 0,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        });
-
-        $user = User::find($user->id);
-
+        $this->debitWallet($user->id, $calculateToken, $description, $reference);
+        $this->creditToken($user->id, $calculateToken, $description, $reference);
 
         return response()->json([
             "status" => "success",
-            "message" => "Cards retrieved successfully.",
-            "token Purchase" => $noOfTokenRequested,
-            'user' => $user
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "token purchased successfully.",
         ], StatusCodes::SUCCESS);
-    }
-
-    public function tokenRate(TokenRateRequest $request)
-    {
-        $rate = $request->rate;
-
-        $tokenRate = DB::table('tokenrates')->first();
-
-        if (!$tokenRate) {
-            DB::table('tokenrates')->insert([
-                'dollarTokenRate' => $rate,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-            $newtokenRate = DB::table('tokenrates')->latest()->first();
-
-            return response()->json([
-                "status" => "success",
-                "message" => "Token Rate added successfully.",
-                "token" => $newtokenRate
-            ], StatusCodes::SUCCESS);
-        }
-
-        DB::table('tokenrates')->update([
-            'dollarTokenRate' => $rate,
-            'updated_at' => now()
-        ]);
-
-        $updateRate = DB::table('tokenrates')->orderByDesc('tokenrates.updated_at')->first();
-
-        return response()->json([
-            "status" => "success",
-            "message" => "Token Rate updated successfully.",
-            "token" => $updateRate
-        ], StatusCodes::SUCCESS);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
