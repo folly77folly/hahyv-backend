@@ -68,7 +68,7 @@ class Kernel extends HttpKernel
         'comment_like' => \App\Http\Middleware\CommentLikeMiddleware::class,
         'post' => \App\Http\Middleware\PostApproveMiddleware::class,
         'subscribe' => \App\Http\Middleware\SubscribeMiddleware::class,
-        'wallet_balance' => \App\Http\Middleware\WalletBalance::class,
+        'wallet_balance_sub' => \App\Http\Middleware\WalletBalance::class,
         'poll_expiry' => \App\Http\Middleware\VotingExpiryMiddleware::class,
         'token' => \App\Http\Middleware\TokenMiddleware::class,
         'walletTipBalance' => \App\Http\Middleware\WalletTipBalance::class,
