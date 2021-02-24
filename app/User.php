@@ -25,11 +25,13 @@ use App\Notifications\PasswordNotification;
 use App\Notifications\EmailVerifyNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable, HasApiTokens, FollowingFanTrait;
+    use Notifiable, HasApiTokens, FollowingFanTrait, Searchable;
     public static $token;
+    public $id;
     /**
      * The attributes that are mass assignable.
      *
@@ -233,5 +235,38 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(CardTransaction::class, 'user');
     }
 
+    public function searchableAs(){
+        return 'users_username';
+    }
+    /**
+     * Modify the query used to retrieve models when making all of the models searchable.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function makeAllSearchableUsing($query)
+    {
+        $users = DB::table('users')->where('role_id', 2)->get();
+        return $query;
+    }
 
+    public function shouldBeSearchable()
+    {
+        return $this->role_id == 2;
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        $array = $this->username;
+        $array = $this->toArray();
+
+        // Customize the data array...
+
+        return $array;
+    }
 }

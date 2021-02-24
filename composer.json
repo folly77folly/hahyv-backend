@@ -9,6 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^7.2.5|^8.0",
+        "algolia/algoliasearch-client-php": "^2.7",
+        "algolia/scout-extended": "^1.13",
         "doctrine/dbal": "^2.10",
         "fakerphp/faker": "^1.9.1",
         "fideloper/proxy": "^4.4",
