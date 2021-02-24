@@ -9,6 +9,7 @@ use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SearchRequest;
 
 class UserProfileController extends Controller
 {
@@ -282,6 +283,15 @@ class UserProfileController extends Controller
             "status" => "success",
             "message" => "All Posts fetched successfully.",
             "data" => $post
+        ], StatusCodes::SUCCESS);
+    }
+
+    public function search(SearchRequest $request){
+        $validatedData = $request->validated();
+        $query= '';
+        $users = User::search($validatedData['find'])->get();
+        return response()->json([
+            'data' => $users,
         ], StatusCodes::SUCCESS);
     }
 }

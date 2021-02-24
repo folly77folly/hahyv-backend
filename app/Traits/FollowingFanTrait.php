@@ -41,6 +41,9 @@ Trait FollowingFanTrait{
     }
 
     public function subscribed($user_id){
+        if(!Auth()->user()){
+            return false;
+        }
         if(Auth()->user()->id != $user_id ){
 
             $subscribed = SubscribersList::where([
