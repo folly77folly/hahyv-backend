@@ -3,10 +3,12 @@
 namespace App\Jobs;
 
 use App\User;
+use App\Mail\PayoutMail;
 use Illuminate\Bus\Queueable;
 use App\Collections\Constants;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Queue\SerializesModels;
 use App\Traits\WalletTransactionsTrait;
 use App\Traits\EarningTransactionsTrait;
@@ -45,7 +47,7 @@ class PayoutJob implements ShouldQueue
         $earning_type = Constants::EARNING['WALLET'];
         $s = 1;
         foreach ($creators as $creator) {
-            $reference ="wa_pay".$s;
+            $reference ="wa_pay".$s."_".time();
             # code...
             if ($creator->availableEarning > 0){
 
@@ -62,6 +64,18 @@ class PayoutJob implements ShouldQueue
                     $this->debitEarning($creator->id, $balance, $incomeDescription, $reference, $creator->id, $earning_type, false);
                 });
             }
+            //send mail to creator
+            $payAmount = \number_format($creator->availableEarning,2,'.', ',');
+            $mailInfo = [
+                'username' => $creator->username,
+                'amount' => $creator->availableEarning,
+                'subject' => "Weekly Payouts of Earnings",
+                'body' => "I'm Pleased to inform you that payout from earnings wallet has been moved to your wallet.
+                A total of =N= $payAmount has been sent to your wallet
+                You can withdrawal it into your bank provisioned on the system.
+                Thanks."
+            ];
+            Mail::to($creator->email)->queue(new PayoutMail($mailInfo));
             $s = $s + 1;
         }
     }

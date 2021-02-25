@@ -1,6 +1,5 @@
-
 @component('mail::message')
-Hello **{{$name}}**,  {{-- use double space for line break --}}
+Hello **{{ $mailDetails['username'] }}**,  {{-- use double space for line break --}}
 
 @component('mail::panel')
 {{ $mailDetails['body'] }}

@@ -37,7 +37,7 @@ class SendAnnouncement implements ShouldQueue
         //
         foreach ($this->emails as $key => $email) {
             # code...
-            Mail::to($email)->send(new AnnouncementMail($this->mailDetails, $key));
+            Mail::to($email)->queue(new AnnouncementMail($this->mailDetails, $key));
         }
         // Mail::to('ilori2020@yopmail.com')->send(new AnnouncementMail($this->mailDetails));
     }

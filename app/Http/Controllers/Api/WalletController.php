@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use App\Traits\CardPaymentTrait;
+use App\Jobs\StripeFailedCardJob;
 use App\Jobs\StripeFundWalletJob;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\Log;
@@ -184,12 +185,16 @@ class WalletController extends Controller
             dispatch(new StripeFundWalletJob($paymentIntent));
             // handlePaymentIntentSucceeded($paymentIntent);
             break;
-        case 'payment_method.attached':
-            $paymentMethod = $event->data->object; // contains a \Stripe\PaymentMethod
+        case 'charge.failed':
+            $paymentIntent = $event->data->object; // contains a \Stripe\PaymentIntent
+            dispatch(new StripeFailedCardJob($paymentIntent));// contains a \Stripe\PaymentMethod
             // handlePaymentMethodAttached($paymentMethod);
-     
-    
            break;
+        case 'charge.expired':
+            $paymentIntent = $event->data->object; // contains a \Stripe\PaymentIntent
+            dispatch(new StripeFailedCardJob($paymentIntent));// contains a \Stripe\PaymentMethod
+            // handlePaymentMethodAttached($paymentMethod);
+            break;           
         // ... handle other event types
         default:
             echo 'Received unknown event type ' . $event->type;
