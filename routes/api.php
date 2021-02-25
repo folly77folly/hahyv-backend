@@ -17,7 +17,7 @@ use App\Http\Controllers\API\FollowerController;
 
 //webhook
 Route::webhooks('webhook-receiving-url', 'paystack');
-Route::POST('webhook-stripe-url', 'Api\WalletController@valentine');
+Route::POST('/webhook-stripe-url', 'Api\WalletController@valentine');
 
 //Admin Routes
 
