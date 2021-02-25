@@ -11,7 +11,9 @@ use App\Collections\Constants;
 use App\Models\ReferEarnSetup;
 use App\Models\SubscribersList;
 use App\Models\SubscriptionRate;
+use App\Models\TokenTransaction;
 use App\Models\PaymentPercentage;
+use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
 Trait FollowingFanTrait{
 
@@ -124,6 +126,34 @@ Trait FollowingFanTrait{
         }
             
         return 1;
+    }
+
+    public function walletValue($user_id){
+        if(!Auth()->user()){
+            return 0;
+        }
+        $credit = WalletTransaction::where('user_id', $user_id)->sum('amountCredited');
+        $debit = WalletTransaction::where('user_id', $user_id)->sum('amountDebited');
+        $balance = $credit - $debit;
+        if ($balance <= 0){
+            return 0;
+        }
+        // User::where('id',$user_id)->update(['walletBalance' => $balance]);
+        return Round($balance,2);
+    }
+
+    public function tokenValue($user_id){
+        if(!Auth()->user()){
+            return 0;
+        }
+        $credit = TokenTransaction::where('user_id', $user_id)->sum('tokenCredited');
+        $debit = TokenTransaction::where('user_id', $user_id)->sum('tokenDebited');
+        $balance = $credit - $debit;
+        if ($balance <= 0){
+            return 0;
+        }
+        // User::where('id',$user_id)->update(['walletBalance' => $balance]);
+        return Round($balance,2);
     }
     
 }

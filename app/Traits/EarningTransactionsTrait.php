@@ -19,8 +19,8 @@ Trait EarningTransactionsTrait{
         DB::transaction(function ()  use ($earningBalance, $user, $amount, $description, 
         $trans_id, $sender_id, $earning_type) {
     
-            $user->earningBalance = $earningBalance + $amount;
-            $user->save();
+            // $user->earningBalance = $earningBalance + $amount;
+            // $user->save();
     
             EarningTransaction::create([
                 'user_id' => $user->id,
@@ -45,15 +45,15 @@ Trait EarningTransactionsTrait{
         });
     }
 
-    public function debitEarning($id, $amount, $description, $trans_id, $sender_id, $earning_type){
+    public function debitEarning($id, $amount, $description, $trans_id, $sender_id, $earning_type, $debitHahyv ){
         // $user = Auth()->user();
         $user = User::find($id);
         $earningBalance = $user->earningBalance;
         DB::transaction(function ()  use ($earningBalance, $user, $amount, $description,
-        $trans_id, $sender_id, $earning_type) {
+        $trans_id, $sender_id, $earning_type, $debitHahyv) {
     
-            $user->earningBalance = $earningBalance - $amount;
-            $user->save();
+            // $user->earningBalance = $earningBalance - $amount;
+            // $user->save();
     
             EarningTransaction::create([
                 'user_id' => $user->id,
@@ -64,6 +64,20 @@ Trait EarningTransactionsTrait{
                 'sender_id' => $sender_id,
                 'earning_type_id' => $earning_type
             ]);
+
+            if ($debitHahyv){
+
+                HahyvEarning::create([
+                    'receiver_id' => $user->id,
+                    'description'=> $description,
+                    'amount' => $amount,
+                    'type_id' => Constants::TRANSACTION["DEBIT"],
+                    'trans_id' => $trans_id,
+                    'sender_id' => $sender_id,
+                    'earning_type_id' => $earning_type
+                ]);            
+            }
+
     
         });
     }
