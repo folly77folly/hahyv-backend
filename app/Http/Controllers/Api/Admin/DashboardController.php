@@ -8,6 +8,7 @@ use App\Collections\Constants;
 use App\Jobs\SendAnnouncement;
 use App\Mail\AnnouncementMail;
 use App\Collections\StatusCodes;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\AnnouncementRequest;
@@ -105,8 +106,10 @@ class DashboardController extends Controller
         $user  = User::find($validatedData['user_id']);
         if($user->is_active == 1){
             $user->is_active = 0;
+            DB::table('oauth_access_tokens')->where('user_id',$user->id)->update(['revoked'=> 1]);
         }else{
             $user->is_active = 1;
+            DB::table('oauth_access_tokens')->where('user_id',$user->id)->update(['revoked'=> 0]);
         }
         $user->save();
         return response()->json([
