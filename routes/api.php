@@ -47,6 +47,9 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
             Route::POST('/subscribers', 'Api\Admin\MessageController@subscribers');
             Route::POST('/creators', 'Api\Admin\MessageController@creators');
         });
+
+        //Payout to all creators
+        Route::apiResource('payout', Api\Admin\PayoutController::class);
     });
 
 });

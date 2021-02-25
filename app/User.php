@@ -10,10 +10,12 @@ use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\BankDetail;
 use App\Models\Preference;
+use Laravel\Scout\Searchable;
 use App\Models\CardTransaction;
 use App\Models\MonetizeBenefit;
 use App\Models\SubscribersList;
 use App\Models\SubscriptionRate;
+use App\Models\WalletTransaction;
 use App\Models\WithdrawalRequest;
 use App\Traits\FollowingFanTrait;
 use App\Models\EarningTransaction;
@@ -25,7 +27,6 @@ use App\Notifications\PasswordNotification;
 use App\Notifications\EmailVerifyNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Scout\Searchable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -70,7 +71,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     
 
-    protected $appends = ['isSubscribed', 'unlockFee', 'pendingWithdrawal', 'availableEarning','allEarning','earnRate'];
+    protected $appends = ['isSubscribed', 
+    'unlockFee', 'pendingWithdrawal', 
+    'availableEarning','allEarning','earnRate',
+    'walletBalance', 'tokenBalance'];
 
     public function getIsSubscribedAttribute(){
         if ($this->is_monetize){
@@ -104,6 +108,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $available;
     }
 
+    public function getWalletBalanceAttribute(){
+        return $this->walletValue($this->id);
+    }
+
+    public function getTokenBalanceAttribute(){
+        return $this->tokenValue($this->id);
+    }
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -227,6 +238,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(EarningTransaction::class);
     }
+
+    // All Wallet 
+    // public function wallet()
+    // {
+    //     return $this->hasMany(WalletTransaction::class);
+    // }
 
     // All Earnings 
     public function cardTrans()
