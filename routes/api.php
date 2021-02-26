@@ -58,7 +58,11 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
         });
 
         //Payout to all creators
+        Route::POST('payout_user', 'Api\Admin\PayoutController@payoutUser');
         Route::apiResource('payout', Api\Admin\PayoutController::class);
+
+        //Hahyv Earnings 
+        Route::apiResource('wallet_transactions', Api\Admin\HahyvEarningController::class);
     });
 
 });

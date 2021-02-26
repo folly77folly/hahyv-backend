@@ -165,6 +165,7 @@ class DashboardController extends Controller
         $hahyvWallet = HahyvEarning::sum('amount');
 
         //payout value
+        // $payoutOuters = $users->where('availableEarning', '>', 0);
         $payout = $users->where('availableEarning', '>', 0)->sum('availableEarning');
         
         $data =  [
@@ -182,7 +183,7 @@ class DashboardController extends Controller
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
             "message" => "successfully",
-            "data" => $data
+            "data" => $data,
         ],StatusCodes::SUCCESS,);        
 
     }
