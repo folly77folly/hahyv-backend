@@ -104,8 +104,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function getAvailableEarningAttribute(){
-        $available = ($this->getAllEarningAttribute() - $this->getPendingWithdrawalAttribute()) * $this->earnRate;
-        $this->earningBalance = $available;
+        $available = $this->getAllEarningAttribute()  * $this->earnRate;
         return round($available,2);
     }
 
