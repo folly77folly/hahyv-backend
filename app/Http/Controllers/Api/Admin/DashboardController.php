@@ -94,6 +94,16 @@ class DashboardController extends Controller
         //
     }
     public function allUsers(){
+        $users  = User::where('role_id', '!=', 1)->latest();
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "all users retrieved",
+            "data" => $users
+        ],StatusCodes::SUCCESS,);
+    }
+
+    public function allUsersP(){
         $users  = User::where('role_id', '!=', 1)->latest()->paginate(Constants::PAGE_LIMIT);
         return response()->json([
             "status" => "success",
@@ -152,7 +162,10 @@ class DashboardController extends Controller
         $inActiveSubscribers = $subscribers->where('active', 0)->count();
 
         //hahyv wallet
-        HahyvEarning::sum('amount');
+        $hahyvWallet = HahyvEarning::sum('amount');
+
+        //payout value
+        $payout = $users->where('availableEarning', '>', 0)->sum('availableEarning');
         
         $data =  [
             "noOfUsers" => $noOfUsers,
@@ -161,8 +174,8 @@ class DashboardController extends Controller
             "noOfSubscribers" => $allSubscribers,
             "noOfActiveSubscribers" => $activeSubscribers,
             "noOfInActiveSubscribers" => $inActiveSubscribers,
-            "hahyvWallet" => $noOfCreators,
-            "totalExpectedPayout" => $noOfCreators,
+            "hahyvWallet" => $hahyvWallet,
+            "totalExpectedPayout" => $payout,
         ];
 
         return response()->json([

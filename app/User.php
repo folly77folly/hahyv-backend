@@ -99,13 +99,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function getAllEarningAttribute(){
-        return $this->earnings->sum('amount');
+        $result = $this->earnings->sum('amount');
+        return round($result, 2);
     }
 
     public function getAvailableEarningAttribute(){
         $available = ($this->getAllEarningAttribute() - $this->getPendingWithdrawalAttribute()) * $this->earnRate;
         $this->earningBalance = $available;
-        return $available;
+        return round($available,2);
     }
 
     public function getWalletBalanceAttribute(){

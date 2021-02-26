@@ -39,7 +39,7 @@ class PayoutJob implements ShouldQueue
     {
         //
         $creators = User::where([
-            'is_monetize'=> 1,
+            'role_id'=> 2,
             // ['availableEarning', '>', 0]
             ])->get();
         $description ="Payout from Admin";

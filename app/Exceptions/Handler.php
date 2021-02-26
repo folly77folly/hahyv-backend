@@ -64,7 +64,7 @@ class Handler extends ExceptionHandler
             'status' => 'failed',
             'status_code' => 404,
             'message' => $exception->getMessage(),
-            'error' => $exception->errors()
+            // 'error' => $exception->errors()
         ], 404);
         Log::info($exception->getMessage());
             return parent::render($request, $exception);
