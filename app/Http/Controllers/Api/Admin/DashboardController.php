@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\User;
+use App\Models\HahyvEarning;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Jobs\SendAnnouncement;
 use App\Mail\AnnouncementMail;
+use App\Models\SubscribersList;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -142,12 +144,24 @@ class DashboardController extends Controller
         $noOfUsers = $users->count();
         $noOfNonCreators = $users->where('is_monetize', 0)->count();
         $noOfCreators = $users->where('is_monetize', 1)->count();
+
+        // no of subscribers
+        $subscribers = SubscribersList::all();
+        $allSubscribers = $subscribers->count();
+        $activeSubscribers = $subscribers->where('active', 1)->count();
+        $inActiveSubscribers = $subscribers->where('active', 0)->count();
+
+        //hahyv wallet
+        HahyvEarning::sum('amount');
         
         $data =  [
             "noOfUsers" => $noOfUsers,
             "noOfNonCreators" => $noOfNonCreators,
             "noOfCreators" => $noOfCreators,
-            "totalEarning" => $noOfCreators,
+            "noOfSubscribers" => $allSubscribers,
+            "noOfActiveSubscribers" => $activeSubscribers,
+            "noOfInActiveSubscribers" => $inActiveSubscribers,
+            "hahyvWallet" => $noOfCreators,
             "totalExpectedPayout" => $noOfCreators,
         ];
 
@@ -180,7 +194,7 @@ class DashboardController extends Controller
                     return $query->where('liked', 1)->with('user');
                 }])->latest()->paginate(Constants::PAGE_LIMIT);
 
-        }])->get();
+        }])->first();
 
 
         return response()->json([
