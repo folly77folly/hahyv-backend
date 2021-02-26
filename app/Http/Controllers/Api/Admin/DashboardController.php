@@ -158,8 +158,8 @@ class DashboardController extends Controller
         // no of subscribers
         $subscribers = SubscribersList::all();
         $allSubscribers = $subscribers->count();
-        $activeSubscribers = $subscribers->where(['is_active' => 1])->count();
-        $inActiveSubscribers = $subscribers->where(['is_active' => 0])->count();
+        $activeSubscribers = $subscribers->where('is_active', '==', 1 )->count();
+        $inActiveSubscribers = $subscribers->where('is_active', '==', 0)->count();
 
         //hahyv wallet
         $hahyvWallet = HahyvEarning::all()->sum('amount');
