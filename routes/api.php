@@ -34,6 +34,7 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
 
         //all users
         Route::GET('/users', 'Api\Admin\DashboardController@allUsers');
+        Route::GET('/users_p', 'Api\Admin\DashboardController@allUsersP');
         Route::PUT('/users', 'Api\Admin\DashboardController@deactivateUser');
 
         //Dashboard Counts
