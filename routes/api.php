@@ -31,9 +31,17 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
     Route::prefix('admin')->group(function(){
         // change password
         Route::POST('/change_password', 'Api\Admin\AuthController@changePassword');
+
         //all users
         Route::GET('/users', 'Api\Admin\DashboardController@allUsers');
         Route::PUT('/users', 'Api\Admin\DashboardController@deactivateUser');
+
+        //Dashboard Counts
+        Route::GET('/dashboard', 'Api\Admin\DashboardController@dashboard');
+
+        //user profile
+        Route::GET('/user/{user}', 'Api\Admin\DashboardController@profileUsername');
+
         //send mail
         Route::POST('/send_mail', 'Api\Admin\DashboardController@sendMail');
 
