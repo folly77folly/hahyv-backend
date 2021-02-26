@@ -94,7 +94,7 @@ class DashboardController extends Controller
         //
     }
     public function allUsers(){
-        $users  = User::where('role_id', '!=', 1)->latest();
+        $users  = User::where('role_id', '!=', 1)->latest()-get();
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
