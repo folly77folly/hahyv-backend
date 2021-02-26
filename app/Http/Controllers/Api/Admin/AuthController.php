@@ -72,6 +72,14 @@ class AuthController extends Controller
             ], StatusCodes::UNAUTHORIZED);
         }
 
+        if(Auth()->user()->role_id != 1){
+            return response()->json([
+                "status"=>"failure",
+                "status_code" => StatusCodes::UNAUTHORIZED,
+                "message"=>"You are not allowed"
+            ], StatusCodes::UNAUTHORIZED);
+        }
+
         $accessToken = Auth()->user()->createToken("authToken")->accessToken;
         return response()->json([
             "status"=>"success",
