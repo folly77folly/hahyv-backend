@@ -135,4 +135,58 @@ class DashboardController extends Controller
             "message" => "mail sent successfully",
         ],StatusCodes::SUCCESS,);
     }
+
+    public function dashboard(){
+
+        $users = User::where('role_id', 2)->get();
+        $noOfUsers = $users->count();
+        $noOfNonCreators = $users->where('is_monetize', 0)->count();
+        $noOfCreators = $users->where('is_monetize', 1)->count();
+        
+        $data =  [
+            "noOfUsers" => $noOfUsers,
+            "noOfNonCreators" => $noOfNonCreators,
+            "noOfCreators" => $noOfCreators,
+            "totalEarning" => $noOfCreators,
+            "totalExpectedPayout" => $noOfCreators,
+        ];
+
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "successfully",
+            "data" => $data
+        ],StatusCodes::SUCCESS,);        
+
+    }
+
+
+    public function profileUsername(string $str){
+        $post = User::where('username' ,$str)
+        ->with(['post' => function($query){
+                $query->with('Comment')->with(['user' => function($query){
+                    $query->with([
+                        'monetizeBenefits:user_id,benefits',
+                        'subscriptionBenefits:user_id,benefits',
+                        ])->with([
+                            'subscriptionRates' => function($query){
+                                $query->with('subscription:id,name,period');
+                            }]);
+                }])
+                ->with(['polls'=>function($query){
+                    return $query->with('votes');
+                }])
+                ->with(['likes' => function($query){
+                    return $query->where('liked', 1)->with('user');
+                }])->latest()->paginate(Constants::PAGE_LIMIT);
+
+        }])->get();
+
+
+        return response()->json([
+            "status" => "success",
+            "message" => "User profile fetched successfully.",
+            "data" => $post
+        ], StatusCodes::SUCCESS);
+    }
 }
