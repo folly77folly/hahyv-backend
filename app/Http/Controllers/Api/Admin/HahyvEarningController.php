@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\User;
-use App\Jobs\PayoutJob;
-use App\Jobs\PayoutJobUser;
+use App\Models\HahyvEarning;
 use Illuminate\Http\Request;
+use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PayoutRequest;
 
-class PayoutController extends Controller
+class HahyvEarningController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,6 +18,14 @@ class PayoutController extends Controller
     public function index()
     {
         //
+        $earning = HahyvEarning::latest()->paginate(Constants::PAGE_LIMIT);
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "Transactions retrieved .",
+            "data" => $earning
+        ], StatusCodes::SUCCESS);
+
     }
 
     /**
@@ -41,13 +47,6 @@ class PayoutController extends Controller
     public function store(Request $request)
     {
         //
-        dispatch(new PayoutJob());
-
-        return response()->json([
-            "status" => "success",
-            "status_code" => StatusCodes::SUCCESS,
-            "message" => "payout process started...",
-        ],StatusCodes::SUCCESS,);
     }
 
     /**
@@ -93,29 +92,5 @@ class PayoutController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function payoutUser(PayoutRequest $request)
-    {
-        //
-        $validatedData = $request->validated();
-
-        $id = $validatedData['user_id'];
-        $user = User::find($id);
-        if ($user->availableEarning <= 0){
-            return response()->json([
-                "status" => "failure",
-                "status_code" => StatusCodes::BAD_REQUEST,
-                "message" => "No earnings recorded for this user",
-            ],StatusCodes::BAD_REQUEST,);
-        }
-
-        dispatch(new PayoutJobUser($id));
-
-        return response()->json([
-            "status" => "success",
-            "status_code" => StatusCodes::SUCCESS,
-            "message" => "payout process started...",
-        ],StatusCodes::SUCCESS,);
     }
 }
