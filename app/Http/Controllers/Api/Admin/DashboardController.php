@@ -162,7 +162,7 @@ class DashboardController extends Controller
         $inActiveSubscribers = $subscribers->where('active', 0)->count();
 
         //hahyv wallet
-        $hahyvWallet = HahyvEarning::sum('amount');
+        $hahyvWallet = HahyvEarning::all()->sum('amount');
 
         //payout value
         // $payoutOuters = $users->where('availableEarning', '>', 0);
@@ -177,6 +177,7 @@ class DashboardController extends Controller
             "noOfInActiveSubscribers" => $inActiveSubscribers,
             "hahyvWallet" => $hahyvWallet,
             "totalExpectedPayout" => $payout,
+            "totalExpectedIncome" => $hahyvWallet- $payout,
         ];
 
         return response()->json([
