@@ -6,6 +6,7 @@ use Throwable;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Auth\AuthenticationException as AuthenticationException;
 
 class Handler extends ExceptionHandler
 {
@@ -52,19 +53,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        // if ($exception){
-        //     // log the error
-        //     if ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
-        //         $code = $exception->getStatusCode();
-        //       }else{
-        //           $code = StatusCodes::BAD_REQUEST;
-        //       }
-        //     return response()->json([
-        //         'status' => 'failed',
-        //         'status_code' => $code,
-        //         'message' => $exception->getMessage()
-        //     ], $code);
-        //     }
+        if ($exception instanceof AuthenticationException) {
+            return response()->json([
+                'status' => 'failed',
+                'status_code' => '401',
+                'message' => $exception->getMessage()
+            ], 401);
+        }
+        return response()->json([
+            'status' => 'failed',
+            'status_code' => 404,
+            'message' => $exception->getMessage(),
+            'error' => $exception->errors()
+        ], 404);
         Log::info($exception->getMessage());
             return parent::render($request, $exception);
     }
