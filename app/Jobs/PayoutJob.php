@@ -40,8 +40,7 @@ class PayoutJob implements ShouldQueue
         //
         $creators = User::where([
             'role_id'=> 2,
-            // ['availableEarning', '>', 0]
-            ])->get();
+            ])->where('email_verified_at', '!=', null)->get();
         $description ="Payout from Admin";
         $incomeDescription ="Payout charges";
         $earning_type = Constants::EARNING['WALLET'];
@@ -63,7 +62,7 @@ class PayoutJob implements ShouldQueue
                     $reference ="wa_pay_ $creator->id".time();
                     $this->debitEarning($creator->id, $balance, $incomeDescription, $reference, $creator->id, $earning_type, false);
                 });
-                
+
                 //send mail to creator
                 $payAmount = \number_format($creator->availableEarning,2,'.', ',');
                 $mailInfo = [

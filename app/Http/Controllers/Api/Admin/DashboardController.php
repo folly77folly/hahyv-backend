@@ -167,6 +167,8 @@ class DashboardController extends Controller
         //payout value
         // $payoutOuters = $users->where('availableEarning', '>', 0);
         $payout = $users->where('availableEarning', '>', 0)->sum('availableEarning');
+
+        
         
         $data =  [
             "noOfUsers" => $noOfUsers,
