@@ -63,6 +63,9 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
 
         //Hahyv Earnings 
         Route::apiResource('wallet_transactions', Api\Admin\HahyvEarningController::class);
+
+        //Transaction Fee
+        Route::apiResource('transaction_fee', Api\Admin\TransactionFeeController::class);
     });
 
 });
@@ -213,7 +216,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::resource('fileupload', Api\FileuploadController::class);
 
     //Transaction Fee
-    Route::apiResource('transaction_fee', Api\TransactionFeeController::class);
+    Route::GET('transaction_fee', 'Api\TransactionFeeController@index');
 
     //Search 
     Route::GET('search', 'Api\UserProfileController@search');
