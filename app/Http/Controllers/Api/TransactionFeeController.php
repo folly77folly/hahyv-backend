@@ -44,22 +44,7 @@ class TransactionFeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(TransactionFeeRequest $request)
-    {
-        //
-        $validatedData = $request->validated();
-        
-        $transactionFee = TransactionFee::updateOrCreate([
-            'id' => 1
-        ], $validatedData);
 
-        return response()->json([
-            "status"=>"success",
-            "status_code" => StatusCodes::SUCCESS,
-            "message" => "transaction fee save successfully",
-            "data" => $transactionFee
-        ],StatusCodes::SUCCESS);
-    }
 
     /**
      * Display the specified resource.
