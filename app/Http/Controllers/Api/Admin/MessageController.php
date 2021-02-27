@@ -30,15 +30,15 @@ class MessageController extends Controller
 
     public function users(AnnouncementRequest $request){
         $mailDetails = $request->validated();
-        $users  = User::where('role_id', 2)->pluck('email','username');
+        $users  = User::where('role_id', 2)->where('email_verified_at', '!=', null)->pluck('email','username');
 
-        $this->dispatchJob($mailDetails, $users);
+        $this->dispatchJob($mailDetails, $users)->delay(now()->addMinutes(2));
 
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
             "message" => "mail sent successfully",
-        ],StatusCodes::SUCCESS,);
+        ],StatusCodes::SUCCESS);
     }
 
     public function subscribers(AnnouncementRequest $request){
