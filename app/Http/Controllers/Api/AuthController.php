@@ -240,8 +240,16 @@ class AuthController extends Controller
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
-            "message" => "Password changed successfully",
-            "data" => $user
+            "message" => "user login successfully",
+            "data"=> [
+                "name"=>$user->name,
+                "username"=>$user->username,
+                "email"=>$user->email,
+                "id"=>$user->id,
+                "created_at" => $user->created_at,
+                "updated_at" => $user->updated_at,
+                "verified_at" => $user->email_verified_at,
+            ]
         ],StatusCodes::SUCCESS,);
     }
 }
