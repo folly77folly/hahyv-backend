@@ -102,6 +102,9 @@ Route::group(['middleware'=>'auth:api'], function(){
     // Route::GET('{str}', 'Api\UserProfileController@profileUsername');
     // change password
     Route::POST('/changepassword', 'Api\AuthController@changePassword');
+
+    //Search 
+    Route::GET('welcome', 'Api\AuthController@welcome');
     
     // Get all preferences
     Route::GET('preferences/', 'Api\PreferenceController@index')->name('preferences');
@@ -220,5 +223,6 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     //Search 
     Route::GET('search', 'Api\UserProfileController@search');
+
 });
 
