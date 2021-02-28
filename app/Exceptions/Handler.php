@@ -57,7 +57,7 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'status' => 'failed',
                 'status_code' => '401',
-                'message' => $exception->getMessage()
+                'message' => "You are not authorized"
             ], 401);
         }
         // return response()->json([
