@@ -224,7 +224,8 @@ class UserProfileController extends Controller
                 'cover_image_url',
                 'preference_id',
                 'created_at',
-                'updated_at'
+                'updated_at',
+                'email_verified_at'
             )
             ->where('preference_id', '==', $userP)
             ->where('email_verified_at', '!=', null)
@@ -253,7 +254,8 @@ class UserProfileController extends Controller
             'cover_image_url',
             'preference_id',
             'created_at',
-            'updated_at'
+            'updated_at',
+            'email_verified_at'
         )
         ->where('id', '!=', $id )
         ->where('email_verified_at', '!=', null)
