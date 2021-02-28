@@ -236,7 +236,13 @@ class AuthController extends Controller
     public function welcome(Request $request){
 
         $user = $request->user();
-
+        if (!$user){
+            return response()->json([
+                "status"=>"failure",
+                "status_code" => StatusCodes::UNAUTHORIZED,
+                "message"=>"You are not authorized"
+            ], StatusCodes::UNAUTHORIZED);
+        }
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
