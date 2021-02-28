@@ -232,4 +232,16 @@ class AuthController extends Controller
                 "message" => "Password changed successfully",
             ],StatusCodes::SUCCESS,);
     }
+
+    public function welcome(Request $request){
+
+        $user = $request->user();
+
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "Password changed successfully",
+            "data" => $user
+        ],StatusCodes::SUCCESS,);
+    }
 }

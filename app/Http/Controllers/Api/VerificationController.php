@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;
 use App\Http\Requests\OtpRequest;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
 use App\Providers\RouteServiceProvider;
@@ -76,7 +77,10 @@ class VerificationController extends Controller
         //     return response(["message"=>"Successfully Verified"]);
         // }
         $base_url = env('BASE_URL', 'http://127.0.0.1:3001');
-        return redirect($base_url."/welcome");
+        // $token = auth()->loginUsingId($request->route('id'));
+        $accessToken = Auth()->user()->createToken("authToken")->accessToken;
+        Log::alert($accessToken);
+        return redirect($base_url."/welcome/?token=$accessToken");
 
         // return response([
         //     "status"=> "success",
