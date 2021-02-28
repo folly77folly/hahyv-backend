@@ -122,7 +122,7 @@ Trait FollowingFanTrait{
         $amount = PaymentPercentage::first();
         if ($amount){
             $rate = number_format(($amount->rate)/100, 2);
-            return $rate;
+            return floatval($rate);
         }
             
         return 1;

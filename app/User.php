@@ -100,7 +100,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAllEarningAttribute(){
         $result = $this->earnings->sum('amount');
-        return round($result, 2);
+        if($result > 0){
+
+            return round($result, 2);
+        }else{
+            return 0;
+        }
     }
 
     public function getAvailableEarningAttribute(){
