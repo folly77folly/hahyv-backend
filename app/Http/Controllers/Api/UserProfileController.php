@@ -227,6 +227,7 @@ class UserProfileController extends Controller
                 'updated_at'
             )
             ->where('preference_id', '==', $userP)
+            ->where('email_verified_at', '!=', null)
             ->where('id', '!=', $id )
             ->where('role_id', '!=', 1)
             ->whereNotIn('id', $my_followers)
@@ -255,6 +256,7 @@ class UserProfileController extends Controller
             'updated_at'
         )
         ->where('id', '!=', $id )
+        ->where('email_verified_at', '!=', null)
         ->where('role_id', '!=', 1)
         ->whereNotIn('id', $my_followers)
         ->whereNotIn('id', $my_subscribers)

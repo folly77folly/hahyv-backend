@@ -150,7 +150,7 @@ class DashboardController extends Controller
 
     public function dashboard(){
 
-        $users = User::where('role_id', 2)->get();
+        $users = User::where('role_id', 2)->where('email_verified_at', '!=', null)->get();
         $noOfUsers = $users->count();
         $noOfNonCreators = $users->where('is_monetize', 0)->count();
         $noOfCreators = $users->where('is_monetize', 1)->count();

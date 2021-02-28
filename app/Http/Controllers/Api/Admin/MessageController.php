@@ -17,15 +17,24 @@ class MessageController extends Controller
     //
     public function user(MessageToUserRequest $request){
         $mailDetails = $request->validated();
-        $users  = User::where('id', $mailDetails['user_id'])->pluck('email','username');
+        $users  = User::where('id', $mailDetails['user_id'])->where('email_verified_at', '!=', null)->pluck('email','username');
 
-        $this->dispatchJob($mailDetails, $users);
+        if ($users){
+            $this->dispatchJob($mailDetails, $users)->delay(now()->addMinutes(5));
 
-        return response()->json([
-            "status" => "success",
-            "status_code" => StatusCodes::SUCCESS,
-            "message" => "mail sent successfully",
-        ],StatusCodes::SUCCESS,);
+            return response()->json([
+                "status" => "success",
+                "status_code" => StatusCodes::SUCCESS,
+                "message" => "mail sent successfully",
+            ],StatusCodes::SUCCESS,);
+        }else{
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => "user not verified",
+            ],StatusCodes::BAD_REQUEST);
+        }
+
     }
 
     public function users(AnnouncementRequest $request){
@@ -44,7 +53,7 @@ class MessageController extends Controller
     public function subscribers(AnnouncementRequest $request){
         $mailDetails = $request->validated();
         $users  = User::where('is_monetize', false)->pluck('email','username');
-        $this->dispatchJob($mailDetails, $users);
+        $this->dispatchJob($mailDetails, $users)->delay(now()->addMinutes(5));
 
         return response()->json([
             "status" => "success",
@@ -56,7 +65,7 @@ class MessageController extends Controller
     public function creators(AnnouncementRequest $request){
         $mailDetails = $request->validated();
         $users  = User::where('is_monetize', true)->pluck('email','username');
-        $this->dispatchJob($mailDetails, $users);
+        $this->dispatchJob($mailDetails, $users)->delay(now()->addMinutes(5));
 
         return response()->json([
             "status" => "success",
