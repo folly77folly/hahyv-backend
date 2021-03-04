@@ -170,7 +170,7 @@ Route::group(['middleware'=>'auth:api'], function(){
 
     //payment
     Route::POST('/card_payment','Api\PaymentController@cardPayment');
-    Route::POST('fund_wallet','Api\WalletController@fundWallet');
+    Route::POST('fund_wallet','Api\WalletController@fundWalletPayStack');
     Route::GET('wallet_transactions','Api\WalletController@index');
     Route::resource('wallet', 'Api\WalletController');
 

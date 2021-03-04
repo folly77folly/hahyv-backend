@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Collections\Constants;
+use App\Models\CardTransaction;
 use App\Collections\StatusCodes;
 use App\Traits\CardPaymentTrait;
 use App\Jobs\StripeFailedCardJob;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Traits\WalletTransactionsTrait;
 use App\Http\Requests\FundWalletRequest;
+use App\Http\Requests\FundWalletPayStackRequest;
 
 class WalletController extends Controller
 {
@@ -125,27 +127,30 @@ class WalletController extends Controller
 
     }
 
-    public function fundWalletPayStack(FundWalletRequest $request){
-        // $validatedData = $request->validated();
-        // $id = $validatedData['card_id'];
-        // $amount = $validatedData['amount'];
-        // $description = 'funded your wallet with '. $request->amount;
-        // $validatedData['description'] = $description;
-        // $stripe = new \Stripe\StripeClient("sk_test_51I8w9TFSTnpmya5shzFVTfBqBl5hefx32VScM5aZJfSOysNrnhMF9qtcKtnywOqbvHpRd5F6ZprE04wmYll0Cxyl00hzXI0HH5");
-        // $response = $this->chargeCard($validatedData, $stripe);
+    public function fundWalletPayStack(FundWalletPayStackRequest $request){
+        $validatedData = $request->validated();
+        $amount = $validatedData['amount'];
+        $trans_id = $validatedData['trxref'];
+        $ref = $validatedData['reference'];
+        $description = 'funded your wallet with '. $request->amount;
+        $cardTrans = CardTransaction::create([
+            'user_id' =>Auth()->user()->id,
+            'trans_id' =>$trans_id,
+            'description' =>$description,
+            'amount' => $amount,
+            // 'receipt_url' => $result->receipt_url,
+            'receipt_no' => $ref,
+            // 'card_details' => $result->payment_method_details->card->network .'-'. $result->payment_method_details->card->last4, 
+            'trans_type' => 1,
+            'user' => Auth()->user()->id,
+        ]);
 
-        // if ($response['code'] == 0){
-        //     $commonFunction = new CommonFunctionsController;
-        //     $array_json_return =$commonFunction->api_default_fail_response(__function__, $response['result']);
-        //     return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
-        // }
-        // // $this->creditWallet(Auth()->user()->id, $amount, $description);
-        // return response()->json([
-        //     "status" => "success",
-        //     "status_code" => StatusCodes::SUCCESS,
-        //     "message" => "Wallet funded successfully.",
-        //     'response'=> $response['result']
-        // ],StatusCodes::SUCCESS);
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "Wallet funded successfully.",
+            'response'=> $cardTrans
+        ],StatusCodes::SUCCESS);
 
     }
 
