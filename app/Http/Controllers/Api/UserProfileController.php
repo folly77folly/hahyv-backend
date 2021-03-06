@@ -206,7 +206,7 @@ class UserProfileController extends Controller
         //array of subscribers_list
         $my_subscribers= [];
         $subscribers = SubscribersList::where('user_id', '=', Auth()->user()->id)
-        ->where('is_active', 1)
+        ->where('is_active', '=', 1)
         ->get(['creator_id AS id'])->toArray();
         foreach($subscribers as $subscriber){
             array_push($my_subscribers, $subscriber['id']);
@@ -302,12 +302,14 @@ class UserProfileController extends Controller
         ], StatusCodes::SUCCESS);
     }
 
-    public function search(SearchRequest $request){
-        $validatedData = $request->validated();
-        $query= '';
-        $users = User::search($validatedData['find'])->get();
-        return response()->json([
-            'data' => $users,
-        ], StatusCodes::SUCCESS);
+    public function search(Request $request){
+        $query = $request->all();
+        $find= $query['username'];
+        if ($find){
+            $users = User::search($find)->paginate(Constants::PAGE_LIMIT);
+            return response()->json([
+                'data' => $users,
+            ], StatusCodes::SUCCESS);
+        }
     }
 }

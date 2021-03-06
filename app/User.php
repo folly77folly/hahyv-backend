@@ -99,7 +99,8 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function getAllEarningAttribute(){
-        $result = $this->earnings->sum('amount');
+        $result = $this->sumEarnings($this->id);
+        // $result = $this->earnings->sum('amount');
         if($result > 0){
 
             return round($result, 2);
@@ -265,15 +266,18 @@ class User extends Authenticatable implements MustVerifyEmail
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    protected function makeAllSearchableUsing($query)
-    {
-        $users = DB::table('users')->where('role_id', 2)->get();
-        return $query;
-    }
+    // protected function makeAllSearchableUsing($query) //query for batch import
+    // {
+    //     // $users = DB::table('users')->where('role_id','=', 2)->where('email_verified_at', '!=', null)->get();
+    //     return $query;
+    //     // ->where('role_id','=', 2)->where('email_verified_at', '!=', null);
+    // }
 
     public function shouldBeSearchable()
     {
-        return $this->role_id == 2;
+        return  $this->role_id == 2 && $this->email_verified_at != null && $this->username != null ;
+        // ;
+        // $this->role_id == 2 && $this->email_verified_at != null &&
     }
 
     /**
