@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\User;
 use App\Models\Fan;
+use App\Models\Follower;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use Illuminate\Support\Carbon;
