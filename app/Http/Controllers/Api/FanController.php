@@ -17,7 +17,9 @@ class FanController extends Controller
     public function index()
     {
         //
-        $fans = Fan::select('user_id')->where('creator_id', '=', Auth()->user()->id)->with('user')->get();
+        $fans = Fan::select('user_id')->where('creator_id', '=', Auth()->user()->id)
+        ->where('is_active', '=', 1)
+        ->with('user')->get();
 
         return response()->json([
             "status" => "success",

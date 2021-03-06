@@ -123,7 +123,12 @@ class SubscribeController extends Controller
             'user_id' =>$data['user_id'],
             'creator_id' => $data['creator_id'],
         ];
+        $followerData = [
+            'user_id' =>$data['user_id'],
+            'following_userId' => $data['creator_id'],
+        ];
         Fan::firstOrCreate($fanData);
+        Follower::firstOrCreate($followerData);
 
         // Send Notification for subscription
         $this->notify(Auth()->user()->username, $creator_id, 'subscribed');
