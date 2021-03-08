@@ -26,7 +26,7 @@ class TipRequest extends FormRequest
             //
         return [
             'creator_id' => ['required', 'exists:users,id'],
-            'amount' => ['required', 'numeric', 'between:500,2000', 'regex:/^\d*(\.\d{1,2})?$/'],
+            'amount' => ['required', 'numeric', 'between:1000,10000', 'regex:/^\d*(\.\d{1,2})?$/'],
         ];
     }
 
@@ -34,7 +34,7 @@ class TipRequest extends FormRequest
     {
             //
         return [
-            'amount.between' => "The amount must be between N500.00 and N2,000.00.",
+            'amount.between' => "The amount must be between N1,000.00 and N50,000.00.",
         ];
     }
 }

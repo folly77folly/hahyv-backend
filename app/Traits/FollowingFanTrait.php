@@ -166,4 +166,16 @@ Trait FollowingFanTrait{
         return Round($balance,2);
     }
     
+    public function follow($user_id){
+        if(!Auth()->user()){
+            return false;
+        }
+        $id = [$user_id];
+        $followings = Follower::select('following_userId' )->where('user_id', '=', Auth()->user()->id)->whereIn('following_userId', $id)->get();
+        $followers= Follower::select('user_id')->where('following_userId', '=', Auth()->user()->id)->whereIn('user_id', $id)->get();
+        if (count($followings) > 0 && count($followers) > 0 ){
+            return true;
+        }
+        return false;
+    }
 }
