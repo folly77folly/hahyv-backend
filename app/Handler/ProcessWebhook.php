@@ -5,6 +5,10 @@ namespace App\Handler;
 //that will handle the job of processing our webhook before we have 
 //access to it.
 use \Spatie\WebhookClient\ProcessWebhookJob;
+use App\Traits\EarningTransactionsTrait;
+
+use App\User;
+
 use Illuminate\Support\Facades\Log;
 
 use App\Models\CardTransaction;
@@ -19,7 +23,7 @@ use App\Traits\WalletTransactionsTrait;
 class ProcessWebhook extends ProcessWebhookJob
 
 {
-    use WalletTransactionsTrait;
+    use WalletTransactionsTrait, EarningTransactionsTrait;
 
     public function handle(){
 
@@ -46,7 +50,7 @@ class ProcessWebhook extends ProcessWebhookJob
 
         //update card transaction info
         $authorization = $data['payload']['data']['authorization'];
-        $transaction->card_details = $authorization->brand."-".$authorization->last4;
+        $transaction->card_details = $authorization['brand']."-".$authorization['last4'];
         $transaction->save();
         
         // check that event is wallet funding
