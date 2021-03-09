@@ -27,11 +27,13 @@ class ProcessWebhook extends ProcessWebhookJob
 {
 
     use WalletTransactionsTrait, EarningTransactionsTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     Public function __construct(WebhookCall $webhookCall){
 
-        parent::__construct($webhookCall);
+        // parent::__construct($webhookCall);
         $this->delay(now()->addMinutes(1));
+        // $this->webhookCall
     }
 
     public function handle(){
