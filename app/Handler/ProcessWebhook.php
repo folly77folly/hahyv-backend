@@ -46,7 +46,7 @@ class ProcessWebhook extends ProcessWebhookJob
         $reference = $data['payload']['data']['reference'];
         // $transaction = WalletTransaction::where('reference', $reference)->first();
 
-        $transaction = CardTransaction::where('trans_id', $reference )->first();
+        $transaction = CardTransaction::where('trans_id', '=', $reference )->first();
 
         //update card transaction info
         $authorization = $data['payload']['data']['authorization'];
