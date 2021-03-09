@@ -42,11 +42,13 @@ class ProcessWebhook extends ProcessWebhookJob
     //    http_response_code(200); 
 
     if($data['payload']['event'] == "charge.success"){
-        Log::debug($data['payload']['data']);
         $reference = $data['payload']['data']['reference'];
+        Log::debug($reference);
+
         // $transaction = WalletTransaction::where('reference', $reference)->first();
 
         $transaction = CardTransaction::where('trans_id', '=', $reference )->first();
+        Log::debug($transaction);
 
         //update card transaction info
         $authorization = $data['payload']['data']['authorization'];
