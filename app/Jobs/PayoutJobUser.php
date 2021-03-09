@@ -47,7 +47,7 @@ class PayoutJobUser implements ShouldQueue
             $reference ="wa_pay_".time();
             # code...
             if ($creator->availableEarning > 0){
-
+                $payAmount = \number_format($creator->availableEarning,2,'.', ',');
                 // Log::debug($creator);
                 DB::transaction(function () use($creator, $description, $incomeDescription, $reference, $earning_type) {
                     $amount = $creator->availableEarning;
@@ -62,7 +62,7 @@ class PayoutJobUser implements ShouldQueue
                 });
                 
                 //send mail to creator
-                $payAmount = \number_format($creator->availableEarning,2,'.', ',');
+                
                 $mailInfo = [
                     'username' => $creator->username,
                     'amount' => $creator->availableEarning,
