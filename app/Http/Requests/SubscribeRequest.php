@@ -26,7 +26,10 @@ class SubscribeRequest extends FormRequest
         return [
             //
             'creator_id' => ['required', 'exists:users,id'],
-            'card_id' => ['required', 'exists:cards,id'],
+            // 'card_id' => ['required', 'exists:cards,id'],
+            'amount' => ['required'],
+            'trxref' => ['required'],
+            'reference' => ['required'],
             'subscription_id' => ['required', 'exists:subscription_rates,id']
         ];
     }
@@ -35,8 +38,10 @@ class SubscribeRequest extends FormRequest
     {
         return [
             //
-            'card_id.required' => 'Please add your card and make it default',
-            'card_id.exists' => 'Please add your card and make it default',
+            'subscription_id.required' => 'The Creator selected is not available',
+            'subscription_id.exists' => 'The Creator selected is not available',
+            'trxref.required' => 'Transaction reference is required',
+            'reference.required' => 'Reference number is required',
         ];
     }
 }

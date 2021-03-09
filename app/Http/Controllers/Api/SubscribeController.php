@@ -8,6 +8,7 @@ use App\Models\Follower;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use Illuminate\Support\Carbon;
+use App\Models\CardTransaction;
 use App\Models\SubscribersList;
 use App\Traits\FeeChargesTrait;
 use App\Collections\StatusCodes;
@@ -35,34 +36,35 @@ class SubscribeController extends Controller
     public function withCard(SubscribeRequest $request){
         $validatedData = $request->validated();
         $creator_id = $validatedData['creator_id'];
-        $card_id = $validatedData['card_id'];
+        $ref = $validatedData['reference'];
+        $trans_id = $validatedData['trxref'];
         $subscriber_username = Auth()->user()->username;
         $user = User::find($creator_id);
         $transactionFee = $this->transactionFee();
         $subscription = SubscriptionRate::find($validatedData['subscription_id']);
         $creator_description = "$subscriber_username Subscribed to your content";
         $description = "Subscribed to $user->username content";
-        $validatedData['description'] = $description;
-        $validatedData['card_id'] = $card_id;
-        $validatedData['amount'] = $subscription->amount + $transactionFee;
-        $validatedData['trans_type'] = 2;
-        $validatedData['user'] = $creator_id;
-        $stripe = new \Stripe\StripeClient(env('STRIPE_API_KEY'));
-        $response = $this->chargeCard($validatedData, $stripe);
+        $amount = $validatedData['amount'];
 
-
-        if ($response['code'] == 0){
-            $commonFunction = new CommonFunctionsController;
-            $array_json_return =$commonFunction->api_default_fail_response(__function__, $response['result']);
-            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
-        }
+        $cardTrans = CardTransaction::create([
+            'user_id' =>Auth()->user()->id,
+            'trans_id' =>$trans_id,
+            'description' =>$description,
+            'amount' => $amount,
+            'receipt_no' => $ref, 
+            'trans_type' => 2,
+            'user' => Auth()->user()->id,
+        ]);
 
         //crediting the creator wallet
         // $this->creditEarning($creator_id, $validatedData['amount'], $creator_description);
 
         $this->store([
             'user_id' =>Auth()->user()->id,
-             'creator_id' => $creator_id
+             'creator_id' => $creator_id,
+             'period' => $subscription->subscription->period,
+             'is_active' => 1,
+             'expiry' => Carbon::now()->addMonths($subscription->subscription->period)             
             ]);
         return response()->json([
             "status" => "success",
@@ -92,6 +94,7 @@ class SubscribeController extends Controller
             'user_id' =>Auth()->user()->id,
              'creator_id' => $creator_id,
              'period' => $subscription->subscription->period,
+             'is_active' => 1,
              'expiry' => Carbon::now()->addMonths($subscription->subscription->period)
             ]);
         return response()->json([
@@ -105,20 +108,12 @@ class SubscribeController extends Controller
     public function store(array $data){
         //check is subscription exists
         $creator_id = $data['creator_id'];
-        $subscription = SubscribersList::where([
+        $updateQuery = [
             'user_id'=> Auth()->user()->id,
             'creator_id'=> $creator_id,
-            ])->first();
-        if($subscription){
-            if (!$subscription->is_active){
-                $subscription->is_active = 1;
-                $subscription->save();
-            }
-        }else{
+        ];
 
-            SubscribersList::firstOrCreate($data);
-        }
-
+        SubscribersList::updateOrCreate($updateQuery, $data);
         //Make Fan when you subscribe
         $fanData = [
             'user_id' =>$data['user_id'],
@@ -161,11 +156,11 @@ class SubscribeController extends Controller
         $this->debitWallet(Auth()->user()->id,$amount, $description, $reference);
         $this->creditEarning($creator_id,$amount, $creator_description, $reference, Auth()->user()->id, Constants::EARNING['WALLET']);
 
-        $data = [
-            'user_id' =>Auth()->user()->id,
-            'creator_id' => $creator_id
-            ];
-        $fan = Fan::firstOrCreate($data);
+        // $data = [
+        //     'user_id' =>Auth()->user()->id,
+        //     'creator_id' => $creator_id
+        //     ];
+        // $fan = Fan::firstOrCreate($data);
 
         $this->notify(Auth()->user()->username, $creator_id, 'tipped');
 
@@ -185,6 +180,13 @@ class SubscribeController extends Controller
             'user_id'=> Auth()->user()->id,
             'creator_id'=> $creator_id,
             ])->first();
+        if(!$subscription){
+            return response()->json([
+                "status" => "success",
+                "status_code" => StatusCodes::SUCCESS,
+                "message" => "subscription does not exist.",
+            ],StatusCodes::SUCCESS);
+        }
         $subscription->is_active = 0;
         $subscription->save();
 

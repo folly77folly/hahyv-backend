@@ -27,7 +27,6 @@ Trait WalletTransactionsTrait{
                 'amountDebited' => 0,
                 'reference' => $reference,
                 'transfer_code' => $transfer_code
-                
             ]);
     
         });

@@ -40,11 +40,9 @@ class StripeFundWalletJob implements ShouldQueue
         $transaction = CardTransaction::where('trans_id',$this->paymentDetails->id )->first();
         // check that event is wallet funding
         if($transaction){
-
             if($transaction->trans_type == 1){
                 $this->creditWallet($transaction->user_id, $transaction->amount, $transaction->description, $transaction->trans_id);
             }else{
-                
                 //crediting the creator wallet
                 $user = User::find($transaction->user_id);
                 $subscriber_username = $user->username;

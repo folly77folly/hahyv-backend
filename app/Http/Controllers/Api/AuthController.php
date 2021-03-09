@@ -237,6 +237,7 @@ class AuthController extends Controller
 
         $user = $request->user();
         if (!$user){
+            
             return response()->json([
                 "status"=>"failure",
                 "status_code" => StatusCodes::UNAUTHORIZED,
