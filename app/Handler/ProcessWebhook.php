@@ -5,6 +5,14 @@ namespace App\Handler;
 //that will handle the job of processing our webhook before we have 
 //access to it.
 use \Spatie\WebhookClient\ProcessWebhookJob;
+use Illuminate\Foundation\Bus\Dispatchable;
+
+use Illuminate\Queue\SerializesModels;
+
+use Illuminate\Bus\Queueable;
+
+use Illuminate\Queue\InteractsWithQueue;
+
 use Spatie\WebhookClient\Models\WebhookCall;
 
 use App\Models\CardTransaction;
@@ -29,12 +37,12 @@ class ProcessWebhook extends ProcessWebhookJob
     use WalletTransactionsTrait, EarningTransactionsTrait;
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    Public function __construct(WebhookCall $webhookCall){
+    // Public function __construct(WebhookCall $webhookCall){
 
-        // parent::__construct($webhookCall);
-        $this->delay(now()->addMinutes(1));
-        // $this->webhookCall
-    }
+    //     parent::__construct($webhookCall);
+    //     $this->delay(now()->addMinutes(1));
+    //     $this->webhookCall
+    // }
 
     public function handle(){
 

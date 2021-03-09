@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\PaystackJob;
+use App\Handler\ProcessWebhook;
 
 return [
     'configs' => [
@@ -46,7 +47,8 @@ return [
              *
              * This should be set to a class that extends \Spatie\WebhookClient\ProcessWebhookJob.
              */
-            'process_webhook_job' => \App\Handler\ProcessWebhook::class,
+            'process_webhook_job' => ProcessWebhook::dispatch()->delay(now()->addMinutes(2)),
+            // 'process_webhook_job' => \App\Handler\ProcessWebhook::class,
         ],
         [
             /*
@@ -91,6 +93,7 @@ return [
              * This should be set to a class that extends \Spatie\WebhookClient\ProcessWebhookJob.
              */
             'process_webhook_job' => \App\Handler\ProcessWebhook::class,
+            // 'process_webhook_job' => \App\Handler\ProcessWebhook::class,
         ],
     ],
 ];
