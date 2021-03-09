@@ -5,6 +5,8 @@ namespace App\Handler;
 //that will handle the job of processing our webhook before we have 
 //access to it.
 use \Spatie\WebhookClient\ProcessWebhookJob;
+use Spatie\WebhookClient\Models\WebhookCall;
+
 use App\Models\CardTransaction;
 
 use App\Traits\EarningTransactionsTrait;
