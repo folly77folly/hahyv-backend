@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\User;
 use App\Models\Follower;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Models\SubscribersList;
@@ -112,14 +113,18 @@ class UserProfileController extends Controller
         $request->validate(
             [
                 'email' => 'email',
-                'date_of_birth' => ['before:-18 years']
+                'date_of_birth' => ['before:-18 years'],
+                'username' => ['unique:users,username,'. $id, 'max:20']
             ],
             [
                 'email.email' => 'The email address is not correct',
                 'date_of_birth.before' => 'Your date of birth indicates that you are under 18 years'
             ]
         );
-        
+        if($request->username){
+            $request['username'] = strtolower($request->username);
+        }
+         
         $user = User::Where('id', $id)->first();
 
         if (!$user) {
