@@ -5,13 +5,13 @@ namespace App\Handler;
 //that will handle the job of processing our webhook before we have 
 //access to it.
 use \Spatie\WebhookClient\ProcessWebhookJob;
+use App\Models\CardTransaction;
+
 use App\Traits\EarningTransactionsTrait;
 
 use App\User;
 
 use Illuminate\Support\Facades\Log;
-
-use App\Models\CardTransaction;
 
 use App\Collections\Constants;
 
@@ -23,7 +23,14 @@ use App\Traits\WalletTransactionsTrait;
 class ProcessWebhook extends ProcessWebhookJob
 
 {
+
     use WalletTransactionsTrait, EarningTransactionsTrait;
+
+    Public function __construct(WebhookCall $webhookCall){
+
+        parent::__construct($webhookCall);
+        $this->delay(now()->addMinutes(1));
+    }
 
     public function handle(){
 
@@ -47,7 +54,7 @@ class ProcessWebhook extends ProcessWebhookJob
 
         // $transaction = WalletTransaction::where('reference', $reference)->first();
 
-        $transaction = CardTransaction::where('trans_id', '=', $reference )->first();
+        $transaction = CardTransaction::where(['trans_id' => $reference ])->first();
         Log::debug($transaction);
 
         //update card transaction info
