@@ -311,7 +311,7 @@ class UserProfileController extends Controller
         $query = $request->all();
         $find= $query['username'];
         if ($find){
-            $users = User::search($find)->paginate(Constants::PAGE_LIMIT);
+            $users = User::search($find)->get();
             return response()->json([
                 'data' => $users,
             ], StatusCodes::SUCCESS);
