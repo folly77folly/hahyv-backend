@@ -46,18 +46,6 @@ class SubscribeController extends Controller
         $description = "Subscribed to $user->username content";
         $amount = $validatedData['amount'];
 
-        $cardTrans = CardTransaction::create([
-            'user_id' =>Auth()->user()->id,
-            'trans_id' =>$trans_id,
-            'description' =>$description,
-            'amount' => $amount,
-            'receipt_no' => $ref, 
-            'trans_type' => 2,
-            'user' => Auth()->user()->id,
-        ]);
-
-        //crediting the creator wallet
-        // $this->creditEarning($creator_id, $validatedData['amount'], $creator_description);
 
         $this->store([
             'user_id' =>Auth()->user()->id,

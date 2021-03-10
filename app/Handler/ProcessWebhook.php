@@ -5,28 +5,17 @@ namespace App\Handler;
 //that will handle the job of processing our webhook before we have 
 //access to it.
 use \Spatie\WebhookClient\ProcessWebhookJob;
-use Illuminate\Foundation\Bus\Dispatchable;
-
-use Illuminate\Queue\SerializesModels;
-
-use Illuminate\Bus\Queueable;
-
-use Illuminate\Queue\InteractsWithQueue;
-
-use Spatie\WebhookClient\Models\WebhookCall;
-
-use App\Models\CardTransaction;
-
-use App\Traits\EarningTransactionsTrait;
-
-use App\User;
-
-use Illuminate\Support\Facades\Log;
+use App\Models\PostNotification;
 
 use App\Collections\Constants;
 
-use App\Models\WalletTransaction;
+use App\Collections\StatusCodes;
 
+use App\Models\CardTransaction;
+use App\Traits\EarningTransactionsTrait;
+use App\User;
+use Illuminate\Support\Facades\Log;
+use App\Models\WalletTransaction;
 use App\Traits\WalletTransactionsTrait;
 
 
@@ -35,14 +24,7 @@ class ProcessWebhook extends ProcessWebhookJob
 {
 
     use WalletTransactionsTrait, EarningTransactionsTrait;
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    Public function __construct(WebhookCall $webhookCall){
-
-        parent::__construct($webhookCall);
-        $this->delay(now()->addMinutes(1));
-
-    }
 
     public function handle(){
 
@@ -60,33 +42,46 @@ class ProcessWebhook extends ProcessWebhookJob
        //Acknowledge you received the response}
     //    http_response_code(200); 
 
-    if($data['payload']['event'] == "charge.success"){
+    if($data['payload']['event'] == "charge.success")
+    {
         $reference = $data['payload']['data']['reference'];
-        Log::debug($reference);
+        $amount = ($data['payload']['data']['amount'])/100;
+        $metaData = $data['payload']['data']['metadata'];
 
-        // $transaction = WalletTransaction::where('reference', $reference)->first();
+        if($metaData['user_id']){
+            $authorization = $data['payload']['data']['authorization'];
+        $cardTrans = CardTransaction::create([
+            'user_id' =>$metaData['user_id'],
+            'trans_id' =>$reference,
+            'description' => $metaData['description'],
+            'amount' => $amount,
+            'receipt_url' => $metaData['referrer'],
+            'receipt_no' => $reference,
+            'card_details' => $authorization['brand']."-".$authorization['last4'], 
+            'trans_type' => $metaData['trans_type'],
+            'user' => $metaData['user_id']
+        ]);
 
+        
         $transaction = CardTransaction::where(['trans_id' => $reference ])->first();
-        Log::debug($transaction);
-
-        //update card transaction info
-        $authorization = $data['payload']['data']['authorization'];
-        $transaction->card_details = $authorization['brand']."-".$authorization['last4'];
-        $transaction->save();
         
         // check that event is wallet funding
-        if($transaction){
-            if($transaction->trans_type == 1){
-                $this->creditWallet($transaction->user_id, $transaction->amount, $transaction->description, $transaction->trans_id);
-            }else{
-                //crediting the creator wallet
-                $user = User::find($transaction->user_id);
-                $subscriber_username = $user->username;
-                $creator_id = $transaction->user;
-                $creator_description = $user->username. " Subscribed to your content.";
-                $this->creditEarning($creator_id, $transaction->amount, $creator_description, $transaction->trans_id, $transaction->user_id, Constants::EARNING['CARD']);
+        if($transaction)
+            {
+                if($transaction->trans_type == 1){
+                    $this->creditWallet($transaction->user_id, $transaction->amount, $transaction->description, $transaction->trans_id);
+                }else{
+                    //crediting the creator wallet
+                    $user = User::find($transaction->user_id);
+                    $subscriber_username = $user->username;
+                    $creator_id = $transaction->user;
+                    $creator_description = $user->username. " Subscribed to your content.";
+                    $this->creditEarning($creator_id, $transaction->amount, $creator_description, $transaction->trans_id, $transaction->user_id, Constants::EARNING['CARD']);
+                }
             }
         }
+        
+
        }
     }   
 }
