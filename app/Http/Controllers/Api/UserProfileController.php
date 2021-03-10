@@ -245,7 +245,7 @@ class UserProfileController extends Controller
                 "status_code" => StatusCodes::SUCCESS,
                 "message" => "suggestions successfully",
                 "data" => array_values($suggestions)
-            ]);
+            ],StatusCodes::SUCCESS);
         }
 
         $suggestions = User::all(
@@ -274,7 +274,7 @@ class UserProfileController extends Controller
             "status_code" => StatusCodes::SUCCESS,
             "message" => "suggestions successfully fetched",
             "data" => array_values($suggestions)
-        ]);
+        ],StatusCodes::SUCCESS);
 
     }
 

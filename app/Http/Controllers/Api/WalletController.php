@@ -133,23 +133,11 @@ class WalletController extends Controller
         $trans_id = $validatedData['trxref'];
         $ref = $validatedData['reference'];
         $description = 'funded your wallet with '. $request->amount;
-        $cardTrans = CardTransaction::create([
-            'user_id' =>Auth()->user()->id,
-            'trans_id' =>$trans_id,
-            'description' =>$description,
-            'amount' => $amount,
-            // 'receipt_url' => $result->receipt_url,
-            'receipt_no' => $ref,
-            // 'card_details' => $result->payment_method_details->card->network .'-'. $result->payment_method_details->card->last4, 
-            'trans_type' => 1,
-            'user' => Auth()->user()->id,
-        ]);
 
         return response()->json([
             "status" => "success",
             "status_code" => StatusCodes::SUCCESS,
             "message" => "Wallet funded successfully.",
-            'response'=> $cardTrans
         ],StatusCodes::SUCCESS);
 
     }
