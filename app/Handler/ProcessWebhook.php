@@ -59,7 +59,7 @@ class ProcessWebhook extends ProcessWebhookJob
             'receipt_no' => $reference,
             'card_details' => $authorization['brand']."-".$authorization['last4'], 
             'trans_type' => $metaData['trans_type'],
-            'user' => $metaData['user_id']
+            'user' => $metaData['creator_id']? $metaData['creator_id']:$metaData['user_id']
         ]);
 
         
