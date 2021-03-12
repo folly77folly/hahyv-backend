@@ -28,24 +28,25 @@ class ProcessWebhook extends ProcessWebhookJob
 
     public function handle(){
         //responding to webhook
-        http_response_code(200);
-
-       $data = json_decode($this->webhookCall, true);
-
-       //Do something with the event
-       if($data['payload']['event'] == "transfer.failed" || $data['payload']['event'] == "transfer.reversed"){
-        $reference = $data['payload']['data']['reference'];
-        $transaction = WalletTransaction::where('reference', $reference)->first();
-        if ($transaction){
-            $description ="Reversal of transfer for $reference";
-            WalletTransaction::where('reference', $reference)->update(['status'=> 0]);
-            $this->creditWallet($transaction->user_id, $transaction->amountDebited, $description);
+        
+        $data = json_decode($this->webhookCall, true);
+        
+        //Do something with the event
+        if($data['payload']['event'] == "transfer.failed" || $data['payload']['event'] == "transfer.reversed"){
+            http_response_code(200);
+            $reference = $data['payload']['data']['reference'];
+            $transaction = WalletTransaction::where('reference', $reference)->first();
+            if ($transaction){
+                $description ="Reversal of transfer for $reference";
+                WalletTransaction::where('reference', $reference)->update(['status'=> 0]);
+                $this->creditWallet($transaction->user_id, $transaction->amountDebited, $description);
+            }
         }
-       }
-
-
-    if($data['payload']['event'] == "charge.success")
-    {
+        
+        
+        if($data['payload']['event'] == "charge.success")
+        {
+        http_response_code(200);
         $reference = $data['payload']['data']['reference'];
         $amount = ($data['payload']['data']['amount'])/100;
         $metaData = $data['payload']['data']['metadata'];
@@ -73,6 +74,7 @@ class ProcessWebhook extends ProcessWebhookJob
                 if($transaction->trans_type == 1){
                     $this->creditWallet($transaction->user_id, $transaction->amount, $transaction->description, $transaction->trans_id);
                 }else{
+
                     //crediting the creator wallet
                     $user = User::find($transaction->user_id);
                     $subscriber_username = $user->username;
