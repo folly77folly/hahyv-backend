@@ -27,8 +27,11 @@ class ProcessWebhook extends ProcessWebhookJob
 
 
     public function handle(){
+        //responding to webhook
+        http_response_code(200);
 
        $data = json_decode($this->webhookCall, true);
+
        //Do something with the event
        if($data['payload']['event'] == "transfer.failed" || $data['payload']['event'] == "transfer.reversed"){
         $reference = $data['payload']['data']['reference'];
@@ -39,8 +42,7 @@ class ProcessWebhook extends ProcessWebhookJob
             $this->creditWallet($transaction->user_id, $transaction->amountDebited, $description);
         }
        }
-       //Acknowledge you received the response}
-    //    http_response_code(200); 
+
 
     if($data['payload']['event'] == "charge.success")
     {
@@ -57,7 +59,7 @@ class ProcessWebhook extends ProcessWebhookJob
             'amount' => $amount,
             'receipt_url' => $metaData['referrer'],
             'receipt_no' => $reference,
-            'card_details' => $authorization['brand']."-".$authorization['last4'], 
+            'card_details' => $authorization['brand']."-".$authorization['last4'],
             'trans_type' => $metaData['trans_type'],
             'user' => $metaData['creator_id']? $metaData['creator_id']:$metaData['user_id']
         ]);
