@@ -114,7 +114,8 @@ class MessageController extends Controller
         
         $message = Message::create($validatedData);
         if ($message){
-            $this->debitToken($id, 1, $request->message);
+            $reference = "ms_tk".time();
+            $this->debitToken($id, 1, $request->message, $reference);
         }
         $sentMessage = Message::find($message->id)->load(['recipient', 'sender']);
         broadcast(new MessageEvent($sentMessage))->toOthers();
