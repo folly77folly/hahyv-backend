@@ -38,7 +38,7 @@ return [
             /*
              * This class determines the response on a valid webhook call.
              */
-            'webhook_response' => PaystackResponse::class,
+            'webhook_response' => \App\Handler\PaystackResponse::class,
             
             /*
              * The classname of the model to be used to store call. The class should be equal
