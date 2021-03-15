@@ -25,6 +25,11 @@ class ProcessWebhook extends ProcessWebhookJob
 
     use WalletTransactionsTrait, EarningTransactionsTrait;
 
+    public function failed(Exception $exception)
+    {
+        // Send user notification of failure, etc...
+        http_response_code(200);
+    }
 
     public function handle(){
         //responding to webhook
