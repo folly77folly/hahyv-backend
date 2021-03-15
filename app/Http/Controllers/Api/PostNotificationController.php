@@ -22,7 +22,7 @@ class PostNotificationController extends Controller
         //
         $id = Auth()->user()->id;
         try{
-            $postNotification = PostNotification::where('broadcast_id', $id)->with(['user', 'post', 'post_type:id,name'])->paginate(Constants::PAGE_LIMIT);
+            $postNotification = PostNotification::where('broadcast_id', $id)->with(['user', 'post', 'post_type:id,name'])->latest()->paginate(Constants::PAGE_LIMIT);
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
