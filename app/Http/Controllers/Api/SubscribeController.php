@@ -107,11 +107,16 @@ class SubscribeController extends Controller
             'user_id' =>$data['user_id'],
             'creator_id' => $data['creator_id'],
         ];
+        $fanDataUpdate = [
+            'user_id' =>$data['user_id'],
+            'creator_id' => $data['creator_id'],
+            'is_active' => 1,
+        ];
         $followerData = [
             'user_id' =>$data['user_id'],
             'following_userId' => $data['creator_id'],
         ];
-        Fan::firstOrCreate($fanData);
+        Fan::updateOrCreate($fanData, $fanDataUpdate);
         Follower::firstOrCreate($followerData);
 
         // Send Notification for subscription
@@ -177,6 +182,12 @@ class SubscribeController extends Controller
         }
         $subscription->is_active = 0;
         $subscription->save();
+
+        //Un-Fan the Creator
+        Fan::where([
+            'user_id'=> Auth()->user()->id,
+            'creator_id'=> $creator_id,
+            ])->update(['is_active' => 0]);
 
         return response()->json([
             "status" => "success",
