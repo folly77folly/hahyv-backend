@@ -43,6 +43,7 @@ class AuthController extends Controller
                 "id"=>$user->id,
                 "token" => $accessToken,
                 "created_at" => $user->created_at,
+                "provider_name" => $user->provider_name,
                 "updated_at" => $user->updated_at,
                 "verified_at" => $user->email_verified_at
             ]
@@ -87,6 +88,7 @@ class AuthController extends Controller
             "name"=> Auth()->user()->name,
             "username"=> Auth()->user()->username,
             "email"=> Auth()->user()->email,
+            "provider_name" => Auth()->user()->provider_name,
             "id"=> Auth()->user()->id,
             "token" => $accessToken,
             "verified_at" => Auth()->user()->email_verified_at
