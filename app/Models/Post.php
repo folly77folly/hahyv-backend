@@ -9,6 +9,7 @@ use App\Models\Comment;
 use App\Providers\Following;
 use App\Traits\FollowingFanTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
 {
@@ -24,7 +25,19 @@ class Post extends Model
         'accept_tip' => 'boolean',
         'is_paid' => 'boolean',
     ];
-    protected $appends = array('canComment', 'is_bookmark', 'showTip');
+    protected $appends = array('canComment', 'is_bookmark', 'showTip','url', 'uploaded_time');
+
+    public function getUrlAttribute()
+    {
+        return Storage::disk('s3')->url($this->path);
+    }
+
+    public function getUploadedTimeAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
+
 
     public function getCanCommentAttribute(){
         return $this->check($this->user_id);
