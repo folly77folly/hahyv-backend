@@ -431,7 +431,7 @@ class PostController extends Controller
             foreach($request->file('images') as $file){
                 $name= time().'_'.$file->getClientOriginalName();
 
-                $path = Storage::disk('s3')->putFile('images', $file, 'public');
+                $path = Storage::disk('s3')->put('images', $file, 'public');
                 if (!$path){
                     return response()->json([
                         "status" => "failure",
