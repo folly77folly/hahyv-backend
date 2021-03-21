@@ -3,20 +3,21 @@
 namespace App\Http\Controllers\API;
 
 use App\User;
+use Exception;
+use Validator;
 use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
+use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;
 use App\Models\PostNotification;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\PostNotificationController;
-use Exception;
-use Validator;
-use Illuminate\Support\Carbon;
 
 class PostController extends Controller
 {
@@ -87,7 +88,7 @@ class PostController extends Controller
                 "status" => "failure",
                 "message" => "Error.",
                 "data" => $validator->errors()
-            ], StatusCodes::CREATED);
+            ], StatusCodes::BAD_REQUEST);
         }
 
         $id = Auth()->user()->id;
@@ -400,6 +401,104 @@ class PostController extends Controller
             "message" => "All Posts fetched successfully.",
             "data" => $post
         ], StatusCodes::SUCCESS);
+    }
+
+    public function post(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'poll' => ['array'],
+            'poll_duration' => ['int'],
+            'videos.*' => ['mimes:mp4,,mov,ogg,qt','max:10000'],
+            'images.*' => 'image|mimes:png,jpg|max:5000'
+            
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json([
+                "status" => "failure",
+                "message" => "Error.",
+                "data" => $validator->errors()
+            ], StatusCodes::BAD_REQUEST);
+        }
+
+        $id = Auth()->user()->id;
+        $images = [];
+        $videos = [];
+        $post = new Post;
+
+        if ($request->hasFile('images')){
+            foreach($request->file('images') as $file){
+                $name= time().'_'.$file->getClientOriginalName();
+
+                $path = Storage::disk('s3')->putFile('images', $file, 'public');
+                if (!$path){
+                    return response()->json([
+                        "status" => "failure",
+                        "message" => "File Upload Failed try again",
+                    ], StatusCodes::BAD_REQUEST);
+                }
+                $data[] = env('AWS_URL').$path;
+            }
+
+            $images = $data;
+        }
+        if ($request->hasFile('videos')){
+
+            foreach($request->file('videos') as $file){
+                $name= time().'_'.$file->getClientOriginalName();
+                ini_set('max_execution_time', 300);
+                $path = Storage::disk('s3')->putFile('videos', $file, 'public');
+                if (!$path){
+                    return response()->json([
+                        "status" => "failure",
+                        "message" => "File Upload Failed try again",
+                    ], StatusCodes::BAD_REQUEST);
+                }
+                $videoData[] = env('AWS_URL').$path;
+            }
+
+            $videos = $videoData;
+        }
+
+        $post->description = $request->description;
+        $post->images = $images;
+        $post->videos = $videos;
+        $post->user_id = $id;
+        $post->poll = $request->input('poll');
+
+        if($request->input('height') != null ){
+            $post->height = $request->input('height');
+        }
+        if($request->input('width') != null ){
+            $post->width = $request->input('width');
+        }
+        if($request->input('orientation') != null ){
+            $post->orientation = $request->input('orientation');
+        }
+        if($request->input('poll_duration') != null ){
+            $post->poll_expiry = Carbon::now()->addDays($request->input('poll_duration'));
+        }
+
+        $post->save();
+        if (!empty($request->poll)){
+
+            $data = [];
+            foreach ($request->poll as $choice){
+                $the_choice = [
+                    'post_id' => $post->id,
+                    'choices' => $choice
+                ];
+                array_push($data, $the_choice);
+            }
+            $post->polls()->createMany($data);
+        }
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Post created successfully.",
+            "data" => Post::find($post->id)->load('user')->load('polls')
+        ], StatusCodes::CREATED);
     }
 
 }
