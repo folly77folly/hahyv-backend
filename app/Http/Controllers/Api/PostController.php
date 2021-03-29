@@ -87,7 +87,6 @@ class PostController extends Controller
                 "status" => "failure",
                 "message" => "Error.",
                 "data" => $validator->errors(),
-                "user" => $request->user()
             ], StatusCodes::BAD_REQUEST);
         }
         $images = [];
