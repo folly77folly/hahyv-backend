@@ -47,7 +47,7 @@ class PostController extends Controller
         //         "data" => json_decode($post)
         //     ], StatusCodes::SUCCESS);
         // }
-        
+
         $post = Post::where('user_id', $id)->with(array('Comment', 'user'))
         ->with(['polls'=>function($query){
             return $query->with('votes');
@@ -77,9 +77,8 @@ class PostController extends Controller
         $validator = Validator::make($request->all(),[
             'poll' => ['array'],
             'poll_duration' => ['int'],
-            'images' => ['array'],
-            'videos' => ['array'],
-            
+            'description' => ['required_without_all:images,videos']
+
         ]);
 
         if ($validator->fails())
@@ -87,17 +86,30 @@ class PostController extends Controller
             return response()->json([
                 "status" => "failure",
                 "message" => "Error.",
-                "data" => $validator->errors()
+                "data" => $validator->errors(),
+                "user" => $request->user()
             ], StatusCodes::BAD_REQUEST);
         }
-
+        $images = [];
+        $videos = [];
+        $description = "";
         $id = Auth()->user()->id;
         $post = new Post;
 
+        if (!empty($request->images)){
+            $images = $request->input('images');
+        }
+        if (!empty($request->videos)){
+            $videos = $request->input('videos');
+        }
+        if (!empty($request->description)){
+            $description = $request->input('description');
+        }
         $post->description = $request->description;
-        $post->images = $request->input('images');
-        $post->videos = $request->input('videos');
+        $post->images = $images;
+        $post->videos = $videos;
         $post->user_id = $id;
+        $post->description = $description;
         $post->poll = $request->input('poll');
 
         if($request->input('height') != null ){
@@ -149,7 +161,7 @@ class PostController extends Controller
             }])->load(['polls' => function($query){
                 return $query->with('votes');
             }]);
-    
+
             return response()->json([
                 "status" => "success",
                 "message" => "Post fetched successfully.",
@@ -230,13 +242,13 @@ class PostController extends Controller
         ])->first();
 
         $data = [
-            'user_id' => $id, 
+            'user_id' => $id,
             'post_id' => $post->id
         ];
 
         if (!$like) {
             $createPost = Like::create($data);
-            
+
             $this->initialCount($createPost->post_id);
 
             // insert into post notification for like
@@ -378,11 +390,11 @@ class PostController extends Controller
     {
         $user = User::find($s_id);
 
-        
+
         $post = Post::where('user_id', $user->id)->with('Comment')->with(['user' => function($query){
             $query->with([
-                'monetizeBenefits:user_id,benefits', 
-                'subscriptionBenefits:user_id,benefits', 
+                'monetizeBenefits:user_id,benefits',
+                'subscriptionBenefits:user_id,benefits',
                 ])->with([
                     'subscriptionRates' => function($query){
                         $query->with('subscription:id,name,period');
@@ -405,12 +417,13 @@ class PostController extends Controller
 
     public function post(Request $request)
     {
+
         $validator = Validator::make($request->all(),[
             'poll' => ['array'],
             'poll_duration' => ['int'],
             'videos.*' => ['mimes:mp4,,mov,ogg,qt','max:10000'],
             'images.*' => 'image|mimes:png,jpg|max:5000'
-            
+
         ]);
 
         if ($validator->fails())
@@ -426,22 +439,31 @@ class PostController extends Controller
         $images = [];
         $videos = [];
         $post = new Post;
-
         if ($request->hasFile('images')){
             foreach($request->file('images') as $file){
                 $name= time().'_'.$file->getClientOriginalName();
 
-                $path = Storage::disk('s3')->put('images', $file, 'public');
-                if (!$path){
-                    return response()->json([
-                        "status" => "failure",
-                        "message" => "File Upload Failed try again",
-                    ], StatusCodes::BAD_REQUEST);
-                }
-                $data[] = env('AWS_URL').$path;
-            }
+                $path = "/image/abc.jpg";
+                // $path = Storage::disk('s3')->putFile('images', $file, 'public');
+                // if (!$path){
+                //     return response()->json([
+                //         "status" => "failure",
+                //         "message" => "File Upload Failed try again",
+                //     ], StatusCodes::BAD_REQUEST);
+                // }
+                $post_data = (object)[];
 
-            $images = $data;
+                    $post_data->id = 1233;
+                    $post_data->url = env('AWS_URL').$path;
+                    $post_data->height = 4160;
+                    $post_data->width = 3120;
+                    $post_data->orientation = 'portrait';
+
+                // $data[] = env('AWS_URL').$path;
+                $data[] = ($post_data);
+            }
+            // dd($data);
+            $images = ($data);
         }
         if ($request->hasFile('videos')){
 

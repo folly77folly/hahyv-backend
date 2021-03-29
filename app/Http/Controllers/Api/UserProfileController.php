@@ -4,14 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\User;
 use App\Models\Follower;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Models\SubscribersList;
 use App\Collections\StatusCodes;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SearchRequest;
 
 class UserProfileController extends Controller
 {
@@ -78,8 +76,8 @@ class UserProfileController extends Controller
                 'referral_url'
             )
             ->with([
-                'monetizeBenefits:user_id,benefits', 
-                'subscriptionBenefits:user_id,benefits', 
+                'monetizeBenefits:user_id,benefits',
+                'subscriptionBenefits:user_id,benefits',
                 ])->with([
                     'subscriptionRates' => function($query){
                         $query->with('subscription:id,name,period');
@@ -124,7 +122,7 @@ class UserProfileController extends Controller
         if($request->username){
             $request['username'] = strtolower($request->username);
         }
-         
+
         $user = User::Where('id', $id)->first();
 
         if (!$user) {
@@ -197,10 +195,10 @@ class UserProfileController extends Controller
     }
 
     public function preference()
-    {   
+    {
         $userP = Auth()->user()->preference_id;
         $id = Auth()->user()->id;
-        
+
         //array of following
         $my_followers= [];
         $followings = Follower::where('user_id', '=', Auth()->user()->id)->get(['following_userId AS id'])->toArray();
@@ -284,7 +282,7 @@ class UserProfileController extends Controller
                 $query->with('Comment')->with(['user' => function($query){
                     $query->with([
                         'monetizeBenefits:user_id,benefits',
-                        'subscriptionBenefits:user_id,benefits', 
+                        'subscriptionBenefits:user_id,benefits',
                         ])->with([
                             'subscriptionRates' => function($query){
                                 $query->with('subscription:id,name,period');

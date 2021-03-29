@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Storage;
 class Post extends Model
 {
     use FollowingFanTrait;
-    
+
+
     protected $guarded =[];
 
     protected $casts = [
@@ -54,8 +55,11 @@ class Post extends Model
             return false;
         }
 
+        $this->images == null ? []:$this->images ;
+        $this->videos == null ? []:$this->videos ;
+
         if(count($this->images) > 0 || count($this->videos)> 0 ){
-            
+
             if ($this->user->is_monetize == false){
                 return true;
             }
