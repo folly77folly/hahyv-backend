@@ -10,6 +10,12 @@ class Message extends Model
     //
     protected $guarded = [];
 
+    protected $appends = ['delivered'];
+
+    public function getDeliveredAttribute(){
+        return true;
+    }
+
     public function sender(){
         return $this->belongsTo(User::class, 'sender_id');
     }
