@@ -185,7 +185,7 @@ class MessageController extends Controller
         }
         $messages = Message::where([
             'conversation_id'=> $conversation_id,
-            ])->with(['recipient', 'sender'])->latest()->get();
+            ])->with(['recipient', 'sender'])->orderBy('created_at', 'asc')->get();
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
@@ -234,7 +234,7 @@ class MessageController extends Controller
         $messages = Message::where([
             'sender_id'=> Auth()->user()->id,
             'recipient_id'=> $request->recipient_id
-            ])->with('recipient')->latest()->get();
+            ])->with('recipient')->orderBy('created_at', 'asc')->get();
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
