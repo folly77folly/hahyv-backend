@@ -47,16 +47,18 @@ class MessageController extends Controller
         //     ->with(['messages' => function($query){
         //          $query->orderBy('created_at', 'asc');
         //     }])->get();
-        $messages = Message::whereOr([
+        $messages = Message::where([
             'sender_id'=> $id,
+            ])->orWhere([
             'recipient_id'=> $id
             ])->with(['recipient', 'sender'])->orderBy('created_at', 'asc')->get();
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
             'message' => 'messages retrieved',
-            'data' => $messages
+            'data' => $messages,
         ],StatusCodes::SUCCESS);  
+        
     }
 
     /**
