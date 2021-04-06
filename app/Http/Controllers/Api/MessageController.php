@@ -47,6 +47,7 @@ class MessageController extends Controller
         //     ->with(['messages' => function($query){
         //          $query->orderBy('created_at', 'asc');
         //     }])->get();
+        ini_set('max_execution_time',300);
         $messages = Message::where([
             'sender_id'=> $id,
             ])->orWhere([
