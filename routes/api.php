@@ -195,6 +195,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     //messages
     Route::POST('/history', 'Api\MessageController@history');
     Route::GET('/conversation/{id}', 'Api\MessageController@getConversation');
+    Route::GET('/chats', 'Api\MessageController@getChats');
     Route::apiResource('message', Api\MessageController::class);
 
     //earnings

@@ -271,4 +271,20 @@ class MessageController extends Controller
             'data' => $conversation_one
         ],StatusCodes::SUCCESS); 
     }
+
+    public function getChats(){
+        $id = Auth()->user()->id;
+        $messages = Message::select('sender_id','recipient_id')->where([
+            'sender_id'=> $id,
+            ])->orWhere([
+            'recipient_id'=> $id
+            ])->distinct()->with(['recipient', 'sender'])->get();
+
+        return response()->json([
+            'status' => 'success',
+            'status_code' => StatusCodes::SUCCESS,
+            'message' => 'messages retrieved',
+            'data' => $messages,
+        ],StatusCodes::SUCCESS);  
+    }
 }
