@@ -9,6 +9,7 @@ use App\Models\PostNotification;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Events\PostNotificationEvent;
+use Exception;
 
 class PostNotificationController extends Controller
 {
@@ -78,7 +79,7 @@ class PostNotificationController extends Controller
                 //     broadcast(new PostNotificationEvent($notification))->toOthers();
                 // }
             }catch(Exception $e){
-                $commonFunction = new CommonFunctionsController;
+                $commonFunction = new CommonFunctionsController();
                 $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
                 return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
             }

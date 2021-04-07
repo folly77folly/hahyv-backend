@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use App\Models\Message;
 use App\Events\MessageEvent;
 use App\Models\Conversation;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\HistoryRequest;
 use App\Http\Requests\MessageRequest;
 use App\Traits\TokenTransactionsTrait;
+use App\Http\Controllers\Api\CommonFunctionsController;
 use App\Http\Controllers\Api\PostNotificationController;
 
 class MessageController extends Controller
@@ -32,21 +34,7 @@ class MessageController extends Controller
     {
         //
         $id = Auth()->user()->id;
-        // $conversation_one = Conversation::where([
-        //     'user_one' => $id,
-        //     ])->get('id');
-        // $conversation_two = Conversation::whereOr([
-        //     'user_one' => $id,
-        //     'user_two' => $id,
-        //     ])->get('id');
-        // $conversation_three = Conversation::whereOr([
-        //     'user_one' => $id,
-        //     'user_two' => $id,
-        //     ])
 
-        //     ->with(['messages' => function($query){
-        //          $query->orderBy('created_at', 'asc');
-        //     }])->get();
         ini_set('max_execution_time',300);
         $messages = Message::where([
             'sender_id'=> $id,
@@ -81,39 +69,40 @@ class MessageController extends Controller
     public function store(MessageRequest $request)
     {
         //
-        $conversation_id = "";
+        try {
+            $conversation_id = "";
         $id = Auth()->user()->id;
         $username = Auth()->user()->username;
 
+
         $validatedData = $request->validated();
-        $validatedData['sender_id'] = Auth()->user()->id;
-        $conversation_one = Conversation::where([
+
+        if(!$request->conversation_id){
+            $conversation_one = Conversation::where([
             'user_one' => $id,
             'user_two' => $request->recipient_id,
-            ])->first();
-        if (!$conversation_one){
+            ])->orWhere([
+            'user_one' => $request->recipient_id,
+            'user_two' => $id,
+                ])->get();
+                if (count($conversation_one) > 0){
+                $conversation_id = $conversation_one[0]->id;
+                $validatedData['conversation_id'] = $conversation_id;
+            }else{
 
-            $conversation_two = Conversation::where([
-                'user_one' => $request->recipient_id,
-                'user_two' => $id,
-                ])->first();
+                $data = [
+                    'user_one' => $id,
+                    'user_two' => $request->recipient_id,
+                ];
+                $conversation = Conversation::firstOrCreate($data);
+                $conversation_id = $conversation->id;
+                $validatedData['conversation_id'] = $conversation_id;
+            }
+            
 
-                if(!$conversation_two){
-
-                    //create_conversation
-                    $data = [
-                        'user_one' => $id,
-                        'user_two' => $request->recipient_id,
-                    ];
-                    $conversation = Conversation::create($data);
-                    $conversation_id = $conversation->id;
-                }else{
-                    $conversation_id = $conversation_two->id;
-                }
-        }else{
-            $conversation_id = $conversation_one->id;
         }
-        $validatedData['conversation_id'] = $conversation_id;
+        $validatedData['sender_id'] = Auth()->user()->id;
+ 
         
         $message = Message::create($validatedData);
         if ($message){
@@ -121,6 +110,7 @@ class MessageController extends Controller
             $this->debitToken($id, 1, $request->message, $reference);
         }
         $sentMessage = Message::find($message->id)->load(['recipient', 'sender']);
+
         broadcast(new MessageEvent($sentMessage))->toOthers();
 
         //notify that you received a message
@@ -131,7 +121,13 @@ class MessageController extends Controller
             'status_code' => StatusCodes::CREATED,
             'message' => 'message sent successfully',
             'data' => $sentMessage
-        ],StatusCodes::CREATED);    
+        ],StatusCodes::CREATED);
+        } catch (Exception $e) {
+            $commonFunction = new CommonFunctionsController();
+            $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
+        }
+            
     }
 
 
@@ -274,11 +270,12 @@ class MessageController extends Controller
 
     public function getChats(){
         $id = Auth()->user()->id;
+
         $messages = Message::select('sender_id','recipient_id')->where([
             'sender_id'=> $id,
             ])->orWhere([
             'recipient_id'=> $id
-            ])->distinct()->with(['recipient', 'sender'])->get();
+            ])->distinct()->addSelect('conversation_id')->with(['recipient', 'sender'])->get();
 
         return response()->json([
             'status' => 'success',
