@@ -59,6 +59,7 @@ class PostNotificationController extends Controller
         $logged_user = Auth()->user()->id;
         if($logged_user != $data['broadcast_id']){
             try{
+                $data['read'] = 0;
                 $new_postNotification = PostNotification::firstOrCreate($data);
                 broadcast(new PostNotificationEvent($new_postNotification))->toOthers();
                 // $existing_notification = PostNotification::where([
