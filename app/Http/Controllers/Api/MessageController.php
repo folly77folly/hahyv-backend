@@ -284,4 +284,37 @@ class MessageController extends Controller
             'data' => $messages,
         ],StatusCodes::SUCCESS);  
     }
+
+    public function getHistory($id)
+    {
+    
+        $data = Conversation::where([
+            'user_one' => Auth()->user()->id,
+            'user_two' => $id,
+            ])->orWhere([
+                'user_one' => $id,
+                'user_two' => Auth()->user()->id
+            ])->get();
+
+        if (Count($data) > 0){
+            $conversation_id = $data[0]->id;
+
+            $messages = Message::where([
+                'conversation_id'=> $conversation_id,
+                ])->with(['recipient', 'sender'])->orderBy('created_at', 'desc')->paginate(Constants::PAGE_LIMIT);
+            return response()->json([
+                'status' => 'success',
+                'status_code' => StatusCodes::SUCCESS,
+                'message' => 'messages retrieved',
+                'data' => $messages
+            ],StatusCodes::SUCCESS); 
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'status_code' => StatusCodes::SUCCESS,
+            'message' => 'messages retrieved',
+            'data' => []
+        ],StatusCodes::SUCCESS); 
+    }
 }
