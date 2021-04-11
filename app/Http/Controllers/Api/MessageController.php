@@ -82,7 +82,6 @@ class MessageController extends Controller
                 $conversation_one = Conversation::Where(['user_one' => $request->recipient_id,'user_two' => $id,])->first();
             }
 
-            print_r($conversation_one);
                 if ($conversation_one){
                 $conversation_id = $conversation_one->id;
                 $validatedData['conversation_id'] = $conversation_id;
