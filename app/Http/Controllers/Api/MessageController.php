@@ -83,10 +83,11 @@ class MessageController extends Controller
             ])->orWhere([
             'user_one' => $request->recipient_id,
             'user_two' => $id,
-                ])->get();
+                ])->first();
+
             print_r($conversation_one);
-                if (count($conversation_one) > 0){
-                $conversation_id = $conversation_one[0]->id;
+                if ($conversation_one){
+                $conversation_id = $conversation_one->id;
                 $validatedData['conversation_id'] = $conversation_id;
             }else{
 
