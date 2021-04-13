@@ -40,7 +40,7 @@ class PostApproveMiddleware
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>"You are unable to post any more content until you have uploaded bank details",
+                'message'=>"Kindly Update your Profile and Wallet Details(Bank) before Posting",
             ],StatusCodes::BAD_REQUEST);
         }
         else{
