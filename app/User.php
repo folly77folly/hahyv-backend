@@ -132,16 +132,13 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $hidden = [
         'password', 'remember_token', 'otp_expiry', 'otp',
-        'provider_id','description','role_id','referral_url',
+        'provider_id','role_id',
         'is_reported','pendingWithdrawal','rf_token',
-        'is_blocked','ip_address','theme','location','provider_name',
-        'followerCount','cover_image_url','fansCount',
+        'is_blocked','ip_address','provider_name',
+        'followerCount','fansCount',
         'postCount',
-        'tokenBalance',
         'subscription_plan',
-        "preference_id",
         "website_url",
-        "gender",
         "date_of_birth",
         "is_active",
     ];
