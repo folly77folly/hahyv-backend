@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\BankDetailsRequest;
 use App\Http\Requests\AccountNumberRequest;
 use App\Http\Controllers\Api\CommonFunctionsController;
+use Exception;
 
 class BankDetailsController extends Controller
 {
@@ -65,8 +66,21 @@ class BankDetailsController extends Controller
         try{
             $bvn = $validatedData['bvn'];
             $mobile = $validatedData['phone_no'];
-            $response  = $this->check($bvn, $mobile);
-            // print_r($validatedData['bvn']);
+            $bankCode = $validatedData['bank_id'];
+            $accountNumber = $validatedData['account_no'];
+            $firstName = $validatedData['first_name'];
+            $lastName = $validatedData['last_name'];
+            // $response  = $this->check($bvn, $mobile);
+            $fields = [
+                'bvn' => $bvn,
+                'account_number' => $accountNumber,
+                'bank_code' => $bankCode,
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+
+              ];
+            $response  = $this->verifyMatch($fields, $accountNumber);
+            print_r($response);
             if($response['status'] == false){
                 return response()->json([
                     "status" =>"failure",
@@ -281,11 +295,6 @@ public function resolveAccount(AccountNumberRequest $request){
     }
 
 
-    // ($response);
-    // curl_close($curl);
-    // $result = json_decode($response, true);
-    // echo $response . PHP_EOL;
-    // return ($result["ResponseCode"]);
 }
     public function check($bvn, $mobile){
         $response = $this->resolveBvn3($bvn);
@@ -328,4 +337,45 @@ public function resolveAccount(AccountNumberRequest $request){
         }
     }
 
+    public function verifyMatch($fields, $accountNumber){
+        $fieldQuery = http_build_query($fields);
+        $response = $this->matchBvn($fieldQuery);
+        // return $response;
+        if(isset($response->status)){
+            if($response->status == true){
+                if($response->data->account_number == true and $response->data->is_blacklisted == false){
+
+                    $result = [
+                        'status' => true,
+                    ];
+                }else{
+                    $result = [
+                        'status' => false,
+                        'message' => "Your BVN information does not match your bank account information"
+                    ];
+                }
+                return($result);
+            }else{
+                if($response->message == "BVN match requests exhausted for the month" ){
+                    $result = [
+                        'status' => false,
+                        'message' => "Can't verify your BVN at the moment limit try again Later"
+                    ];
+                    return($result);
+                }
+                $result = [
+                    'status' => false,
+                    'message' => $response->message
+                ];
+                return($result);
+            }
+        }else{
+
+            $result = [
+                'status' => false,
+                'message' => "Can't Verify your bvn now try again Later"
+            ];
+            return($result);
+        }
+    }
 }

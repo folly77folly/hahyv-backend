@@ -77,17 +77,13 @@ class MessageController extends Controller
 
         $validatedData = $request->validated();
         if(!$request->conversation_id){
-            dd($request->conversation_id);
-            $conversation_one = Conversation::where([
-            'user_one' => $id,
-            'user_two' => $request->recipient_id,
-            ])->orWhere([
-            'user_one' => $request->recipient_id,
-            'user_two' => $id,
-                ])->get();
-            \print_r($conversation_one);
-                if (count($conversation_one) > 0){
-                $conversation_id = $conversation_one[0]->id;
+            $conversation_one = Conversation::where(['user_one' => $id,'user_two' => $request->recipient_id])->first();
+            if(!$conversation_one){
+                $conversation_one = Conversation::Where(['user_one' => $request->recipient_id,'user_two' => $id,])->first();
+            }
+
+                if ($conversation_one){
+                $conversation_id = $conversation_one->id;
                 $validatedData['conversation_id'] = $conversation_id;
             }else{
 
