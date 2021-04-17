@@ -130,7 +130,7 @@ class TokenController extends Controller
 
         $presentTokenRate = $tokenRate->rate;
 
-        $noOfTokenRequested = $request->token / $unit;
+        $noOfTokenRequested = $request->token;  // $unit;
         $reference = "wa_tk".time();
         $description = "purchase of $noOfTokenRequested unit(s) of token";
         $calculateToken = $noOfTokenRequested * $presentTokenRate;
@@ -146,7 +146,7 @@ class TokenController extends Controller
         }
 
         $this->debitWallet($user->id, $calculateToken, $description, $reference);
-        $this->creditToken($user->id, $calculateToken, $description, $reference);
+        $this->creditToken($user->id, $noOfTokenRequested, $description, $reference);
 
         return response()->json([
             "status" => "success",
