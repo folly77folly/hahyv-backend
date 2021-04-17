@@ -9,11 +9,14 @@ use App\Models\Conversation;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Collections\StatusCodes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Pagination\Paginator;
 use App\Http\Requests\HistoryRequest;
 use App\Http\Requests\MessageRequest;
 use App\Traits\TokenTransactionsTrait;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Http\Controllers\Api\CommonFunctionsController;
 use App\Http\Controllers\Api\PostNotificationController;
 
@@ -76,7 +79,7 @@ class MessageController extends Controller
 
 
         $validatedData = $request->validated();
-        if(!$request->conversation_id){
+        if(!$request->conversation_id or $request->conversation_id == ""){
             $conversation_one = Conversation::where(['user_one' => $id,'user_two' => $request->recipient_id])->first();
             if(!$conversation_one){
                 $conversation_one = Conversation::Where(['user_one' => $request->recipient_id,'user_two' => $id,])->first();
@@ -268,17 +271,38 @@ class MessageController extends Controller
     public function getChats(){
         $id = Auth()->user()->id;
 
-        $messages = Message::select('sender_id','recipient_id')->where([
-            'sender_id'=> $id,
+        $conversation_array = [];
+        $message_array = [];
+        $messages = Conversation::select('user_one as sender_id','user_two as recipient_id')->where([
+            'user_one'=> $id,
             ])->orWhere([
-            'recipient_id'=> $id
-            ])->distinct()->addSelect('conversation_id')->with(['recipient', 'sender'])->get();
+            'user_two'=> $id
+            ])->distinct()->addSelect('id as conversation_id')->with('user_one','user_two')->get();
+            
+        foreach ($messages as $conversation){
+            if($conversation->sender_id == $id){
+                $conversation_array['user_id']= $conversation->recipient_id;
+                $conversation_array['conversation_id']= $conversation->conversation_id;
+                $conversation_array['user']= $conversation->user_two;
+            }
+
+            if($conversation->recipient_id == $id){
+                $conversation_array['user_id']= $conversation->sender_id;
+                $conversation_array['conversation_id']= $conversation->conversation_id;
+                $conversation_array['user']= $conversation->user_one;
+            }
+            array_push($message_array, $conversation_array);
+        }
+
+        // $chats = collect($message_array)->paginate(Constants::PAGE_LIMIT);
+        $chats = $this->paginate($message_array)->setPath(route('getChats'));
 
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
             'message' => 'messages retrieved',
-            'data' => $messages,
+            'data' => $chats,
+            // 'data' => $chats,
         ],StatusCodes::SUCCESS);  
     }
 
@@ -313,5 +337,12 @@ class MessageController extends Controller
             'message' => 'messages retrieved',
             'data' => []
         ],StatusCodes::SUCCESS); 
+    }
+
+    public function paginate($items, $perPage = Constants::PAGE_LIMIT, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

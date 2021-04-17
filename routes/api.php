@@ -187,6 +187,12 @@ Route::group(['middleware'=>'auth:api'], function(){
 
 
     //transactions
+
+
+
+
+
+    
     Route::GET('/card_transactions', 'Api\CardTransactionController@index');
 
     //Poll Vote
@@ -195,7 +201,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     //messages
     Route::POST('/history', 'Api\MessageController@history');
     Route::GET('/conversation/{id}', 'Api\MessageController@getConversation');
-    Route::GET('/chats', 'Api\MessageController@getChats');
+    Route::GET('/chats', 'Api\MessageController@getChats')->name('getChats');
     Route::GET('/history-message/{id}', 'Api\MessageController@getHistory');
     Route::apiResource('message', Api\MessageController::class);
 
