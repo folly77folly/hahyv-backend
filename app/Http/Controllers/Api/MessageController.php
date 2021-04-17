@@ -304,19 +304,19 @@ class MessageController extends Controller
         ],StatusCodes::SUCCESS);  
     }
 
-    public function getHistory($id)
+    public function getHistory($conversation_id)
     {
     
-        $data = Conversation::where([
-            'user_one' => Auth()->user()->id,
-            'user_two' => $id,
-            ])->orWhere([
-                'user_one' => $id,
-                'user_two' => Auth()->user()->id
-            ])->get();
+        // $data = Conversation::where([
+        //     'user_one' => Auth()->user()->id,
+        //     'user_two' => $id,
+        //     ])->orWhere([
+        //         'user_one' => $id,
+        //         'user_two' => Auth()->user()->id
+        //     ])->get();
 
-        if (Count($data) > 0){
-            $conversation_id = $data[0]->id;
+        // if (Count($data) > 0){
+            // $conversation_id = $data[0]->id;
 
             $messages = Message::where([
                 'conversation_id'=> $conversation_id,
@@ -327,7 +327,7 @@ class MessageController extends Controller
                 'message' => 'messages retrieved',
                 'data' => $messages
             ],StatusCodes::SUCCESS); 
-        }
+        // }
 
         return response()->json([
             'status' => 'success',
