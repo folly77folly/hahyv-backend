@@ -294,15 +294,13 @@ class MessageController extends Controller
             array_push($message_array, $conversation_array);
         }
 
-        // $chats = collect($message_array)->paginate(Constants::PAGE_LIMIT);
-        $chats = $this->paginate($message_array)->setPath(route('getChats'));
+        // $chats = $this->paginate($message_array)->setPath(route('getChats'));
 
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
             'message' => 'messages retrieved',
-            'data' => $chats,
-            // 'data' => $chats,
+            'data' => $message_array,
         ],StatusCodes::SUCCESS);  
     }
 
