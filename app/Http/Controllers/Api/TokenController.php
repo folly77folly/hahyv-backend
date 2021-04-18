@@ -133,7 +133,7 @@ class TokenController extends Controller
         $noOfTokenRequested = $request->token;  // $unit;
         $reference = "wa_tk".time();
         $description = "purchase of $noOfTokenRequested unit(s) of token";
-        $calculateToken = $noOfTokenRequested * $presentTokenRate;
+        $calculateToken = ($noOfTokenRequested/$unit) * $presentTokenRate;
         $formattedAmount = number_format($calculateToken,2,".",",");
 
 
