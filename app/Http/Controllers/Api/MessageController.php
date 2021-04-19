@@ -182,7 +182,7 @@ class MessageController extends Controller
         }
         $messages = Message::where([
             'conversation_id'=> $conversation_id,
-            ])->with(['recipient', 'sender'])->orderBy('created_at', 'asc')->get();
+            ])->with(['recipient', 'sender'])->orderBy('created_at', 'asc')->paginate(Constants::PAGE_LIMIT);
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
