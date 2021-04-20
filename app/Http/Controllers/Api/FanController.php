@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Fan;
 use Illuminate\Http\Request;
+use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
 
@@ -19,7 +20,7 @@ class FanController extends Controller
         //
         $fans = Fan::select('user_id')->where('creator_id', '=', Auth()->user()->id)
         ->where('is_active', '=', 1)
-        ->with('user')->get();
+        ->with('user')->paginate(Constants::PAGE_LIMIT);
 
         return response()->json([
             "status" => "success",
