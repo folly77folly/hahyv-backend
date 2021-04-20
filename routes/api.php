@@ -33,7 +33,7 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
         Route::POST('/change_password', 'Api\Admin\AuthController@changePassword');
 
         //all users
-        // Route::GET('/users', 'Api\Admin\DashboardController@allUsers');
+        Route::GET('/users', 'Api\Admin\DashboardController@allUsers');
         Route::GET('/users_p', 'Api\Admin\DashboardController@allUsersP');
         Route::PUT('/users', 'Api\Admin\DashboardController@deactivateUser');
 
@@ -92,8 +92,8 @@ Route::GET('email/verify/{id}/{hash}', 'Api\VerificationController@verify')->nam
 Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
 
 Route::group(['middleware'=>'auth:api'], function(){
-    //all users
-    Route::GET('/users', 'Api\AuthController@index')->name('allUsers');
+    //all users for search 
+    // Route::GET('/users', 'Api\AuthController@index')->name('allUsers');
     
     // User profile
     Route::GET('profile/preference', 'Api\UserProfileController@preference');
