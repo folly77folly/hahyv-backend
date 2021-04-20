@@ -73,7 +73,7 @@ class MessageController extends Controller
     {
         //
         try {
-            $conversation_id = "";
+        $conversation_id = "";
         $id = Auth()->user()->id;
         $username = Auth()->user()->username;
 

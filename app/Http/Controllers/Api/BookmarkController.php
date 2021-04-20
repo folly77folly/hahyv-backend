@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use App\Models\Post;
 use App\Models\Bookmark;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookmarkRequest;
 use App\Http\Controllers\Api\CommonFunctionsController;
 use App\Http\Controllers\Api\PostNotificationController;
+
 
 class BookmarkController extends Controller
 {
@@ -31,7 +33,7 @@ class BookmarkController extends Controller
                 }, 'likes'=>function($query_likes){
                     $query_likes->with('user');
                 }]);
-            }])->get();
+            }])->paginate(Constants::PAGE_LIMIT);
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,
