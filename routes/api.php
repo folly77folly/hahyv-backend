@@ -33,7 +33,7 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
         Route::POST('/change_password', 'Api\Admin\AuthController@changePassword');
 
         //all users
-        Route::GET('/users', 'Api\Admin\DashboardController@allUsers');
+        // Route::GET('/users', 'Api\Admin\DashboardController@allUsers');
         Route::GET('/users_p', 'Api\Admin\DashboardController@allUsersP');
         Route::PUT('/users', 'Api\Admin\DashboardController@deactivateUser');
 
