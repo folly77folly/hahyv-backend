@@ -199,7 +199,7 @@ class UserProfileController extends Controller
         $userP = Auth()->user()->preference_id;
         $id = Auth()->user()->id;
 
-        //array of following
+        //array of users that you are following
         $my_followers= [];
         $followings = Follower::where('user_id', '=', Auth()->user()->id)->get(['following_userId AS id'])->toArray();
         foreach($followings as $following){
@@ -216,7 +216,7 @@ class UserProfileController extends Controller
         }
 
         if ($userP != 1){
-            $suggestions = User::all(
+            $suggestions = User::select(
                 'id',
                 'name',
                 'username',
@@ -236,17 +236,17 @@ class UserProfileController extends Controller
             ->where('role_id', '!=', 1)
             ->whereNotIn('id', $my_followers)
             ->whereNotIn('id', $my_subscribers)
-            ->toArray();
+            ->paginate(Constants::PAGE_LIMIT);
 
             return response()->json([
                 "status"=>"success",
                 "status_code" => StatusCodes::SUCCESS,
                 "message" => "suggestions successfully",
-                "data" => array_values($suggestions)
+                "data" => $suggestions
             ],StatusCodes::SUCCESS);
         }
 
-        $suggestions = User::all(
+        $suggestions = User::select(
             'id',
             'name',
             'username',
@@ -265,29 +265,28 @@ class UserProfileController extends Controller
         ->where('role_id', '!=', 1)
         ->whereNotIn('id', $my_followers)
         ->whereNotIn('id', $my_subscribers)
-        ->toArray();
+        ->paginate(Constants::PAGE_LIMIT);
 
         return response()->json([
             "status"=>"success",
             "status_code" => StatusCodes::SUCCESS,
             "message" => "suggestions successfully fetched",
-            "data" => array_values($suggestions)
+            "data" => $suggestions
         ],StatusCodes::SUCCESS);
 
     }
 
     public function profileUsername(string $str){
-        $post = User::where('username' ,$str)
-        ->with(['post' => function($query){
-                $query->with('Comment')->with(['user' => function($query){
-                    $query->with([
-                        'monetizeBenefits:user_id,benefits',
-                        'subscriptionBenefits:user_id,benefits',
-                        ])->with([
-                            'subscriptionRates' => function($query){
-                                $query->with('subscription:id,name,period');
-                            }]);
+        $post = User::where('username' ,$str)->with([
+            'monetizeBenefits:user_id,benefits',
+            'subscriptionBenefits:user_id,benefits',
+            ])->with([
+                'subscriptionRates' => function($query){
+                    $query->with('subscription:id,name,period');
                 }])
+
+        ->with(['post' => function($query){
+                $query->with('Comment')->with('user')
                 ->with(['polls'=>function($query){
                     return $query->with('votes');
                 }])

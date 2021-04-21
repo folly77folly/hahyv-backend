@@ -92,8 +92,8 @@ Route::GET('email/verify/{id}/{hash}', 'Api\VerificationController@verify')->nam
 Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
 
 Route::group(['middleware'=>'auth:api'], function(){
-    //all users
-    Route::GET('/users', 'Api\AuthController@index')->name('allUsers');
+    //all users for search 
+    // Route::GET('/users', 'Api\AuthController@index')->name('allUsers');
     
     // User profile
     Route::GET('profile/preference', 'Api\UserProfileController@preference');
@@ -187,6 +187,12 @@ Route::group(['middleware'=>'auth:api'], function(){
 
 
     //transactions
+
+
+
+
+
+    
     Route::GET('/card_transactions', 'Api\CardTransactionController@index');
 
     //Poll Vote
@@ -195,7 +201,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     //messages
     Route::POST('/history', 'Api\MessageController@history');
     Route::GET('/conversation/{id}', 'Api\MessageController@getConversation');
-    Route::GET('/chats', 'Api\MessageController@getChats');
+    Route::GET('/chats', 'Api\MessageController@getChats')->name('getChats');
     Route::GET('/history-message/{id}', 'Api\MessageController@getHistory');
     Route::apiResource('message', Api\MessageController::class);
 

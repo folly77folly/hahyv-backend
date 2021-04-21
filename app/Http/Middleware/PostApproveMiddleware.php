@@ -21,19 +21,19 @@ class PostApproveMiddleware
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>"You are unable to post any more content until you have uploaded a Profile Image",
+                'message'=>"Kindly Update your Profile and Wallet Details(Bank) before Posting",
             ],StatusCodes::BAD_REQUEST);
         }elseif(!Auth()->user()->cover_image_url){
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>"You are unable to post any more content until you have uploaded a Cover Image"
+                'message'=>"Kindly Update your Profile and Wallet Details(Bank) before Posting"
             ],StatusCodes::BAD_REQUEST);
         }elseif(!Auth()->user()->description){
             return response()->json([
                 'status'=> 'failure',
                 'status_code'=> StatusCodes::BAD_REQUEST,
-                'message'=>"You are unable to post any more content until you fill your bio"
+                'message'=>"Kindly Update your Profile and Wallet Details(Bank) before Posting"
             ],StatusCodes::BAD_REQUEST);
         }
         elseif(!Auth()->user()->bankDetail){

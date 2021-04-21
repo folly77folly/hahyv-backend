@@ -138,7 +138,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'followerCount','fansCount',
         'postCount',
         'subscription_plan',
-        "website_url",
         "date_of_birth",
         "is_active",
     ];
