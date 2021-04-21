@@ -175,7 +175,7 @@ class FollowerController extends Controller
     }
     
     public function following(){
-        $followings = Follower::select('following_userId')->where('user_id', '=', Auth()->user()->id)->with('following')->paginate(Constants::PAGE_LIMIT);
+        $followings = Follower::select('following_userId')->where('user_id', '=', Auth()->user()->id)->with('following')->latest()->paginate(Constants::PAGE_LIMIT);
 
         return response()->json([
             "status" => "success",
@@ -186,7 +186,7 @@ class FollowerController extends Controller
     }
 
     public function followers(){
-        $followers= Follower::select('user_id','following_userId')->where('following_userId', '=', Auth()->user()->id)->with('user')->paginate(Constants::PAGE_LIMIT);
+        $followers= Follower::select('user_id','following_userId')->where('following_userId', '=', Auth()->user()->id)->with('user')->latest()->paginate(Constants::PAGE_LIMIT);
 
         return response()->json([
             "status" => "success",

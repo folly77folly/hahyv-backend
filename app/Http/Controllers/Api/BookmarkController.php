@@ -33,7 +33,7 @@ class BookmarkController extends Controller
                 }, 'likes'=>function($query_likes){
                     $query_likes->with('user');
                 }]);
-            }])->paginate(Constants::PAGE_LIMIT);
+            }])->latest()->paginate(Constants::PAGE_LIMIT);
             return response()->json([
                 "status" =>"success",
                 "status_code" =>StatusCodes::SUCCESS,

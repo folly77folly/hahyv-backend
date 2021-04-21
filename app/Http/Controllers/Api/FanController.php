@@ -20,7 +20,7 @@ class FanController extends Controller
         //
         $fans = Fan::select('user_id')->where('creator_id', '=', Auth()->user()->id)
         ->where('is_active', '=', 1)
-        ->with('user')->paginate(Constants::PAGE_LIMIT);
+        ->with('user')->latest()->paginate(Constants::PAGE_LIMIT);
 
         return response()->json([
             "status" => "success",
