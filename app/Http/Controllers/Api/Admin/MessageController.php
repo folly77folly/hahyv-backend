@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\User;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Traits\AdminJobsTrait;
 use App\Collections\StatusCodes;
@@ -20,8 +21,7 @@ class MessageController extends Controller
         $users  = User::where('id', $mailDetails['user_id'])->where('email_verified_at', '!=', null)->pluck('email','username');
 
         if ($users){
-            $this->dispatchJob($mailDetails, $users)->delay(now()->addMinutes(5));
-
+            $this->dispatchJob($mailDetails, $users);
             return response()->json([
                 "status" => "success",
                 "status_code" => StatusCodes::SUCCESS,
@@ -41,7 +41,7 @@ class MessageController extends Controller
         $mailDetails = $request->validated();
         $users  = User::where('role_id', 2)->where('email_verified_at', '!=', null)->pluck('email','username');
 
-        $this->dispatchJob($mailDetails, $users)->delay(now()->addMinutes(2));
+        $this->dispatchJob($mailDetails, $users);
 
         return response()->json([
             "status" => "success",
@@ -53,7 +53,7 @@ class MessageController extends Controller
     public function subscribers(AnnouncementRequest $request){
         $mailDetails = $request->validated();
         $users  = User::where('is_monetize', false)->pluck('email','username');
-        $this->dispatchJob($mailDetails, $users)->delay(now()->addMinutes(5));
+        $this->dispatchJob($mailDetails, $users);
 
         return response()->json([
             "status" => "success",
@@ -65,7 +65,7 @@ class MessageController extends Controller
     public function creators(AnnouncementRequest $request){
         $mailDetails = $request->validated();
         $users  = User::where('is_monetize', true)->pluck('email','username');
-        $this->dispatchJob($mailDetails, $users)->delay(now()->addMinutes(5));
+        $this->dispatchJob($mailDetails, $users);
 
         return response()->json([
             "status" => "success",
