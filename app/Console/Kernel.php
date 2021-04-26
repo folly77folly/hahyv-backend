@@ -28,8 +28,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('command:unSubscribe')->everyFiveMinutes();
-        $schedule->command('command:subscription_expiry')->daily('06:00');
+        $schedule->command('command:unSubscribe')->everyMinute();
+        $schedule->command('command:subscription_expiry')->daily('08:00');
     }
 
     /**
