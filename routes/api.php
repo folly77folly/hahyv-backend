@@ -42,6 +42,7 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
 
         //user profile
         Route::GET('/user/{user}', 'Api\Admin\DashboardController@profileUsername');
+        Route::PUT('/subscription-expire', 'Api\Admin\DashboardController@expiry');
 
         //send mail
         Route::POST('/send_mail', 'Api\Admin\DashboardController@sendMail');
@@ -66,6 +67,7 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
 
         //Transaction Fee
         Route::apiResource('transaction_fee', Api\Admin\TransactionFeeController::class);
+
     });
 
 });
