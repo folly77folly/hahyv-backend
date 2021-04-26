@@ -7,6 +7,7 @@ use App\Collections\Constants;
 use App\Models\SubscribersList;
 use Illuminate\Console\Command;
 use App\Jobs\SubscriptionExpiryJob;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionExpiry extends Command
 {
@@ -45,6 +46,7 @@ class SubscriptionExpiry extends Command
         $time = Constants::JOB_DELAY_TIME['ONE'];
 
         $users = SubscribersList::whereBetween('expiry',  [Carbon::now(), Carbon::now()->addDays($days)])->with('user', 'creator')->get();
+        Log::alert($users);
         if($users){
             dispatch(new SubscriptionExpiryJob($users))->delay(now()->addMinute($time));
         }
