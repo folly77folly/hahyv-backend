@@ -40,7 +40,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            'throttle:60,1',
+            'throttle:600000,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -63,5 +63,17 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'emailverifier' => \App\Http\Middleware\EmailVerifiedMiddleWare::class,
+        'comment' => \App\Http\Middleware\CommentMiddleware::class,
+        'comment_like' => \App\Http\Middleware\CommentLikeMiddleware::class,
+        'post' => \App\Http\Middleware\PostApproveMiddleware::class,
+        'subscribe' => \App\Http\Middleware\SubscribeMiddleware::class,
+        'wallet_balance_sub' => \App\Http\Middleware\WalletBalance::class,
+        'poll_expiry' => \App\Http\Middleware\VotingExpiryMiddleware::class,
+        'token' => \App\Http\Middleware\TokenMiddleware::class,
+        'walletTipBalance' => \App\Http\Middleware\WalletTipBalance::class,
+        'earning_balance' => \App\Http\Middleware\EarningWithdrawalMiddleware::class,
+        'wallet_balance' => \App\Http\Middleware\WalletBankTransfer::class,
+        'admin' => \App\Http\Middleware\AdminRoleMiddleware::class,
     ];
 }

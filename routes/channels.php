@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+Broadcast::channel('notification-{user_id}', function ($user, $user_id) {
+    return true;
+    // return (int) $user->id === (int) $user_id;
+});

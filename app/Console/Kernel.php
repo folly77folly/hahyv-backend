@@ -2,7 +2,9 @@
 
 namespace App\Console;
 
+use App\Console\Commands\UnsubscribeUser;
 use Illuminate\Console\Scheduling\Schedule;
+use App\Console\Commands\SubscriptionExpiry;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
@@ -14,6 +16,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
+        Commands\UnsubscribeUser::class,
+        Commands\SubscriptionExpiry::class,
     ];
 
     /**
@@ -24,11 +28,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('command:unSubscribe')->everyFiveMinutes();
+        $schedule->command('command:subscription_expiry')->daily('06:00');
     }
 
     /**
      * Register the commands for the application.
+     * 
      *
      * @return void
      */

@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="9T7CDwviMokVrafNoI5wbxAXWki_mX7ttswWlKoHg_M" />
 
         <title>Laravel</title>
 
@@ -62,6 +63,45 @@
                 margin-bottom: 30px;
             }
         </style>
+
+          <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+          <script>
+        
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+        
+            // var pusher = new Pusher('30b40ac3acc26d1a0504', {
+            //   cluster: 'eu',
+            //   auth: {
+            //     headers: {
+            //     'X-CSRF-Token': "{{ csrf_token() }}"
+            //     }
+            //   }
+            // });
+
+            var pusher = new Pusher('30b40ac3acc26d1a0504', {
+                cluster: 'eu',
+                authTransport: 'jsonp',
+                authEndpoint: 'https://hahyv.herokuapp.com/pusher/auth'
+            });
+
+ 
+        
+            // var channel = pusher.subscribe('channel-name');
+            // channel.bind('LikeComment', function(data) {
+            //   alert(JSON.stringify(data));
+            // });
+            var pchannel = pusher.subscribe('private-notification-101');
+            pchannel.bind('App\\Events\\PostNotificationEvent', function(data) {
+              alert(JSON.stringify(data));
+            });
+
+
+            // var pchannelChat = pusher.subscribe('private-chat-1');
+            // pchannelChat.bind('App\\Events\\MessageEvent', function(data) {
+            //   alert(JSON.stringify(data));
+            });
+          </script>
     </head>
     <body>
         <div class="flex-center position-ref full-height">
@@ -81,20 +121,22 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Hahyv Backend
                 </div>
 
                 <div class="links">
-                    <a href="https://laravel.com/docs">Docs</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://blog.laravel.com">Blog</a>
-                    <a href="https://nova.laravel.com">Nova</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://vapor.laravel.com">Vapor</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                    <a href="https://documenter.getpostman.com/view/8806253/TVsrF97w">API-Docs1</a>
+                    <a href="https://documenter.getpostman.com/view/8806253/TW74jR5o">API-Docs2</a>
+                    {{-- <a href="https://documenter.getpostman.com/view/8806253/TVzPnJpe#e86af4f4-d855-4b14-b57b-a140a1cbfc15">API-Docs2</a> --}}
                 </div>
             </div>
+        </div>
+        <div>
+            <h1>Pusher Test</h1>
+            <p>
+              Try publishing an event to channel <code>my-channel</code>
+              with event name <code>my-event</code>.
+            </p>
         </div>
     </body>
 </html>
