@@ -39,7 +39,7 @@ class UnsubscribeUser extends Command
      */
     public function handle()
     {
-        // echo Carbon::now();
+
         $expired = SubscribersList::where('expiry', '<', Carbon::now())->update(['is_active' => false]);
     }
 }

@@ -66,7 +66,6 @@ class Handler extends ExceptionHandler
         //     'message' => $exception->getMessage(),
         //     'error' => $exception->errors()
         // ], 404);
-        Log::info($exception->getMessage());
             return parent::render($request, $exception);
     }
 }

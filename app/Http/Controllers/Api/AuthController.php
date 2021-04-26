@@ -9,6 +9,7 @@ use App\Events\ReferralEvent;
 use App\Collections\Constants;
 use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;
+use App\Events\unSubscribeEvent;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Providers\UrlShortenerEvent;
@@ -42,7 +43,7 @@ class AuthController extends Controller
             'updated_at',
             )
             ->where('id', '!=', $id)
-            ->where('role_id', '!=', 1)
+            ->where('role_id', '!=', Constants::ROLE['ADMIN'])
             ->where('email_verified_at', '!=', null)
             ->paginate(Constants::PAGE_LIMIT);
 
@@ -201,6 +202,7 @@ class AuthController extends Controller
         }
 
         $accessToken = Auth()->user()->createToken("authToken")->accessToken;
+        event(new unSubscribeEvent(Auth()->user()->id));
         return response()->json([
             "status"=>"success",
             "status_code"=> StatusCodes::SUCCESS,

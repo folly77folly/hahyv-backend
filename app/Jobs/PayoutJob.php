@@ -50,7 +50,7 @@ class PayoutJob implements ShouldQueue
             # code...
             if ($creator->availableEarning > 0){
                 $payAmount = \number_format($creator->availableEarning,2,'.', ',');
-                // Log::debug($creator);
+
                 DB::transaction(function () use($creator, $description, $incomeDescription, $reference, $earning_type) {
                     $amount = $creator->availableEarning;
                     $debitAmount = -1 * $amount;
