@@ -26,7 +26,7 @@ class Post extends Model
         'accept_tip' => 'boolean',
         'is_paid' => 'boolean',
     ];
-    protected $appends = array('canComment', 'is_bookmark', 'showTip','url', 'uploaded_time');
+    protected $appends = array('canComment', 'is_bookmark', 'showTip');
 
     // public function getUrlAttribute()
     // {
