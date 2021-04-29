@@ -7,7 +7,7 @@ Hello **{{$name}}**,  {{-- use double space for line break --}}
 @endcomponent
 
 Click on the link below to access your account
-@component('mail::button', ['url' => env('BASE_URL','https://hahyv.netlify.app/'), 'color' => 'success'])
+@component('mail::button', ['url' => {{ env('BASE_URL','https://hahyv.netlify.app/') }}, 'color' => 'success'])
 Go to Hahyv
 @endcomponent
 Sincerely,  {{-- use double space for line break --}}
