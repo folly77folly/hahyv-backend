@@ -28,10 +28,10 @@ class Post extends Model
     ];
     protected $appends = array('canComment', 'is_bookmark', 'showTip','url', 'uploaded_time');
 
-    public function getUrlAttribute()
-    {
-        return Storage::disk('s3')->url($this->path);
-    }
+    // public function getUrlAttribute()
+    // {
+    //     return Storage::disk('s3')->url($this->path);
+    // }
 
     public function getUploadedTimeAttribute()
     {
