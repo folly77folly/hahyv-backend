@@ -33,10 +33,10 @@ class Post extends Model
     //     return Storage::disk('s3')->url($this->path);
     // }
 
-    public function getUploadedTimeAttribute()
-    {
-        return $this->created_at->diffForHumans();
-    }
+    // public function getUploadedTimeAttribute()
+    // {
+    //     return $this->created_at->diffForHumans();
+    // }
 
 
 
