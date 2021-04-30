@@ -13,6 +13,6 @@ Click on the link below to access your account
 Go to Hahyv
 @endcomponent
 Sincerely,  {{-- use double space for line break --}}
-Hahyv team. {{-- use double space for line break --}}
+Hahyv Team. {{-- use double space for line break --}}
 
 @endcomponent
