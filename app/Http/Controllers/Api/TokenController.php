@@ -110,6 +110,13 @@ class TokenController extends Controller
             'token' => 'required|integer',
         ]);
         $tokenRate = TokenRate::first();
+        if(!$tokenRate){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::UNPROCESSABLE,
+                "message" => "Token is not sold yet, check later.",
+            ], StatusCodes::UNPROCESSABLE);
+        }
         $unit = $tokenRate->unit;
         $modulo = fmod($request->token, $unit);
 

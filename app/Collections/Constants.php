@@ -66,4 +66,11 @@ class Constants{
         "TRUE" => 1,
         "FALSE" => 0,
     ];
+
+    //default subscription benefits
+    Const DEFAULT_BENEFITS = [
+        "Full access to this user's content",
+        "Direct message with this user",
+        "Cancel your subscription at any time"
+    ];
 }
