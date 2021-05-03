@@ -62,11 +62,12 @@ class ProcessWebhook extends ProcessWebhookJob
 
         if($metaData['user_id']){
             $authorization = $data['payload']['data']['authorization'];
+            $charges = $metaData['charges'];
         $cardTrans = CardTransaction::create([
             'user_id' =>$metaData['user_id'],
             'trans_id' =>$reference,
             'description' => $metaData['description'],
-            'amount' => $amount,
+            'amount' => $amount - $charges,
             'receipt_url' => $metaData['referrer'],
             'receipt_no' => $reference,
             'card_details' => $authorization['brand']."-".$authorization['last4'],
