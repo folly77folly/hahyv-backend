@@ -5,6 +5,10 @@ namespace App\Handler;
 //that will handle the job of processing our webhook before we have 
 //access to it.
 use \Spatie\WebhookClient\ProcessWebhookJob;
+use Illuminate\Support\Facades\Log;
+
+use Exception;
+
 use App\Models\PostNotification;
 
 use App\Collections\Constants;
@@ -14,7 +18,6 @@ use App\Collections\StatusCodes;
 use App\Models\CardTransaction;
 use App\Traits\EarningTransactionsTrait;
 use App\User;
-use Illuminate\Support\Facades\Log;
 use App\Models\WalletTransaction;
 use App\Traits\WalletTransactionsTrait;
 
@@ -28,6 +31,7 @@ class ProcessWebhook extends ProcessWebhookJob
     public function failed(Exception $exception)
     {
         // Send user notification of failure, etc...
+        Log::alert('Transaction failed '.$exception);
         http_response_code(200);
     }
 
