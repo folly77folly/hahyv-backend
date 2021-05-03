@@ -12,7 +12,7 @@ Trait PayStackPaymentTrait{
     
     public function transferRecipient(array $fields ){
         $url = env('PAYSTACK_BASE_URL')."transferrecipient";
-        $key = env('PAYSTACK_SECRET_KEY_TEST');
+        $key = env('PAYSTACK_SECRET_KEY');
         $fields_string = http_build_query($fields);
 
         //open connection
@@ -55,7 +55,7 @@ Trait PayStackPaymentTrait{
     public function transfer(array $fields){
         $url = env('PAYSTACK_BASE_URL')."transfer";
         $fields_string = http_build_query($fields);
-        $key = env('PAYSTACK_SECRET_KEY_TEST');
+        $key = env('PAYSTACK_SECRET_KEY');
         //open connection
       
         $ch = curl_init();

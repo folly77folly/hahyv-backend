@@ -26,7 +26,7 @@ class SubscriptionRateRequest extends FormRequest
         return [
             //
             'subscription_type_id' => ['required', 'exists:subscription_types,id'],
-            'amount' => ['required', 'numeric', 'regex:/^\d*(\.\d{1,2})?$/']
+            'amount' => ['required', 'numeric', 'regex:/^\d*(\.\d{1,2})?$/', 'gt:0']
         ];
     }
 }
