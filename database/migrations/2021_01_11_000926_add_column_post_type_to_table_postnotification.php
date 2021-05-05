@@ -28,7 +28,7 @@ class AddColumnPostTypeToTablePostnotification extends Migration
     {
         Schema::table('post_notifications', function (Blueprint $table) {
             //
-            $table->dropColumn('post_type_id');
+            $table->dropIfExists('post_type_id');
         });
     }
 }

@@ -27,7 +27,7 @@ class AddColumnPosterToPostNotifictionTable extends Migration
     {
         Schema::table('post_notifications', function (Blueprint $table) {
             //
-            $table->dropColumn('broadcast_id');
+            $table->dropIfExists('broadcast_id');
         });
     }
 }

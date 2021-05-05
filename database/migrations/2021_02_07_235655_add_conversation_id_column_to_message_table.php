@@ -35,9 +35,9 @@ class AddConversationIdColumnToMessageTable extends Migration
     {
         Schema::table('messages', function (Blueprint $table) {
             //
-            $table->dropColumn('conversation_id');
-            $table->dropColumn('status');
-            $table->dropColumn('deleted_at');
+            $table->dropIfExists('conversation_id');
+            $table->dropIfExists('status');
+            $table->dropIfExists('deleted_at');
         });
     }
 }
