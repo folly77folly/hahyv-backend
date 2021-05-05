@@ -31,8 +31,8 @@ class ProcessWebhook extends ProcessWebhookJob
     public function failed(Exception $exception)
     {
         // Send user notification of failure, etc...
-        http_response_code(200);
         Log::alert('Transaction failed '.$exception);
+        http_response_code(200);
     }
 
     public function handle(){
@@ -98,8 +98,8 @@ class ProcessWebhook extends ProcessWebhookJob
         
             }
         } catch (Exception $exception) {
-            http_response_code(200);
             Log::alert($exception->getMessage());
+            http_response_code(200);
         }
         
     }   
