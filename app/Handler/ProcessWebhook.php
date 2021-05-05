@@ -98,8 +98,8 @@ class ProcessWebhook extends ProcessWebhookJob
         
             }
         } catch (Exception $exception) {
-            http_response_code(200);
             Log::alert($exception->getMessage());
+            http_response_code(200);
         }
         
     }   
