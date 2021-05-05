@@ -16,7 +16,7 @@ class ChangeStringToUnsignedIntegerInUsers extends Migration
         Schema::table('users', function (Blueprint $table) {
             //
             $table->renameColumn('preference', 'preference_id');
-            $table->renameColumn('PostCount', 'postCount');
+            // $table->renameColumn('postCount', 'postCount');
         });
 
     }
@@ -30,8 +30,8 @@ class ChangeStringToUnsignedIntegerInUsers extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->renameColumn('preference_id', 'preference');
-            $table->renameColumn('postCount', 'PostCount');
+            $table->renameColumn('preference_id', 'preference')->change();
+            // $table->renameColumn('postCount', 'PostCount');
         });
     }
 }

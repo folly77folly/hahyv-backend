@@ -13,6 +13,7 @@ class CreatePreferencesTable extends Migration
      */
     public function up()
     {
+        // Schema::dropIfExists('preferences');
         Schema::create('preferences', function (Blueprint $table) {
             $table->id();
             $table->string('preference')->unique();
@@ -27,6 +28,12 @@ class CreatePreferencesTable extends Migration
      */
     public function down()
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropIfExists('preference');
+        });
+
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('preferences');
+        Schema::enableForeignKeyConstraints();
     }
 }
