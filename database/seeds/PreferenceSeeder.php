@@ -14,16 +14,19 @@ class PreferenceSeeder extends Seeder
     {
         //
         $all = new Preference();
+        $all->id = 1;
         $all->preference = "all";
         $all->save();
 
-        $all = new Preference();
-        $all->preference = "straight";
-        $all->save();
+        $straight = new Preference();
+        $straight->id = 2;
+        $straight->preference = "straight";
+        $straight->save();
 
-        $all = new Preference();
-        $all->preference = "lgbt";
-        $all->save();
+        $lgbt = new Preference();
+        $lgbt->id = 3;
+        $lgbt->preference = "lgbt";
+        $lgbt->save();
 
     }
 }

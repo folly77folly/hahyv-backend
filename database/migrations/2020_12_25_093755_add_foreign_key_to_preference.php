@@ -30,10 +30,10 @@ class AddForeignKeyToPreference extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::table('users', function (Blueprint $table) {
-            //
-            $table->string('preference_id')->default(1)->change();
-            $table->dropForeign('preference_id');
+            $table->unsignedBigInteger('preference_id')->default(0)->change();
         });
+        Schema::enableForeignKeyConstraints();
     }
 }

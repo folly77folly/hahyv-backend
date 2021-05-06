@@ -35,14 +35,15 @@ class AddUserColumnToEarningTransaction extends Migration
      * @return void
      */
     public function down()
-    {
+    {   Schema::disableForeignKeyConstraints();
         Schema::table('earning_transactions', function (Blueprint $table) {
             //
-            $table->dropColumn('trans_id');
-            $table->dropForeign('sender_id');
-            $table->dropColumn('sender_id');
-            $table->dropForeign('earning_type_id');
-            $table->dropColumn('earning_type_id');
+            $table->dropIfExists('trans_id');
+            // $table->dropForeign('sender_id');
+            $table->dropIfExists('sender_id');
+            // $table->dropForeign('earning_type_id');
+            $table->dropIfExists('earning_type_id');
         });
+        Schema::enableForeignKeyConstraints();
     }
 }

@@ -31,6 +31,7 @@ class PayoutMail extends Mailable
     {
         $mail_from_name = env('MAIL_FROM_NAME');
         return $this->from(env('MAIL_FROM_ADDRESS'), $mail_from_name)
+                ->replyTo(env('MAIL_REPLY_TO'))
                 ->subject($this->mailDetails['subject'])
                 ->markdown('emails.payout');
     }

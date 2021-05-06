@@ -63,8 +63,8 @@ class EmailVerifyNotification extends Notification
         }
 
         return (new MailMessage)
-            ->subject(Lang::get('Verify Email Address'))
-            ->greeting(Lang::get('Hello '. $this->username. ',' ))
+            ->subject(Lang::get('Email confirmation'))
+            ->greeting(Lang::get('Hi '. $this->username. ',' ))
             ->line(Lang::get('Please click the button below to verify your email address.'))
             ->action(Lang::get('Verify Email Address'), $verificationUrl)
             // ->line(Lang::get('Your Confirmation Code is '. $this->otp))

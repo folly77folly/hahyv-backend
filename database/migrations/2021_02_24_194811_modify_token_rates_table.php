@@ -15,7 +15,7 @@ class ModifyTokenRatesTable extends Migration
     {
         Schema::table('tokenrates', function (Blueprint $table) {
             //
-            $table->renameColumn('dollarTokenRate', 'rate')->change();
+            $table->renameColumn('dollartokenrate', 'rate')->change();
             $table->integer('unit')->after('id')->unsigned();
         });
 
@@ -35,12 +35,12 @@ class ModifyTokenRatesTable extends Migration
         Schema::table('tokenrates', function (Blueprint $table) {
             //
             $table->dropColumn('unit');
-            $table->renameColumn('rate', 'dollarTokenRate')->change();
+            $table->renameColumn('rate', 'dollartokenrate')->change();
         });
 
         Schema::table('tokenrates', function (Blueprint $table) {
             //
-            $table->integer('dollarTokenRate')->change();
+            $table->integer('dollartokenrate')->change();
         });
     }
 }

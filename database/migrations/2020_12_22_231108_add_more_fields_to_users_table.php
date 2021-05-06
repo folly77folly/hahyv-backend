@@ -16,7 +16,7 @@ class AddMoreFieldsToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->text('description')->nullable();
             $table->string('profile_image_url')->nullable();
-            $table->string('preference')->nullable();
+            $table->unsignedBigInteger('preference');
             $table->string('website_url')->nullable();
             $table->string('gender')->nullable();
             $table->string('date_of_birth')->nullable();
@@ -26,7 +26,7 @@ class AddMoreFieldsToUsersTable extends Migration
             $table->bigInteger('followerCount')->default(0);
             $table->bigInteger('followingCount')->default(0);
             $table->bigInteger('fansCount')->default(0);
-            $table->bigInteger('PostCount')->default(0);
+            $table->bigInteger('postCount')->default(0);
             $table->bigInteger('walletBalance')->default(0);
             $table->bigInteger('tokenBalance')->default(0);
             $table->string('subscription_plan')->nullable();

@@ -28,7 +28,7 @@ class ModifyLikedColumnOnLikesTable extends Migration
     {
         Schema::table('likes', function (Blueprint $table) {
             //
-            $table->boolean('liked')->default(0);
+            $table->boolean('liked')->default(0)->change();
         });
     }
 }

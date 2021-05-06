@@ -18,7 +18,7 @@ class EarningTypeSeeder extends Seeder
         $earn_type1->name = 'card';
         $earn_type1->save();
 
-        $earn_type2 = new EarningType();
+        $earn_type2 = new EarningType();  
         $earn_type2->id = 2;
         $earn_type2->name = 'wallet';
         $earn_type2->save();
