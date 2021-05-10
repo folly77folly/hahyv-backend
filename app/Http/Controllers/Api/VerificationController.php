@@ -53,7 +53,7 @@ class VerificationController extends Controller
     {
         auth()->loginUsingId($request->route('id'));
         if (! hash_equals((string) $request->route('id'), (string) $request->user()->getKey())) {
-            throw new AuthorizationException;  
+            throw new AuthorizationException;
         }
 
         if (! hash_equals((string) $request->route('hash'), sha1($request->user()->getEmailForVerification()))) {
