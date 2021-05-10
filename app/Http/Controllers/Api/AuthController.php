@@ -13,6 +13,7 @@ use App\Events\unSubscribeEvent;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Providers\UrlShortenerEvent;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Auth\Events\Registered;
@@ -174,15 +175,30 @@ class AuthController extends Controller
     {
 
         $validatedData = $request->validated();
+        
+        if(($request->provider))
+        {
+            $user = User::where('email', $validatedData['email'])->first();
+            // dd($user);
+            if(!$user){
+                return response()->json([
+                    "status"=>"failure",
+                    "status_code" => StatusCodes::UNAUTHORIZED,
+                    "message"=>"Email not registered"
+                ], StatusCodes::UNAUTHORIZED);
+            }
+            Auth::login($user);
+        }else{
 
-
-        if (!Auth()->attempt($validatedData)){
-            return response()->json([
-                "status"=>"failure",
-                "status_code" => StatusCodes::UNAUTHORIZED,
-                "message"=>"Invalid Email or Password"
-            ], StatusCodes::UNAUTHORIZED);
+            if (!Auth()->attempt($validatedData)){
+                return response()->json([
+                    "status"=>"failure",
+                    "status_code" => StatusCodes::UNAUTHORIZED,
+                    "message"=>"Invalid Email or Password"
+                ], StatusCodes::UNAUTHORIZED);
+            }
         }
+
 
 
         if(!Auth()->user()->hasVerifiedEmail()){
