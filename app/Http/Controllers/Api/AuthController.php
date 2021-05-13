@@ -282,4 +282,14 @@ class AuthController extends Controller
             ]
         ],StatusCodes::SUCCESS,);
     }
+    public function logOut()
+    {
+        $user = Auth()->user()->token();
+        $user->revoke();
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "logged out successfully",
+        ],StatusCodes::SUCCESS,);
+    }
 }
