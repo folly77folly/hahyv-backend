@@ -94,6 +94,9 @@ Route::GET('email/verify/{id}/{hash}', 'Api\VerificationController@verify')->nam
 Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
 
 Route::group(['middleware'=>'auth:api'], function(){
+    //Log out users
+    Route::POST('/logout', 'Api\AuthController@logOut');
+
     //all users for search 
     // Route::GET('/users', 'Api\AuthController@index')->name('allUsers');
     
