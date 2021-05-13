@@ -38,6 +38,7 @@ class ProcessWebhook extends ProcessWebhookJob
     public function handle(){
         //responding to webhook
         try {
+            http_response_code(200);
                 $data = json_decode($this->webhookCall, true);
             
                 //Do something with the event
@@ -55,7 +56,6 @@ class ProcessWebhook extends ProcessWebhookJob
                 
                 if($data['payload']['event'] == "charge.success")
                 {
-                http_response_code(200);
                 $reference = $data['payload']['data']['reference'];
                 $amount = ($data['payload']['data']['amount'])/100;
                 $metaData = $data['payload']['data']['metadata'];

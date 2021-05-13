@@ -37,7 +37,8 @@ class LoginRequest extends FormRequest
     {
         return [
             'email'=> 'required',
-            'password'=> 'required',
+            'provider' => 'nullable',
+            'password'=> 'required_without:provider'
         ];
     }
 }
