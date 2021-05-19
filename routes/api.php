@@ -30,7 +30,7 @@ Route::prefix('admin')->group(function(){
     Route::POST('/login', 'Api\Admin\AuthController@login');
 });
 
-Route::group(['middleware'=>['auth:api','admin', 'cors']], function(){
+Route::group(['middleware'=>['auth:api','admin']], function(){
 
     Route::prefix('admin')->group(function(){
         // change password
