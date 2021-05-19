@@ -20,10 +20,12 @@ Route::webhooks('webhook-receiving-url', 'paystack');
 Route::POST('/webhook-stripe-url', 'Api\WalletController@valentine');
 
 //Admin Routes
+Route::group(['middleware' => 'cors']),function(){
 
-Route::prefix('admin')->group(function(){
-    Route::POST('/register', 'Api\Admin\AuthController@register');
-    Route::POST('/login', 'Api\Admin\AuthController@login');
+    Route::prefix('admin')->group(function(){
+        Route::POST('/register', 'Api\Admin\AuthController@register');
+        Route::POST('/login', 'Api\Admin\AuthController@login');
+    });
 });
 
 Route::group(['middleware'=>['auth:api','admin', 'cors']], function(){
