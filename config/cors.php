@@ -27,6 +27,8 @@ return [
 
     'exposed_headers' => [],
 
+    'Access-Control-Allow-Origin' => ['https://admin.hahyv.com'],
+
     'max_age' => 0,
 
     'supports_credentials' => false,
