@@ -75,5 +75,6 @@ class Kernel extends HttpKernel
         'earning_balance' => \App\Http\Middleware\EarningWithdrawalMiddleware::class,
         'wallet_balance' => \App\Http\Middleware\WalletBankTransfer::class,
         'admin' => \App\Http\Middleware\AdminRoleMiddleware::class,
+        'cors' => \App\Http\Middleware\Cors::class,
     ];
 }
