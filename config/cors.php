@@ -27,7 +27,7 @@ return [
 
     'exposed_headers' => [],
 
-    'Access-Control-Allow-Origin' => ['https://admin.hahyv.com'],
+    'Access-Control-Allow-Origin' => ['https://admin.hahyv.com','https://affectionate-hoover-3d89a5.netlify.app'],
 
     'max_age' => 0,
 
