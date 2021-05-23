@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\User;
 use App\Models\Referral;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
@@ -9,6 +10,7 @@ use App\Models\ReferEarnSetup;
 use App\Collections\StatusCodes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReferralRequest;
+use App\Http\Requests\PayReferralRequest;
 
 class ReferralController extends Controller
 {
@@ -54,5 +56,16 @@ class ReferralController extends Controller
                 "message"=>"Update not successful",
                 ],StatusCodes::BAD_REQUEST);
         }
+    }
+
+    public function payReferral(PayReferralRequest $request)
+    {
+        $validatedData = $request->validated();
+        $user = User::where('id', $request->user_id)->update(['referral_is_paid' => 1]);
+        return response()->json([
+            "status"=> "success",
+            "message"=>"Referral paid successfully",
+            "data" => User::find($request->user_id)
+            ],StatusCodes::SUCCESS);
     }
 }

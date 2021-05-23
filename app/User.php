@@ -151,6 +151,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'theme' => 'boolean',
         'is_online' => 'boolean',
         'is_blocked' => 'boolean',
+        'referral_is_paid' => 'boolean',
     ];
 
     public function sendPasswordResetNotification($token)
