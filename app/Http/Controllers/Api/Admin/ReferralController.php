@@ -15,7 +15,9 @@ class ReferralController extends Controller
     //
     public function index()
     {
-        $referrals = Referral::select('user_id')->distinct('user_id')->with('user')->paginate(Constants::PAGE_LIMIT);
+        $referrals = Referral::select('user_id')->distinct('user_id')->with(['user' => function($query){
+            $query->with('bankDetail');
+        }])->paginate(Constants::PAGE_LIMIT);
         
         return response()->json([
             "status"=> "success",
