@@ -79,36 +79,36 @@ Trait FollowingFanTrait{
         }
     }
 
-    public function shortUrl($longUrl)
-    {
-        $url = urlencode($longUrl);
-        $json = file_get_contents("https://cutt.ly/api/api.php?key=43034c0f0caf3b6ac9df465befb862a770633&short=$url");
-        $data = json_decode ($json, true);
-        if($data['url']['status'] ==7){
-            return $data['url']['shortLink'];
-        }else{
-            return null;
-        } ;
+    // public function shortUrl($longUrl)
+    // {
+    //     $url = urlencode($longUrl);
+    //     $json = file_get_contents("https://cutt.ly/api/api.php?key=43034c0f0caf3b6ac9df465befb862a770633&short=$url");
+    //     $data = json_decode ($json, true);
+    //     if($data['url']['status'] ==7){
+    //         return $data['url']['shortLink'];
+    //     }else{
+    //         return null;
+    //     } ;
     
-    }
+    // }
 
-    public function earn(array $data){
-        $setup = ReferEarnSetup::first();
-        if($setup->amount == 0){
+    // public function earn(array $data){
+    //     $setup = ReferEarnSetup::first();
+    //     if($setup->amount == 0){
 
-        }else{
-            $amount = $setup->amount;
-            $number = $setup->number_to_refer;
-            $noReferred = Referral::where('user_id', $data['user_id'])->count();
-            $mod = fmod($noReferred, $number);
-            $description = "earnings from referral";
-            $reference = "ref".time();
-            if ($mod == 0){
-                $this->creditEarning($data['user_id'], $amount, $description, $reference, Auth()->user()->id, Constants::EARNING['REFERRAL']);
-            }
-        }
+    //     }else{
+    //         $amount = $setup->amount;
+    //         $number = $setup->number_to_refer;
+    //         $noReferred = Referral::where('user_id', $data['user_id'])->count();
+    //         $mod = fmod($noReferred, $number);
+    //         $description = "earnings from referral";
+    //         $reference = "ref".time();
+    //         if ($mod == 0){
+    //             $this->creditEarning($data['user_id'], $amount, $description, $reference, Auth()->user()->id, Constants::EARNING['REFERRAL']);
+    //         }
+    //     }
 
-    }
+    // }
 
     public function subRate($id){
         $subscriptions = SubscriptionRate::where('user_id', $id)->orderBy('amount','ASC')->first();

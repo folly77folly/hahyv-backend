@@ -11,19 +11,24 @@ Trait ReferralTrait{
 
     use EarningTransactionsTrait;
 
-    public function refer($user, $token){
+    public function refer($user, $token, $ip_address){
         // $user = Auth()->user();
         $tokenOwner = User::where('rf_token', $token)->first();
         if(!$tokenOwner){
-
-        }else{
+            Log::alert("message");
+        }else if($ip_address == $tokenOwner->ip_address)
+        {
+            Log::alert("messages");
+        }
+        else{
             $data =[
                 'user_id' => $tokenOwner->id,
                 'referred_id' => $user
             ];
             DB::transaction(function () use($data){
                 Referral::firstOrCreate($data);
-                $this->earn($data);
+                //automatic earning of money or token by user
+                // $this->earn($data);
             });
         }
     }
@@ -57,6 +62,16 @@ Trait ReferralTrait{
             }
         }
 
+    }
+
+    public function referrals($user_id)
+    {
+        return Referral::select('referred_id')->where('user_id', $user_id)->with('referredUser')->get();
+    }
+
+    public function referralsCount($user_id)
+    {
+        return Referral::where('user_id', $user_id)->count();
     }
 
     // public function debitWallet($id, $amount, $description){

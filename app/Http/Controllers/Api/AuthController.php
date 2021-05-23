@@ -147,7 +147,8 @@ class AuthController extends Controller
         $accessToken = $user->createToken('authToken')->accessToken;
 
         if (!empty($request->referral_id)){
-            event(new ReferralEvent($user->id, $request->referral_id));
+
+            event(new ReferralEvent($user->id, $request->referral_id, $user->ip_address));
         }
         return response()->json([
             "status"=> "success",
