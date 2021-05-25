@@ -15,16 +15,18 @@ class ReferralEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $user_id;
     public $id;
+    public $ip_address;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($user_id, $id)
+    public function __construct($user_id, $id, $ip_address)
     {
         //
         $this->user_id = $user_id;
         $this->id = $id;
+        $this->ip_address = $ip_address;
     }
 
     /**

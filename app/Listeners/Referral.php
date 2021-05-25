@@ -30,6 +30,6 @@ class Referral
     public function handle(ReferralEvent $event)
     {
         //
-        $this->refer($event->user_id, $event->id);
+        $this->refer($event->user_id, $event->id, $event->ip_address);
     }
 }

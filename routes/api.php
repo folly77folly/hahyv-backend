@@ -68,6 +68,12 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
         //Transaction Fee
         Route::apiResource('transaction_fee', Api\Admin\TransactionFeeController::class);
 
+        // Referrals 
+        Route::GET('referral-setup', 'Api\Admin\ReferralController@getSetup');
+        Route::POST('referral-setup', 'Api\Admin\ReferralController@setup');
+        Route::GET('referrals', 'Api\Admin\ReferralController@index');
+        Route::PUT('referral', 'Api\Admin\ReferralController@payReferral');
+
     });
 
 });
