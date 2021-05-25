@@ -26,7 +26,8 @@ class MessageRequest extends FormRequest
         return [
             //
             'recipient_id' => ['required', 'int', 'exists:users,id'],
-            'message' => ['required', 'string']
+            'message' => ['required', 'string'],
+            'conversation_id' => ['nullable']
         ];
     }
 }

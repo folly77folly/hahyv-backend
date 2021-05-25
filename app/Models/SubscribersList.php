@@ -9,6 +9,11 @@ class SubscribersList extends Model
 {
     //
     protected$guarded =[];
+
+    protected $casts = [
+        'expiry' => 'datetime',
+        'is_active' => 'boolean'
+    ];
     
     public function user(){
         return $this->belongsTo(User::class);

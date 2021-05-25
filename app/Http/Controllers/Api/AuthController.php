@@ -6,11 +6,14 @@ use App\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Events\ReferralEvent;
+use App\Collections\Constants;
 use Illuminate\Support\Carbon;
 use App\Collections\StatusCodes;
+use App\Events\unSubscribeEvent;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Providers\UrlShortenerEvent;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Auth\Events\Registered;
@@ -28,7 +31,7 @@ class AuthController extends Controller
     {
         //
         $id = Auth()->user()->id;
-        $users = User::all(
+        $users = User::select(
             'id',
             'name',
             'username',
@@ -41,7 +44,9 @@ class AuthController extends Controller
             'updated_at',
             )
             ->where('id', '!=', $id)
-            ->toArray();
+            ->where('role_id', '!=', Constants::ROLE['ADMIN'])
+            ->where('email_verified_at', '!=', null)
+            ->paginate(Constants::PAGE_LIMIT);
 
         if(!$users){
 
@@ -56,7 +61,7 @@ class AuthController extends Controller
                 "status"=> "success",
                 "status_code"=> StatusCodes::SUCCESS,
                 "message"=>"Users found",
-                "data"=> array_values($users)
+                "data"=> $users
                 ],StatusCodes::SUCCESS);
     }
 
@@ -171,15 +176,30 @@ class AuthController extends Controller
     {
 
         $validatedData = $request->validated();
+        
+        if(($request->provider))
+        {
+            $user = User::where('email', $validatedData['email'])->first();
+            // dd($user);
+            if(!$user){
+                return response()->json([
+                    "status"=>"failure",
+                    "status_code" => StatusCodes::UNAUTHORIZED,
+                    "message"=>"Email not registered"
+                ], StatusCodes::UNAUTHORIZED);
+            }
+            Auth::login($user);
+        }else{
 
-
-        if (!Auth()->attempt($validatedData)){
-            return response()->json([
-                "status"=>"failure",
-                "status_code" => StatusCodes::UNAUTHORIZED,
-                "message"=>"Invalid Email or Password"
-            ], StatusCodes::UNAUTHORIZED);
+            if (!Auth()->attempt($validatedData)){
+                return response()->json([
+                    "status"=>"failure",
+                    "status_code" => StatusCodes::UNAUTHORIZED,
+                    "message"=>"Invalid Email or Password"
+                ], StatusCodes::UNAUTHORIZED);
+            }
         }
+
 
 
         if(!Auth()->user()->hasVerifiedEmail()){
@@ -199,6 +219,7 @@ class AuthController extends Controller
         }
 
         $accessToken = Auth()->user()->createToken("authToken")->accessToken;
+        event(new unSubscribeEvent(Auth()->user()->id));
         return response()->json([
             "status"=>"success",
             "status_code"=> StatusCodes::SUCCESS,
@@ -260,6 +281,16 @@ class AuthController extends Controller
                 "updated_at" => $user->updated_at,
                 "verified_at" => $user->email_verified_at,
             ]
+        ],StatusCodes::SUCCESS,);
+    }
+    public function logOut()
+    {
+        $user = Auth()->user()->token();
+        $user->revoke();
+        return response()->json([
+            "status" => "success",
+            "status_code" => StatusCodes::SUCCESS,
+            "message" => "logged out successfully",
         ],StatusCodes::SUCCESS,);
     }
 }

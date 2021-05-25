@@ -29,8 +29,8 @@ class AddOtpToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->dropColumn('otp');
-            $table->dropColumn('otp_expiry');
+            $table->dropIfExists('otp');
+            $table->dropIfExists('otp_expiry');
         });
     }
 }

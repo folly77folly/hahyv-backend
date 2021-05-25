@@ -42,6 +42,7 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
 
         //user profile
         Route::GET('/user/{user}', 'Api\Admin\DashboardController@profileUsername');
+        Route::PUT('/subscription-expire', 'Api\Admin\DashboardController@expiry');
 
         //send mail
         Route::POST('/send_mail', 'Api\Admin\DashboardController@sendMail');
@@ -99,8 +100,11 @@ Route::GET('email/verify/{id}/{hash}', 'Api\VerificationController@verify')->nam
 Route::POST('otp/verify', 'Api\VerificationController@verifyOTP')->name('verification.otp');
 
 Route::group(['middleware'=>'auth:api'], function(){
-    //all users
-    Route::GET('/users', 'Api\AuthController@index')->name('allUsers');
+    //Log out users
+    Route::POST('/logout', 'Api\AuthController@logOut');
+
+    //all users for search 
+    // Route::GET('/users', 'Api\AuthController@index')->name('allUsers');
     
     // User profile
     Route::GET('profile/preference', 'Api\UserProfileController@preference');
@@ -133,7 +137,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::POST('post/dislikepost', 'Api\PostController@disLikePost');
     Route::POST('post/postlike', 'Api\PostController@postLike');
     Route::POST('post/{id}', 'Api\PostController@show');
-    Route::POST('post_new/posting', 'Api\PostController@post');
+    // Route::POST('post_new/posting', 'Api\PostController@post');
 
     Route::GET('hometimeline', 'Api\HomeTimelineController@index');
 
@@ -194,6 +198,12 @@ Route::group(['middleware'=>'auth:api'], function(){
 
 
     //transactions
+
+
+
+
+
+    
     Route::GET('/card_transactions', 'Api\CardTransactionController@index');
 
     //Poll Vote
@@ -202,6 +212,8 @@ Route::group(['middleware'=>'auth:api'], function(){
     //messages
     Route::POST('/history', 'Api\MessageController@history');
     Route::GET('/conversation/{id}', 'Api\MessageController@getConversation');
+    Route::GET('/chats', 'Api\MessageController@getChats')->name('getChats');
+    Route::GET('/history-message/{id}', 'Api\MessageController@getHistory');
     Route::apiResource('message', Api\MessageController::class);
 
     //earnings

@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use App\Models\Message;
 use App\Events\MessageEvent;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Collections\StatusCodes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Pagination\Paginator;
 use App\Http\Requests\HistoryRequest;
 use App\Http\Requests\MessageRequest;
 use App\Traits\TokenTransactionsTrait;
+use Illuminate\Pagination\LengthAwarePaginator;
+use App\Http\Controllers\Api\CommonFunctionsController;
 use App\Http\Controllers\Api\PostNotificationController;
 
 class MessageController extends Controller
@@ -32,21 +37,7 @@ class MessageController extends Controller
     {
         //
         $id = Auth()->user()->id;
-        // $conversation_one = Conversation::where([
-        //     'user_one' => $id,
-        //     ])->get('id');
-        // $conversation_two = Conversation::whereOr([
-        //     'user_one' => $id,
-        //     'user_two' => $id,
-        //     ])->get('id');
-        // $conversation_three = Conversation::whereOr([
-        //     'user_one' => $id,
-        //     'user_two' => $id,
-        //     ])
 
-        //     ->with(['messages' => function($query){
-        //          $query->orderBy('created_at', 'asc');
-        //     }])->get();
         ini_set('max_execution_time',300);
         $messages = Message::where([
             'sender_id'=> $id,
@@ -81,46 +72,45 @@ class MessageController extends Controller
     public function store(MessageRequest $request)
     {
         //
+        try {
         $conversation_id = "";
         $id = Auth()->user()->id;
         $username = Auth()->user()->username;
 
+
         $validatedData = $request->validated();
-        $validatedData['sender_id'] = Auth()->user()->id;
-        $conversation_one = Conversation::where([
-            'user_one' => $id,
-            'user_two' => $request->recipient_id,
-            ])->first();
-        if (!$conversation_one){
+        if(!$request->conversation_id or $request->conversation_id == ""){
+            $conversation_one = Conversation::where(['user_one' => $id,'user_two' => $request->recipient_id])->first();
+            if(!$conversation_one){
+                $conversation_one = Conversation::Where(['user_one' => $request->recipient_id,'user_two' => $id,])->first();
+            }
 
-            $conversation_two = Conversation::where([
-                'user_one' => $request->recipient_id,
-                'user_two' => $id,
-                ])->first();
+                if ($conversation_one){
+                $conversation_id = $conversation_one->id;
+                $validatedData['conversation_id'] = $conversation_id;
+            }else{
 
-                if(!$conversation_two){
+                $data = [
+                    'user_one' => $id,
+                    'user_two' => $request->recipient_id,
+                ];
+                $conversation = Conversation::firstOrCreate($data);
+                $conversation_id = $conversation->id;
+                $validatedData['conversation_id'] = $conversation_id;
+            }
+            
 
-                    //create_conversation
-                    $data = [
-                        'user_one' => $id,
-                        'user_two' => $request->recipient_id,
-                    ];
-                    $conversation = Conversation::create($data);
-                    $conversation_id = $conversation->id;
-                }else{
-                    $conversation_id = $conversation_two->id;
-                }
-        }else{
-            $conversation_id = $conversation_one->id;
         }
-        $validatedData['conversation_id'] = $conversation_id;
+        $validatedData['sender_id'] = Auth()->user()->id;
+ 
         
         $message = Message::create($validatedData);
         if ($message){
             $reference = "msg_tk".time();
-            $this->debitToken($id, 1, $request->message, $reference);
+            $this->debitToken($id, Constants::TOKEN['DEBIT'], $request->message, $reference);
         }
         $sentMessage = Message::find($message->id)->load(['recipient', 'sender']);
+
         broadcast(new MessageEvent($sentMessage))->toOthers();
 
         //notify that you received a message
@@ -131,7 +121,13 @@ class MessageController extends Controller
             'status_code' => StatusCodes::CREATED,
             'message' => 'message sent successfully',
             'data' => $sentMessage
-        ],StatusCodes::CREATED);    
+        ],StatusCodes::CREATED);
+        } catch (Exception $e) {
+            $commonFunction = new CommonFunctionsController();
+            $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
+            return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
+        }
+            
     }
 
 
@@ -186,7 +182,7 @@ class MessageController extends Controller
         }
         $messages = Message::where([
             'conversation_id'=> $conversation_id,
-            ])->with(['recipient', 'sender'])->orderBy('created_at', 'asc')->get();
+            ])->with(['recipient', 'sender'])->orderBy('created_at', 'asc')->paginate(Constants::PAGE_LIMIT);
         return response()->json([
             'status' => 'success',
             'status_code' => StatusCodes::SUCCESS,
@@ -270,5 +266,81 @@ class MessageController extends Controller
             'message' => 'conversation retrieved',
             'data' => $conversation_one
         ],StatusCodes::SUCCESS); 
+    }
+
+    public function getChats(){
+        $id = Auth()->user()->id;
+
+        $conversation_array = [];
+        $message_array = [];
+        $messages = Conversation::select('user_one as sender_id','user_two as recipient_id')->where([
+            'user_one'=> $id,
+            ])->orWhere([
+            'user_two'=> $id
+            ])->distinct()->addSelect('id as conversation_id')->with('user_one','user_two')->get();
+            
+        foreach ($messages as $conversation){
+            if($conversation->sender_id == $id){
+                $conversation_array['user_id']= $conversation->recipient_id;
+                $conversation_array['conversation_id']= $conversation->conversation_id;
+                $conversation_array['user']= $conversation->user_two;
+            }
+
+            if($conversation->recipient_id == $id){
+                $conversation_array['user_id']= $conversation->sender_id;
+                $conversation_array['conversation_id']= $conversation->conversation_id;
+                $conversation_array['user']= $conversation->user_one;
+            }
+            array_push($message_array, $conversation_array);
+        }
+
+        // $chats = $this->paginate($message_array)->setPath(route('getChats'));
+
+        return response()->json([
+            'status' => 'success',
+            'status_code' => StatusCodes::SUCCESS,
+            'message' => 'messages retrieved',
+            'data' => $message_array,
+        ],StatusCodes::SUCCESS);  
+    }
+
+    public function getHistory($conversation_id)
+    {
+    
+        // $data = Conversation::where([
+        //     'user_one' => Auth()->user()->id,
+        //     'user_two' => $id,
+        //     ])->orWhere([
+        //         'user_one' => $id,
+        //         'user_two' => Auth()->user()->id
+        //     ])->get();
+
+        // if (Count($data) > 0){
+            // $conversation_id = $data[0]->id;
+
+            $messages = Message::where([
+                'conversation_id'=> $conversation_id,
+                ])->with(['recipient', 'sender'])->orderBy('created_at', 'desc')->paginate(Constants::PAGE_LIMIT);
+            return response()->json([
+                'status' => 'success',
+                'status_code' => StatusCodes::SUCCESS,
+                'message' => 'messages retrieved',
+                'data' => $messages
+            ],StatusCodes::SUCCESS); 
+        // }
+
+        return response()->json([
+            'status' => 'success',
+            'status_code' => StatusCodes::SUCCESS,
+            'message' => 'messages retrieved',
+            'data' => []
+        ],StatusCodes::SUCCESS); 
+    }
+
+    public function paginate($items, $perPage = Constants::PAGE_LIMIT, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

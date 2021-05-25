@@ -53,7 +53,7 @@ class VerificationController extends Controller
     {
         auth()->loginUsingId($request->route('id'));
         if (! hash_equals((string) $request->route('id'), (string) $request->user()->getKey())) {
-            throw new AuthorizationException;  
+            throw new AuthorizationException;
         }
 
         if (! hash_equals((string) $request->route('hash'), sha1($request->user()->getEmailForVerification()))) {
@@ -79,14 +79,9 @@ class VerificationController extends Controller
         $base_url = env('BASE_URL', 'http://127.0.0.1:3001');
         // $token = auth()->loginUsingId($request->route('id'));
         $accessToken = Auth()->user()->createToken("authToken")->accessToken;
-        Log::alert($accessToken);
+
         return redirect($base_url."/welcome/?token=$accessToken");
 
-        // return response([
-        //     "status"=> "success",
-        //     "status_code" => StatusCodes::SUCCESS,
-        //     "message"=>"Successfully Verified"
-        // ],StatusCodes::SUCCESS);
     }
 
     public function resend(Request $request)

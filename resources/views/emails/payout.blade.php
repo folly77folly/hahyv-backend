@@ -6,10 +6,13 @@ Hello **{{ $mailDetails['username'] }}**,  {{-- use double space for line break 
 @endcomponent
 
 Click on the link below to access your account
-@component('mail::button', ['url' => env('BASE_URL','https://hahyv.netlify.app/'), 'color' => 'success'])
+@php
+ $url =  env('BASE_URL','https://hahyv.netlify.app/')
+@endphp
+@component('mail::button', ['url' => $url, 'color' => 'success'])
 Go to Hahyv
 @endcomponent
 Sincerely,  {{-- use double space for line break --}}
-Hahyv team. {{-- use double space for line break --}}
+Hahyv Team. {{-- use double space for line break --}}
 
 @endcomponent

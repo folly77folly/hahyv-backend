@@ -9,6 +9,7 @@ use App\Models\PostNotification;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Events\PostNotificationEvent;
+use Exception;
 
 class PostNotificationController extends Controller
 {
@@ -58,27 +59,11 @@ class PostNotificationController extends Controller
         $logged_user = Auth()->user()->id;
         if($logged_user != $data['broadcast_id']){
             try{
+                $data['read'] = 0;
                 $new_postNotification = PostNotification::firstOrCreate($data);
                 broadcast(new PostNotificationEvent($new_postNotification))->toOthers();
-                // $existing_notification = PostNotification::where([
-                //     'message'=> $data['message'],
-                //     'post_id' => isset($data['post_id'])?$data['post_id']:null,
-                //     'user_id' => $data['user_id'],
-                //     'broadcast_id' => $data['broadcast_id'],
-                //     'post_type_id' => $data['post_type_id']
-                // ])->first();
-                // if(!$existing_notification){
-                //     //Don't Notify logged in User
-                //     $new_postNotification = PostNotification::firstOrCreate($data);
-                //     $new_postNotification = PostNotification::find($new_postNotification->id);
-                //     $notification = $new_postNotification->load(['user', 'post', 'post_type:id,name']);
-                //     broadcast(new PostNotificationEvent($notification))->toOthers();
-                // }else{
-                //     $notification = $existing_notification->load(['user', 'post', 'post_type:id,name']);
-                //     broadcast(new PostNotificationEvent($notification))->toOthers();
-                // }
             }catch(Exception $e){
-                $commonFunction = new CommonFunctionsController;
+                $commonFunction = new CommonFunctionsController();
                 $array_json_return =$commonFunction->api_default_fail_response(__function__, $e);
                 return response()->json($array_json_return, StatusCodes::BAD_REQUEST);
             }

@@ -35,6 +35,9 @@ class EventServiceProvider extends ServiceProvider
         Following::class => [
             AddFollowing::class,
         ],
+        'App\Events\unSubscribeEvent' => [
+            'App\Listeners\unSubscribe',  
+        ],
     ];
 
     /**

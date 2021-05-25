@@ -14,16 +14,19 @@ class SubscriptionTypeSeeder extends Seeder
     {
         //
         $basic = new SubscriptionType();
+        $basic->id = 1;
         $basic->name = "basic";
         $basic->period = 1;
         $basic->save();
 
         $standard = new SubscriptionType();
+        $standard->id = 2;
         $standard->name = "standard discount";
         $standard->period = 3;
         $standard->save();
 
         $premium = new SubscriptionType();
+        $premium->id = 3;
         $premium->name = "premium discount";
         $premium->period = 6;
         $premium->save();

@@ -86,7 +86,7 @@ class PostController extends Controller
             return response()->json([
                 "status" => "failure",
                 "message" => "Error.",
-                "data" => $validator->errors(),
+                "errors" => $validator->errors(),
             ], StatusCodes::BAD_REQUEST);
         }
         $images = [];
@@ -414,113 +414,113 @@ class PostController extends Controller
         ], StatusCodes::SUCCESS);
     }
 
-    public function post(Request $request)
-    {
+    // public function post(Request $request)
+    // {
 
-        $validator = Validator::make($request->all(),[
-            'poll' => ['array'],
-            'poll_duration' => ['int'],
-            'videos.*' => ['mimes:mp4,,mov,ogg,qt','max:10000'],
-            'images.*' => 'image|mimes:png,jpg|max:5000'
+    //     $validator = Validator::make($request->all(),[
+    //         'poll' => ['array'],
+    //         'poll_duration' => ['int'],
+    //         'videos.*' => ['mimes:mp4,,mov,ogg,qt','max:10000'],
+    //         'images.*' => 'image|mimes:png,jpg|max:5000'
 
-        ]);
+    //     ]);
 
-        if ($validator->fails())
-        {
-            return response()->json([
-                "status" => "failure",
-                "message" => "Error.",
-                "data" => $validator->errors()
-            ], StatusCodes::BAD_REQUEST);
-        }
+    //     if ($validator->fails())
+    //     {
+    //         return response()->json([
+    //             "status" => "failure",
+    //             "message" => "Error.",
+    //             "data" => $validator->errors()
+    //         ], StatusCodes::BAD_REQUEST);
+    //     }
 
-        $id = Auth()->user()->id;
-        $images = [];
-        $videos = [];
-        $post = new Post;
-        if ($request->hasFile('images')){
-            foreach($request->file('images') as $file){
-                $name= time().'_'.$file->getClientOriginalName();
+    //     $id = Auth()->user()->id;
+    //     $images = [];
+    //     $videos = [];
+    //     $post = new Post;
+    //     if ($request->hasFile('images')){
+    //         foreach($request->file('images') as $file){
+    //             $name= time().'_'.$file->getClientOriginalName();
 
-                $path = "/image/abc.jpg";
-                // $path = Storage::disk('s3')->putFile('images', $file, 'public');
-                // if (!$path){
-                //     return response()->json([
-                //         "status" => "failure",
-                //         "message" => "File Upload Failed try again",
-                //     ], StatusCodes::BAD_REQUEST);
-                // }
-                $post_data = (object)[];
+    //             $path = "/image/abc.jpg";
+    //             // $path = Storage::disk('s3')->putFile('images', $file, 'public');
+    //             // if (!$path){
+    //             //     return response()->json([
+    //             //         "status" => "failure",
+    //             //         "message" => "File Upload Failed try again",
+    //             //     ], StatusCodes::BAD_REQUEST);
+    //             // }
+    //             $post_data = (object)[];
 
-                    $post_data->id = 1233;
-                    $post_data->url = env('AWS_URL').$path;
-                    $post_data->height = 4160;
-                    $post_data->width = 3120;
-                    $post_data->orientation = 'portrait';
+    //                 $post_data->id = 1233;
+    //                 $post_data->url = env('AWS_URL').$path;
+    //                 $post_data->height = 4160;
+    //                 $post_data->width = 3120;
+    //                 $post_data->orientation = 'portrait';
 
-                // $data[] = env('AWS_URL').$path;
-                $data[] = ($post_data);
-            }
-            // dd($data);
-            $images = ($data);
-        }
-        if ($request->hasFile('videos')){
+    //             // $data[] = env('AWS_URL').$path;
+    //             $data[] = ($post_data);
+    //         }
+    //         // dd($data);
+    //         $images = ($data);
+    //     }
+    //     if ($request->hasFile('videos')){
 
-            foreach($request->file('videos') as $file){
-                $name= time().'_'.$file->getClientOriginalName();
-                ini_set('max_execution_time', 300);
-                $path = Storage::disk('s3')->putFile('videos', $file, 'public');
-                if (!$path){
-                    return response()->json([
-                        "status" => "failure",
-                        "message" => "File Upload Failed try again",
-                    ], StatusCodes::BAD_REQUEST);
-                }
-                $videoData[] = env('AWS_URL').$path;
-            }
+    //         foreach($request->file('videos') as $file){
+    //             $name= time().'_'.$file->getClientOriginalName();
+    //             ini_set('max_execution_time', 300);
+    //             $path = Storage::disk('s3')->putFile('videos', $file, 'public');
+    //             if (!$path){
+    //                 return response()->json([
+    //                     "status" => "failure",
+    //                     "message" => "File Upload Failed try again",
+    //                 ], StatusCodes::BAD_REQUEST);
+    //             }
+    //             $videoData[] = env('AWS_URL').$path;
+    //         }
 
-            $videos = $videoData;
-        }
+    //         $videos = $videoData;
+    //     }
 
-        $post->description = $request->description;
-        $post->images = $images;
-        $post->videos = $videos;
-        $post->user_id = $id;
-        $post->poll = $request->input('poll');
+    //     $post->description = $request->description;
+    //     $post->images = $images;
+    //     $post->videos = $videos;
+    //     $post->user_id = $id;
+    //     $post->poll = $request->input('poll');
 
-        if($request->input('height') != null ){
-            $post->height = $request->input('height');
-        }
-        if($request->input('width') != null ){
-            $post->width = $request->input('width');
-        }
-        if($request->input('orientation') != null ){
-            $post->orientation = $request->input('orientation');
-        }
-        if($request->input('poll_duration') != null ){
-            $post->poll_expiry = Carbon::now()->addDays($request->input('poll_duration'));
-        }
+    //     if($request->input('height') != null ){
+    //         $post->height = $request->input('height');
+    //     }
+    //     if($request->input('width') != null ){
+    //         $post->width = $request->input('width');
+    //     }
+    //     if($request->input('orientation') != null ){
+    //         $post->orientation = $request->input('orientation');
+    //     }
+    //     if($request->input('poll_duration') != null ){
+    //         $post->poll_expiry = Carbon::now()->addDays($request->input('poll_duration'));
+    //     }
 
-        $post->save();
-        if (!empty($request->poll)){
+    //     $post->save();
+    //     if (!empty($request->poll)){
 
-            $data = [];
-            foreach ($request->poll as $choice){
-                $the_choice = [
-                    'post_id' => $post->id,
-                    'choices' => $choice
-                ];
-                array_push($data, $the_choice);
-            }
-            $post->polls()->createMany($data);
-        }
+    //         $data = [];
+    //         foreach ($request->poll as $choice){
+    //             $the_choice = [
+    //                 'post_id' => $post->id,
+    //                 'choices' => $choice
+    //             ];
+    //             array_push($data, $the_choice);
+    //         }
+    //         $post->polls()->createMany($data);
+    //     }
 
-        return response()->json([
-            "status" => "success",
-            "message" => "Post created successfully.",
-            "data" => Post::find($post->id)->load('user')->load('polls')
-        ], StatusCodes::CREATED);
-    }
+    //     return response()->json([
+    //         "status" => "success",
+    //         "message" => "Post created successfully.",
+    //         "data" => Post::find($post->id)->load('user')->load('polls')
+    //     ], StatusCodes::CREATED);
+    // }
 
 }
 

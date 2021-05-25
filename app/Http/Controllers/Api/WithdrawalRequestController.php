@@ -119,7 +119,7 @@ class WithdrawalRequestController extends Controller
             return response()->json([
                 "status" => "failure",
                 "status_code" => StatusCodes::BAD_REQUEST,
-                "message" => "you cannot withdraw more than your balance.",
+                "message" => "You cannot withdraw more than your balance.",
             ],StatusCodes::BAD_REQUEST);
         }
 
@@ -127,7 +127,7 @@ class WithdrawalRequestController extends Controller
             return response()->json([
                 "status" => "failure",
                 "status_code" => StatusCodes::BAD_REQUEST,
-                "message" => "bank details not found.",
+                "message" => "Kindly add your bank details before transfer",
             ],StatusCodes::BAD_REQUEST);
         }
 

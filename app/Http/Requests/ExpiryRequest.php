@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SubscriptionRateRequest extends FormRequest
+class ExpiryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,8 +25,8 @@ class SubscriptionRateRequest extends FormRequest
     {
         return [
             //
-            'subscription_type_id' => ['required', 'exists:subscription_types,id'],
-            'amount' => ['required', 'numeric', 'regex:/^\d*(\.\d{1,2})?$/', 'gt:0']
+            'user_id' => ['required', 'exists:subscribers_lists,user_id'],
+            'expiry' => ['required', 'date'],
         ];
     }
 }

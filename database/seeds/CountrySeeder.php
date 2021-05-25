@@ -13,6 +13,7 @@ class CountrySeeder extends Seeder
     {
         //
         $country = new Country();
+        $country->id = 1;
         $country->name = 'Nigeria';
         $country->save();
     }

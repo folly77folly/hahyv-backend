@@ -2,12 +2,13 @@
 
 namespace App\Listeners;
 
+use App\Models\SubscribersList;
+use App\Events\unSubscribeEvent;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Auth\Events\Verified;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class LogVerifiedUser
+class unSubscribe
 {
     /**
      * Create the event listener.
@@ -17,16 +18,18 @@ class LogVerifiedUser
     public function __construct()
     {
         //
+
     }
 
     /**
      * Handle the event.
      *
-     * @param  Verified  $event
+     * @param  unSubscribeEvent  $event
      * @return void
      */
-    public function handle(Verified $event)
+    public function handle(unSubscribeEvent $event)
     {
         //
+        $subscriptions = SubscribersList::where('user_id', $event->user_id)->where('expiry', '<', now())->where('is_active', 1)->update(['is_active' =>  0]);
     }
 }

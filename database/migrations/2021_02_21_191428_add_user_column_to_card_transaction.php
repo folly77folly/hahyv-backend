@@ -34,8 +34,8 @@ class AddUserColumnToCardTransaction extends Migration
     {
         Schema::table('card_transactions', function (Blueprint $table) {
             //
-            $table->dropColumn('trans_type');
-            $table->dropColumn('debit_user');
+            $table->dropIfExists('trans_type');
+            $table->dropIfExists('debit_user');
         });
     }
 }

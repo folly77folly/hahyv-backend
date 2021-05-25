@@ -15,7 +15,7 @@ class CreateTokenratesTable extends Migration
     {
         Schema::create('tokenrates', function (Blueprint $table) {
             $table->id();
-            $table->integer('dollarTokenRate')->default(0);
+            $table->integer('dollartokenrate')->default(0);
             $table->timestamps();
         });
     }

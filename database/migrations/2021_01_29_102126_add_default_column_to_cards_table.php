@@ -29,8 +29,8 @@ class AddDefaultColumnToCardsTable extends Migration
     {
         Schema::table('cards', function (Blueprint $table) {
             //
-            $table->dropColumn('default');
-            $table->dropColumn('name');
+            $table->dropIfExists('default');
+            $table->dropIfExists('name');
         });
     }
 }
