@@ -32,11 +32,11 @@ Trait WalletTransactionsTrait{
         });
     }
 
-    public function debitWallet($id, $amount, $description, $reference = null, $transfer_code = null){
+    public function debitWallet($id, $amount, $description, $reference = null, $transfer_code = null, $status=1){
         // $user = Auth()->user();
         $user = User::find($id);
         $walletBalance = $user->walletBalance;
-        DB::transaction(function ()  use ($walletBalance, $user, $amount, $description, $reference, $transfer_code) {
+        DB::transaction(function ()  use ($walletBalance, $user, $amount, $description, $reference, $transfer_code, $status) {
     
             $user->walletBalance = $walletBalance - $amount;
             $user->save();
@@ -50,6 +50,7 @@ Trait WalletTransactionsTrait{
                 'amountDebited' => $amount,
                 'reference' => $reference,
                 'transfer_code' => $transfer_code,
+                'status' => $status,
             ]);
     
         });
