@@ -26,7 +26,7 @@ class AccountNumberRequest extends FormRequest
         return [
             //
             'account_number' => ['required', 'digits:10'],
-            'bank_code' => ['required', 'max:3'],
+            'bank_code' => ['required',],
         ];
     }
 }
