@@ -6,6 +6,7 @@ use App\Models\Card;
 use App\Collections\Constants;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Api\CardTransactionController;
 Trait WalletTransactionsTrait{
 
@@ -54,6 +55,21 @@ Trait WalletTransactionsTrait{
             ]);
     
         });
+    }
+
+    public function updateTransfer($refNo)
+    {
+        WalletTransaction::where('reference', $refNo)->update(['status' => 1]);
+        Log::info('transfer done');
+    }
+
+    public function doReversal($refNo)
+    {
+        $transaction = WalletTransaction::where('reference', $refNo)->where('status', 0)->first();
+        if($transaction){
+            $this->creditWallet($transaction->user_id, $transaction->amountDebited, 'reversal of failed transfer', 'rvsl-'.$transaction->reference, $transaction->reference);
+            Log::info('reversal done');
+        }
     }
     
 }

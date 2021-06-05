@@ -204,6 +204,7 @@ class WithdrawalRequestController extends Controller
         $validatedData = $request->validated();
         $description = "transfer to bank";
         $amount = $validatedData['amount'];
+        $status = 0;
 
         if(Auth()->user()->walletBalance < $amount){
             return response()->json([
@@ -225,18 +226,18 @@ class WithdrawalRequestController extends Controller
             'BankCode' => Auth()->user()->bankDetail->bank_id,
             'AccountNumber' => Auth()->user()->bankDetail->account_no,
             'AccountName' => Auth()->user()->bankDetail->account_name,
-            'TransactionReference' => rand(100000, 999999),
+            'TransactionReference' => rand(100000, 9999999),
             'Amount' => $amount,
             'Narration'=> $description,
             'SecretKey'=>env('Secret_Key', 'hfucj5jatq8h'),
         ];
-
+        // dd($fields);
         $result = $this->doTransfer($fields);
-
+        // dd($result);
 
         if($result['status']){
 
-            $this->debitWallet(Auth()->user()->id, $amount, $description, $fields['TransactionReference'], $fields['TransactionReference']);
+            $this->debitWallet(Auth()->user()->id, $amount, $description, $fields['TransactionReference'], $fields['TransactionReference'], $status);
             return response()->json([
                 "status" => "success",
                 "status_code" => StatusCodes::SUCCESS,
@@ -253,9 +254,21 @@ class WithdrawalRequestController extends Controller
 
     public function confirmBankTransfer(Request $request)
     {
+
         $data = $request->TransactionRef;
-        Log::info("walletsapi". $data);
-        return http_response_code(200);
+        switch($request->TransferStatus){
+
+            case 'success':
+                Log::info("wallets-api-success". $data);
+                $this->updateTransfer($data);
+                return http_response_code(200);
+
+            case 'failed':
+                Log::info("wallets-api-reversal". $data);
+                $this->doReversal($data);
+                return http_response_code(200);
+
+        }
 
     }
 
