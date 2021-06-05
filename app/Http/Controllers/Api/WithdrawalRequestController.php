@@ -7,13 +7,15 @@ use App\Collections\Constants;
 use App\Collections\StatusCodes;
 use App\Models\WithdrawalRequest;
 use App\Http\Requests\WithRequest;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Traits\PayStackPaymentTrait;
+use App\Traits\WalletsApiPaymentTrait;
 use App\Traits\WalletTransactionsTrait;
 
 class WithdrawalRequestController extends Controller
 {
-    use PayStackPaymentTrait, WalletTransactionsTrait;
+    use PayStackPaymentTrait, WalletTransactionsTrait, WalletsApiPaymentTrait;
 
     public function __construct(){
         $this->middleware('wallet_balance', ['only' => ['bankTransfer']]);
@@ -172,7 +174,7 @@ class WithdrawalRequestController extends Controller
             // print_r($response->data->reference);
                 if($response->status){
 
-                    $this->debitWallet(Auth()->user()->id, $amount, $description, $response->data->reference, $response->data->transfer_code);
+                    $this->debitWallet(Auth()->user()->id, $amount, $description, $response->data->reference, $response->data->transfer_code, 0);
 
                     return response()->json([
                         "status" => "success",
@@ -195,6 +197,79 @@ class WithdrawalRequestController extends Controller
                     "message" => "Host not reachable try again later.",
                 ],StatusCodes::BAD_REQUEST);
           }
+    }
+
+    public function transfer(WithRequest $request)
+    {
+        $validatedData = $request->validated();
+        $description = "transfer to bank";
+        $amount = $validatedData['amount'];
+        $status = 0;
+
+        if(Auth()->user()->walletBalance < $amount){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => "You cannot withdraw more than your balance.",
+            ],StatusCodes::BAD_REQUEST);
+        }
+
+        if(!Auth()->user()->bankDetail){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => "Kindly add your bank details before transfer",
+            ],StatusCodes::BAD_REQUEST);
+        }
+
+        $fields = [
+            'BankCode' => Auth()->user()->bankDetail->bank_id,
+            'AccountNumber' => Auth()->user()->bankDetail->account_no,
+            'AccountName' => Auth()->user()->bankDetail->account_name,
+            'TransactionReference' => rand(100000, 9999999),
+            'Amount' => $amount,
+            'Narration'=> $description,
+            'SecretKey'=>env('Secret_Key', 'hfucj5jatq8h'),
+        ];
+        // dd($fields);
+        $result = $this->doTransfer($fields);
+        // dd($result);
+
+        if($result['status']){
+
+            $this->debitWallet(Auth()->user()->id, $amount, $description, $fields['TransactionReference'], $fields['TransactionReference'], $status);
+            return response()->json([
+                "status" => "success",
+                "status_code" => StatusCodes::SUCCESS,
+                "message" => "withdrawal is been processed.",
+            ],StatusCodes::SUCCESS);
+        }
+
+        return response()->json([
+            "status" => "failure",
+            "status_code" => StatusCodes::BAD_REQUEST,
+            "message" => $result['Message'],
+        ],StatusCodes::BAD_REQUEST);
+    }
+
+    public function confirmBankTransfer(Request $request)
+    {
+
+        $data = $request->TransactionRef;
+        switch($request->TransferStatus){
+
+            case 'success':
+                Log::info("wallets-api-success". $data);
+                $this->updateTransfer($data);
+                return http_response_code(200);
+
+            case 'failed':
+                Log::info("wallets-api-reversal". $data);
+                $this->doReversal($data);
+                return http_response_code(200);
+
+        }
+
     }
 
 }

@@ -10,6 +10,7 @@ use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\BankDetail;
 use App\Models\Preference;
+use App\Traits\ReferralTrait;
 use Laravel\Scout\Searchable;
 use App\Models\CardTransaction;
 use App\Models\MonetizeBenefit;
@@ -30,8 +31,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable, HasApiTokens, FollowingFanTrait, Searchable;
-    public static $token;
+    use Notifiable, HasApiTokens, FollowingFanTrait, ReferralTrait;
+    // Searchable
     /**
      * The attributes that are mass assignable.
      *
@@ -74,7 +75,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $appends = ['isSubscribed', 
     'unlockFee', 'pendingWithdrawal', 
     'availableEarning','allEarning','earnRate',
-    'walletBalance', 'tokenBalance', 'isFollowing'];
+    'walletBalance', 'tokenBalance', 'isFollowing',
+    'allReferrals'
+    ];
 
     public function getIsSubscribedAttribute(){
         if ($this->is_monetize){
@@ -155,6 +158,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'theme' => 'boolean',
         'is_online' => 'boolean',
         'is_blocked' => 'boolean',
+        'referral_is_paid' => 'boolean',
     ];
 
     public function sendPasswordResetNotification($token)
@@ -305,5 +309,15 @@ class User extends Authenticatable implements MustVerifyEmail
         // Customize the data array...
 
         return $array;
+    }
+
+    public function getAllReferralsAttribute()
+    {
+        return $this->referrals($this->id);
+    }
+
+    public function getReferrals()
+    {
+        return $this->referrals($this->id);
     }
 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\API\FollowerController;
 //webhook
 Route::webhooks('webhook-receiving-url', 'paystack');
 Route::POST('/webhook-stripe-url', 'Api\WalletController@valentine');
+Route::POST('/webhook-wallets-api-url', 'Api\WithdrawalRequestController@confirmBankTransfer');
 
 //Admin Routes
 
@@ -67,6 +68,12 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
 
         //Transaction Fee
         Route::apiResource('transaction_fee', Api\Admin\TransactionFeeController::class);
+
+        // Referrals 
+        Route::GET('referral-setup', 'Api\Admin\ReferralController@getSetup');
+        Route::POST('referral-setup', 'Api\Admin\ReferralController@setup');
+        Route::GET('referrals', 'Api\Admin\ReferralController@index');
+        Route::PUT('referral', 'Api\Admin\ReferralController@payReferral');
 
     });
 
@@ -165,6 +172,10 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::get('/resolve_bvn', 'Api\BankDetailsController@check');
     Route::resource('bank_details', Api\BankDetailsController::class);
 
+    Route::get('/all-banks', 'Api\BankDetailsController@getCommercialBanksWalletsApi');
+    Route::post('/account-enquiry', 'Api\BankDetailsController@accountEnquiry');
+    Route::POST('bank-details', 'Api\BankDetailsController@savEBankDetails');
+
     //Bookmark
     Route::resource('bookmark', Api\BookmarkController::class);
 
@@ -228,6 +239,9 @@ Route::group(['middleware'=>'auth:api'], function(){
     //Withdrawal
     Route::POST('withdrawal', 'Api\WithdrawalRequestController@bankTransfer');
     Route::GET('withdrawal', 'Api\WithdrawalRequestController@index');
+
+    //wallets Api
+    Route::POST('user-withdrawal', 'Api\WithdrawalRequestController@transfer');
     // Route::apiResource('withdrawal', Api\WithdrawalRequestController::class);
 
     Route::resource('fileupload', Api\FileuploadController::class);

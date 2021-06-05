@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AccountNumberRequest extends FormRequest
+class PayReferralRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +14,7 @@ class AccountNumberRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return Auth::user()->role_id == 1;
     }
 
     /**
@@ -25,8 +26,7 @@ class AccountNumberRequest extends FormRequest
     {
         return [
             //
-            'account_number' => ['required', 'digits:10'],
-            'bank_code' => ['required',],
+            'user_id'=>['required', 'integer', 'exists:users,id']
         ];
     }
 }
