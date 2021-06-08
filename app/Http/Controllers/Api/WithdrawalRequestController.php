@@ -206,7 +206,8 @@ class WithdrawalRequestController extends Controller
         $validatedData = $request->validated();
         $description = "transfer to bank";
         $amount = $validatedData['amount'];
-        $transferFee = 26.3;
+        $transferFee = 16.13;
+        $total = $transferFee + $amount;
         $status = 0;
 
         if(Auth()->user()->walletBalance < $amount){
@@ -217,7 +218,7 @@ class WithdrawalRequestController extends Controller
             ],StatusCodes::BAD_REQUEST);
         }
 
-        if(Auth()->user()->walletBalance < ($amount + $transferFee)){
+        if(Auth()->user()->walletBalance < $total){
             return response()->json([
                 "status" => "failure",
                 "status_code" => StatusCodes::BAD_REQUEST,
@@ -249,6 +250,8 @@ class WithdrawalRequestController extends Controller
         if($result['status']){
 
             $this->debitWallet(Auth()->user()->id, $amount, $description, $fields['TransactionReference'], $fields['TransactionReference'], $status);
+            $this->debitWallet(Auth()->user()->id, $transferFee, 'transfer charges', 'chg-'.$fields['TransactionReference'], $fields['TransactionReference'], $status);
+            
             return response()->json([
                 "status" => "success",
                 "status_code" => StatusCodes::SUCCESS,
@@ -277,16 +280,18 @@ class WithdrawalRequestController extends Controller
     public function confirmBankTransfer(Request $request)
     {
 
-        $data = $request->TransactionRef;
+        $refNo = $request->TransactionRef;
+        $charges = 'chg-'.$request->TransactionRef;
+        $data = [$refNo, $charges];
         switch($request->TransferStatus){
 
             case 'success':
-                Log::info("wallets-api-success". $data);
+                Log::info("wallets-api-success");
                 $this->updateTransfer($data);
                 return http_response_code(200);
 
             case 'failed':
-                Log::info("wallets-api-reversal". $data);
+                Log::info("wallets-api-reversal");
                 $this->doReversal($data);
                 return http_response_code(200);
 
