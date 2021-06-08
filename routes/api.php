@@ -75,6 +75,14 @@ Route::group(['middleware'=>['auth:api','admin']], function(){
         Route::GET('referrals', 'Api\Admin\ReferralController@index');
         Route::PUT('referral', 'Api\Admin\ReferralController@payReferral');
 
+        //Users Transactions
+        Route::get('user-earnings', 'Api\admin\TransactionsController@earnings');
+        Route::get('user-wallet', 'Api\admin\TransactionsController@wallet');
+        Route::get('user-card', 'Api\admin\TransactionsController@card');
+
+        //verify wallets API transactions
+        Route::get('verify-withdrawal', 'Api\admin\TransactionsController@verifyTransaction');
+
     });
 
 });
