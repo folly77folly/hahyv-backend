@@ -49,19 +49,19 @@ Trait WalletsApiPaymentTrait{
           'Authorization'=> 'Bearer ' .env('Public_Key', 'uvjqzm5xl6bw'),
           'Content-Length'=> 100,
       ])->post(env('API_BASE_URL','https://sandbox.wallets.africa/').'transfer/bank/details', $fields);
-      return $response->json();
+      
+      $result = $response->json();
 
-      // $result = $response->json();
-
-      // if ($response->status() == StatusCodes::SUCCESS and $result['ResponseCode'] == StatusCodes::SUCCESS ){
-      //   return [
-      //     'status'=>true,
-      //   ];
-      // }
-      // return [
-      //   'status'=>false,
-      //   'message'=> $result['Message']
-      // ];
+      if ($response->status() == StatusCodes::SUCCESS and ($result['ResponseCode'] == StatusCodes::SUCCESS || $result['ResponseCode'] == StatusCodes::SUCCESS_SPECIAL) ){
+        return [
+          'status'=>true,
+          'data' => $result
+        ];
+      }
+      return [
+        'status'=>false,
+        'data'=> $result
+      ];
 
     }
 }

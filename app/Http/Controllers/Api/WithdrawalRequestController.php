@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Collections\StatusCodes;
+use App\Mail\LowWalletFundEmail;
 use App\Models\WithdrawalRequest;
 use App\Http\Requests\WithRequest;
+use App\Jobs\AdminLowWalletFundJob;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Traits\PayStackPaymentTrait;
@@ -204,6 +206,7 @@ class WithdrawalRequestController extends Controller
         $validatedData = $request->validated();
         $description = "transfer to bank";
         $amount = $validatedData['amount'];
+        $transferFee = 26.3;
         $status = 0;
 
         if(Auth()->user()->walletBalance < $amount){
@@ -211,6 +214,14 @@ class WithdrawalRequestController extends Controller
                 "status" => "failure",
                 "status_code" => StatusCodes::BAD_REQUEST,
                 "message" => "You cannot withdraw more than your balance.",
+            ],StatusCodes::BAD_REQUEST);
+        }
+
+        if(Auth()->user()->walletBalance < ($amount + $transferFee)){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => "Your balance cannot accommodate transfer charges.",
             ],StatusCodes::BAD_REQUEST);
         }
 
@@ -244,11 +255,22 @@ class WithdrawalRequestController extends Controller
                 "message" => "withdrawal is been processed.",
             ],StatusCodes::SUCCESS);
         }
+        if ($result['message'] == "Your wallet balance is too low to complete this transaction. Please fund your wallet.")
+        {
+            //notify admin of low balance 
+            dispatch(new AdminLowWalletFundJob());
+
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => 'Destination bank cannot be reached. Please try again Later',
+            ],StatusCodes::BAD_REQUEST);
+        }
 
         return response()->json([
             "status" => "failure",
             "status_code" => StatusCodes::BAD_REQUEST,
-            "message" => $result['Message'],
+            "message" => $result['message'],
         ],StatusCodes::BAD_REQUEST);
     }
 
