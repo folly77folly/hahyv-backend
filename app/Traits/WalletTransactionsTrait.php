@@ -57,17 +57,19 @@ Trait WalletTransactionsTrait{
         });
     }
 
-    public function updateTransfer($refNo)
+    public function updateTransfer(array $refNo)
     {
-        WalletTransaction::where('reference', $refNo)->update(['status' => 1]);
+        WalletTransaction::whereIn('reference', $refNo)->update(['status' => 1]);
         Log::info('transfer done');
     }
 
-    public function doReversal($refNo)
+    public function doReversal(array $refNo)
     {
-        $transaction = WalletTransaction::where('reference', $refNo)->where('status', 0)->first();
+        $transaction = WalletTransaction::where('reference', $refNo[0])->where('status', 0)->first();
         if($transaction){
+            $transactionCharges = WalletTransaction::where('reference', $refNo[1])->where('status', 0)->first();
             $this->creditWallet($transaction->user_id, $transaction->amountDebited, 'reversal of failed transfer', 'rvsl-'.$transaction->reference, $transaction->reference);
+            $this->creditWallet($transaction->user_id, $transactionCharges->amountDebited, 'reversal of charges transfer', 'chg-rvsl-'.$transaction->reference, $transaction->reference);
             Log::info('reversal done');
         }
     }

@@ -13,7 +13,6 @@ Trait WalletsApiPaymentTrait{
 
     public function doTransfer(array $fields)
     {
-      
       $response = Http::withOptions([
         'verify'=>false,
       ])->withHeaders([
