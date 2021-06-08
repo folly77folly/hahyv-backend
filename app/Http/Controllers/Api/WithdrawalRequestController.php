@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Collections\Constants;
 use App\Collections\StatusCodes;
+use App\Mail\LowWalletFundEmail;
 use App\Models\WithdrawalRequest;
 use App\Http\Requests\WithRequest;
+use App\Jobs\AdminLowWalletFundJob;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Traits\PayStackPaymentTrait;
@@ -204,6 +206,8 @@ class WithdrawalRequestController extends Controller
         $validatedData = $request->validated();
         $description = "transfer to bank";
         $amount = $validatedData['amount'];
+        $transferFee = 16.13;
+        $total = $transferFee + $amount;
         $status = 0;
 
         if(Auth()->user()->walletBalance < $amount){
@@ -211,6 +215,14 @@ class WithdrawalRequestController extends Controller
                 "status" => "failure",
                 "status_code" => StatusCodes::BAD_REQUEST,
                 "message" => "You cannot withdraw more than your balance.",
+            ],StatusCodes::BAD_REQUEST);
+        }
+
+        if(Auth()->user()->walletBalance < $total){
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => "Your balance cannot accommodate transfer charges.",
             ],StatusCodes::BAD_REQUEST);
         }
 
@@ -238,33 +250,48 @@ class WithdrawalRequestController extends Controller
         if($result['status']){
 
             $this->debitWallet(Auth()->user()->id, $amount, $description, $fields['TransactionReference'], $fields['TransactionReference'], $status);
+            $this->debitWallet(Auth()->user()->id, $transferFee, 'transfer charges', 'chg-'.$fields['TransactionReference'], $fields['TransactionReference'], $status);
+            
             return response()->json([
                 "status" => "success",
                 "status_code" => StatusCodes::SUCCESS,
                 "message" => "withdrawal is been processed.",
             ],StatusCodes::SUCCESS);
         }
+        if ($result['message'] == "Your wallet balance is too low to complete this transaction. Please fund your wallet.")
+        {
+            //notify admin of low balance 
+            dispatch(new AdminLowWalletFundJob());
+
+            return response()->json([
+                "status" => "failure",
+                "status_code" => StatusCodes::BAD_REQUEST,
+                "message" => 'Destination bank cannot be reached. Please try again Later',
+            ],StatusCodes::BAD_REQUEST);
+        }
 
         return response()->json([
             "status" => "failure",
             "status_code" => StatusCodes::BAD_REQUEST,
-            "message" => $result['Message'],
+            "message" => $result['message'],
         ],StatusCodes::BAD_REQUEST);
     }
 
     public function confirmBankTransfer(Request $request)
     {
 
-        $data = $request->TransactionRef;
+        $refNo = $request->TransactionRef;
+        $charges = 'chg-'.$request->TransactionRef;
+        $data = [$refNo, $charges];
         switch($request->TransferStatus){
 
             case 'success':
-                Log::info("wallets-api-success". $data);
+                Log::info("wallets-api-success");
                 $this->updateTransfer($data);
                 return http_response_code(200);
 
             case 'failed':
-                Log::info("wallets-api-reversal". $data);
+                Log::info("wallets-api-reversal");
                 $this->doReversal($data);
                 return http_response_code(200);
 
