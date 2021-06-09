@@ -17,11 +17,9 @@ class TransactionsController extends Controller
 {
     use WalletsApiPaymentTrait;
     //
-    public function earnings(AdminTransactionsRequest $request)
+    public function earnings(int $user_id)
     {
         //
-        $validatedData = $request->validated();
-        $user_id = $request->user_id;
         $earning = EarningTransaction::where('user_id', $user_id)->with('type:id,name')->latest()->paginate(Constants::PAGE_LIMIT);
         return response()->json([
             "status" => "success",
@@ -31,11 +29,9 @@ class TransactionsController extends Controller
         ], StatusCodes::SUCCESS);
     }
 
-    public function wallet(AdminTransactionsRequest $request)
+    public function wallet(int $user_id)
     {
         //
-        $validatedData = $request->validated();
-        $user_id = $request->user_id;
         $transactions = WalletTransaction::where('user_id', $user_id)->latest()->paginate(Constants::PAGE_LIMIT);
         return response()->json([
             "status" => "success",
@@ -45,10 +41,8 @@ class TransactionsController extends Controller
         ],StatusCodes::SUCCESS);
     }
 
-    public function card(AdminTransactionsRequest $request)
+    public function card(int $user_id)
     {
-        $validatedData = $request->validated();
-        $user_id = $request->user_id;
         $transactions = CardTransaction::where('user_id', $user_id)->latest()->paginate(Constants::PAGE_LIMIT);
         return response()->json([
             "status" =>"success",

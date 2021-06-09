@@ -31,8 +31,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable, HasApiTokens, FollowingFanTrait, ReferralTrait;
-    // Searchable
+    use Notifiable, HasApiTokens, FollowingFanTrait, ReferralTrait, Searchable;
     /**
      * The attributes that are mass assignable.
      *
