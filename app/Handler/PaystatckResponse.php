@@ -1,7 +1,9 @@
 <?php
 namespace App\Handler;
 
+use Illuminate\Http\Request;
 use App\Handler\RespondsToWebhook;
+use Spatie\WebhookClient\WebhookConfig;
 
 class PaystackResponse implements RespondsToWebhook {
 

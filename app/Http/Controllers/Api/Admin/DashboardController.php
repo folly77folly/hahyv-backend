@@ -193,6 +193,7 @@ class DashboardController extends Controller
 
     public function profileUsername(string $str){
         $post = User::where('username' ,$str)
+        ->with('bankDetail')
         ->with(['post' => function($query){
                 $query->with('Comment')->with(['user' => function($query){
                     $query->with([
