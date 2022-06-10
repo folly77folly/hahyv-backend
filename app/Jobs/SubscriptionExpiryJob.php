@@ -40,6 +40,10 @@ class SubscriptionExpiryJob implements ShouldQueue
             $now = Carbon::now();
             $daysTogo = $subscriber->expiry->diffInDays($now);
             $message = "Your Subscription to $creator will expire in $daysTogo day(s)";
+            if ($daysTogo == 0)
+            {
+                $message = "Your Subscription to $creator will expire in Today";
+            }
             $mailDetails = [
                 'subject' => 'Subscription Expiry Notification',
                 'body' => $message
